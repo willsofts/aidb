@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Q&amp;A</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; font-size: 1rem;}
+      form { background: rgb(222, 220, 220); padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { width: 100%; border: 0; padding: 10px; margin-right: .5%; }
+      form button { width: 100px; padding: 10px; } 
+	  #inputlayer { display: flex; flex-direction: row; }
+	  #questmessages { overflow: auto; margin-bottom: 8%;}
+      #listmessages { list-style-type: none; margin: 0; padding: 0; }
+      #listmessages li { padding: 5px; }
+      .text-quest { background: ghostwhite; color: black; font-weight: bold; }
+      .text-query { background: floralwhite; color: black; }
+	  .text-answer { background: whitesmoke; color: black;}
+	  .text-error { background-color: #f8d7da; color: black;}
+	  .text-success { background-color: #c3e6cb; color: black; }
+	  .topic { font-weight: bold; min-width: 80px; padding: 4px; }
+	  .text { padding: 4px; padding-left: 6px; width: 100%; white-space: pre-line; }
+	  .fxc { display: flex; flex-direction: row; }
+	  h2 { text-align: center; margin-top: 5px; }
+	  input[type=text] { padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
+	  #sendbutton { padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; color: white; background-color: #6c757d; border-radius: .25rem; }
+	  #sendbutton:hover { background-color: #5a6268; }
+	  button[disabled]:hover { pointer-events: none; }
+	  input[disabled] { background-color: #eee; }
+	  .table-data { border-collapse: collapse; }
+	  .table-data th { background-color: #D3D3D3; }
+	  .table-data th, td { padding: 7px; border: 1px solid #ddd; }	
+	  .table-data > tbody tr:nth-child(odd) { background-color: #f1f0f0; }
+	  .table-responsive { overflow: auto; }
+	  .typed-out { overflow: hidden; white-space: nowrap; width: 0; animation: typing 2s forwards; }
+	  .typed-container { display: inline-block; width: 100%; }
+	  @keyframes typing { from { width: 0 } to { width: 100% } }
+    </style>	
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+    <script>
+		const API_URL = ""; // "http://localhost:8080";
+		$(function() {
+			$('form').submit(function() {
+				test();
+				if($('#query').val().trim()=="") return false;
+				sendQuery($('#query').val());
+				$('#query').val('');
+				return false;
+			});
+		});
+		function sendQuery(quest) {
+			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
+			$('#listmessages').append(li);
+			$(".input-ask").prop('disabled', true);
+			$("body").css("cursor", "progress");
+			jQuery.ajax({
+				url: API_URL+"/api/question/quest",
+				data: {category: "AIDB", query: quest},
+				type: "POST",
+				dataType: "html",
+				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				error : function(transport,status,errorThrown) {
+					$("body").css("cursor", "default");
+					let err = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-error f-left").text("Error")).append($('<span>').addClass("text text-error f-right").text(errorThrown));
+					$('#listmessages').append(err);
+					$(".input-ask").prop('disabled', false);
+				},
+				success: function(data,status,transport) {
+					$("body").css("cursor", "default");
+					let json = $.parseJSON(data);
+					if(json) {
+						displayQueryAnswer(json.query, json.answer, json.error);
+						displayDataSet(json.dataset);
+					}
+					$(".input-ask").prop('disabled', false);
+					window.scrollTo(0,questmessages.scrollHeight);
+				}
+			});	
+		}
+		function displayQueryAnswer(query, answer, error) {
+			let qry = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-query f-left").text("Query")).append($('<span>').addClass("text text-query f-right").text(query));
+			let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("Answer")).append($('<span>').addClass(error?"text text-error f-right":"text text-success f-right").text(answer));
+			$('#listmessages').append(qry).append(ans);
+		}
+		function displayDataSet(data) {
+			if(data && data.length>0) {
+				let div = $('<div>').addClass("text text-answer table-responsive f-right");
+				let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("")).append(div);
+				$('#listmessages').append(li);
+				let table = $('<table>').addClass("table table-data table-bordered");
+				let rowhead = $('<tr>');
+				let first = data[0];
+				for(let key in first) {
+					rowhead.append($('<th>').text(key));
+				}
+				table.append($('<thead>').append(rowhead));
+				let tbody = $('<tbody>');
+				$(data).each(function(index, item) {
+					let tr = $('<tr>');
+					for(let key in item) {
+						tr.append($('<td>').text(item[key]));
+					}
+					tbody.append(tr);
+				});
+				table.append(tbody);
+				div.append(table);
+			}
+		}
+		function test() {			
+			let data = [{name: "John", age: 30, city: "New York"}, {name: "Peter", age: 25, city: "Paris"}, {name: "Mary", age: 28, city: "London"}];
+			displayQueryAnswer("What is your name?", "My name is John");
+			displayDataSet(data);
+		}
+    </script>
+  </head>
+  <body>
+	<h2>Question &amp; Answer</h2>
+	<div id="questlayer">
+		<div id="questmessages">
+    		<ul id="listmessages">
+				<li class="fxc">
+					<span class="topic topic-quest">Question</span>
+					<span class="text text-quest">Welcome to the Q&amp;A system. Please ask your question.</span>
+				</li>
+				<li class="fxc">
+					<span class="topic topic-query">Query</span>
+					<span class="text text-query">Your query.</span>
+				</li>
+				<li class="fxc">
+					<span class="topic topic-answer">Data Set</span>
+					<span class="text text-success">The data set is empty.</span>
+				</li>
+				<li class="fxc">
+					<span class="topic topic-answer"></span>
+					<div class="text text-answer table-responsive">
+						<table class="table table-data table-bordered">
+							<thead>
+							<tr>
+								<th>Question</th>
+								<th>Answer</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr>
+								<td>What is your name?</td>
+								<td>My name is Q&amp;A.</td>
+							</tr>
+							<tr>
+								<td>What is your name?</td>
+								<td>My name is Q&amp;A.</td>
+							</tr>
+							<tr>
+								<td>What is your name?</td>
+								<td>My name is Q&amp;A.</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</li>
+				<li class="fxc">
+					<span class="topic topic-answer">Answer</span>
+					<div class="typed-container text text-success">
+						<div class="typed-out">Record not found.</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<form id="questform" name="questform" action="" onsubmit="return false;">
+			<div id="inputlayer">
+				<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" /><button id="sendbutton" class="input-ask btn">Send</button>
+			</div>
+		</form>
+	</div>
+  </body>
+</html>
