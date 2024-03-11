@@ -54,7 +54,7 @@ export class QuestionHandler extends TknOperateHandler {
             return await handler.processInquire(sql, section);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
-            return Promise.reject(this.getDBError(ex).message);
+            return Promise.reject(this.getDBError(ex));
         }
     }
 
@@ -117,20 +117,7 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public parseAnswer(answer: string, defaultAnswer: boolean = true) : string {
-        let idx = answer.indexOf("Answer:");
-        if(idx >= 0) {
-            let sql = answer.substring(idx+7);
-            this.logger.debug(this.constructor.name+".parseAnswer: sql",sql);
-            sql = sql.trim();
-            if(sql.startsWith("\"")) {
-                sql = sql.substring(1,sql.length-1);
-            }
-            if(sql.endsWith("\"")) {
-                sql = sql.substring(0,sql.length-1);
-            }
-            return sql;
-        }
-        return defaultAnswer?answer:"";
+        return QuestionUtility.parseAnswer(answer, defaultAnswer);
     }
 
     public getDatabaseTableInfo(category: string = "") : string {

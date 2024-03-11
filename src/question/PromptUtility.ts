@@ -9,7 +9,6 @@ export class PromptUtility {
 
     public createQueryPrompt(input: string,table_info: string, dialect: string = this.dialect) : string {
         return `Given an input question, first create a syntactically correct ${dialect} query to run return as the answer.
-        Always using alias or full table info as prefix before column name in the query statement and try to optimize with most performance when execute.
         Use the following format:
         
         Question: "Question here"
@@ -19,6 +18,7 @@ export class PromptUtility {
         
         ${table_info}
                 
+        Always using alias's name or table's name in the SELECT clause and avoid field list is ambiguous.
         If someone asks for the table foobar, they really mean the product table.
                 
         Question: ${input}`;
