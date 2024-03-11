@@ -4,7 +4,7 @@ import { KnContextInfo, KnValidateInfo, VerifyError } from "@willsofts/will-core
 import { InquiryHandler } from "./InquiryHandler";
 import { TknOperateHandler } from '@willsofts/will-serv';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
+import { API_KEY, API_MODEL, API_ANSWER } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
 import { KnRecordSet } from "@willsofts/will-sql";
@@ -97,14 +97,16 @@ export class QuestionHandler extends TknOperateHandler {
                 return Promise.resolve(info);
             }
             info.dataset = rs.rows;
-            let datarows = JSON.stringify(rs.rows);
-            //create reply prompt from sql and result set
-            prompt = prmutil.createQuestPrompt(input, datarows, sql, "");
-            result = await aimodel.generateContent(prompt);
-            response = result.response;
-            text = response.text();
-            this.logger.debug(this.constructor.name+".processQuestion: response:",text);
-            info.answer = this.parseAnswer(text);
+            if(API_ANSWER) {
+                let datarows = JSON.stringify(rs.rows);
+                //create reply prompt from sql and result set
+                prompt = prmutil.createQuestPrompt(input, datarows, sql, "");
+                result = await aimodel.generateContent(prompt);
+                response = result.response;
+                text = response.text();
+                this.logger.debug(this.constructor.name+".processQuestion: response:",text);
+                info.answer = this.parseAnswer(text);
+            }
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
