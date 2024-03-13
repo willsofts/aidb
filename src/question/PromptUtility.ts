@@ -12,7 +12,7 @@ export class PromptUtility {
         Use the following format:
         
         Question: "Question here"
-        Answer: "SQL Query to run in double quotes"
+        Answer: "SQL Query to run with plain text in double quotes"
         
         Only use the following tables:
         
