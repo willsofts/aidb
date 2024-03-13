@@ -3,7 +3,7 @@
   <head>
     <title>Q&amp;A</title>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * { margin: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; font-size: 1rem;}
       form { background: rgb(222, 220, 220); padding: 3px; position: fixed; bottom: 0; width: 100%; }
       form input { width: 100%; border: 0; padding: 10px; margin-right: .5%; }
@@ -32,6 +32,9 @@
 	  .table-data > tbody tr:nth-child(odd) { background-color: #f1f0f0; }
 	  .table-responsive { overflow: auto; }
 	  #waitlayer { display: none; text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+	  h4 { padding-left: 4px; } 
+	  #examplequest { padding: 3px 5px; } 
+	  #examplelist li { padding: 3px 5px; }
     </style>	
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
     <script>
@@ -110,6 +113,16 @@
   </head>
   <body>
 	<h2>Question &amp; Answer</h2>
+	<div id="examplequest">
+		<h4>Example Question:</h4>
+		<ul id="examplelist">
+			<li>What is the cheapest product name</li>
+			<li>What is the most expensive product name</li>
+			<li>List product with name and price then order by price descending</li>
+			<li>Find out best seller 5 product's name of unit in March,2024 ?</li>
+			<li>Find out top 5 customer's name of order amount in March,2024 ?</li>
+		</ul>
+	</div>
 	<div id="questlayer">
 		<div id="questmessages">
     		<ul id="listmessages">
