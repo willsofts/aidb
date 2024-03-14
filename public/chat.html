@@ -33,9 +33,20 @@
 	  .table-data th, td { padding: 7px; border: 1px solid #ddd; }	
 	  .table-data > tbody tr:nth-child(odd) { background-color: #f1f0f0; }
 	  .table-responsive { overflow: auto; }
-	  .typed-out { overflow: hidden; white-space: nowrap; width: 0; animation: typing 2s forwards; }
 	  .typed-container { display: inline-block; width: 100%; }
+	  /*
+	  .typed-out { overflow: hidden; white-space: nowrap; width: 0; animation: typing 2s forwards; }
 	  @keyframes typing { from { width: 0 } to { width: 100% } }
+	  */
+	  .typed-out { 
+		color:#0000;
+		background:linear-gradient(black 0 0) 0 0;
+  		background-repeat:no-repeat;
+		background-clip:text;
+		background-size:calc(var(--n)*1ch) 200%;
+		animation: to 3s linear forwards;
+	  }	
+	  @keyframes to { from { background-size:0 200% } }
     </style>	
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
     <script>
@@ -79,8 +90,11 @@
 			});	
 		}
 		function displayQueryAnswer(query, answer, error) {
+			let span = $('<span>').addClass("typed-out").attr("style","--n:"+answer.length).text(answer);
+			let txt =  $('<div>').addClass(error?"typed-container text text-error f-right":"typed-container text text-success f-right").append(span);
+			let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("Answer")).append(txt);
 			let qry = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-query f-left").text("Query")).append($('<span>').addClass("text text-query f-right").text(query));
-			let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("Answer")).append($('<span>').addClass(error?"text text-error f-right":"text text-success f-right").text(answer));
+			//let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("Answer")).append($('<span>').addClass(error?"text text-error f-right":"text text-success f-right").text(answer));
 			$('#listmessages').append(qry).append(ans);
 		}
 		function displayDataSet(data) {
@@ -161,7 +175,8 @@
 				<li class="fxc">
 					<span class="topic topic-answer">Answer</span>
 					<div class="typed-container text text-success">
-						<div class="typed-out">Record not found.
+						<span class="typed-out" style="--n:200">
+							Record not found.
 							Record not found. 
 							Record not found.
 							Record not found.
@@ -172,9 +187,8 @@
 							Record not found.
 							Record not found.
 							Record not found.
-							Record not found.
-							
-						</div>
+							Record not found.							
+						</span>
 					</div>
 				</li>
 			</ul>
