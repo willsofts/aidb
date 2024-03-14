@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Error</title>
+		<style nonce="YXNzdXJl">
+			a { font-size: 1.5rem; text-decoration: none; } 
+			.info { text-align: center; color:red; font-size: 1.2rem; }
+			.text-center { text-align: center; }
+			.portalbody { margin:0px; font-size:1rem; font-weight:400;line-height:1.5; }
+			.page-header-title { margin-top:0px; margin-bottom:0.5rem; }
+			#ptsearchpager { padding: 5px; }
+		</style>
+		<script nonce="YXNzdXJl">
+			function doGoBack() {
+				window.history.back();
+			}
+			window.onload = function() {
+				gobacklinker.onclick = doGoBack;
+			}
+		</script>
+	</head>
+	<body class="portalbody portalbody-off">
+		<div id="ptsearchpager" class="pt-page pt-page-current pt-page-controller">
+			<div class="header-layer">
+				<h1 class="page-header-title">
+					<label>Error</label>
+				</h1>
+			</div>
+			<div id="searchpanel" class="panel-body">
+				<br/>
+				<div id="messagepanellayer" class="message-panel-class">
+					General Protection Error Occured
+				</div>
+				<br/>
+				<div id="gobacklayer" class="goback-class">
+					<a href="#" id="gobacklinker">Go Back</a>
+				</div>
+				<br/>
+			</div>
+		</div>
+	</body>
+</html>

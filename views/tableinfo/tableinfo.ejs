@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Table Info</title>
+		<style nonce="YXNzdXJl">
+			.sub-entry-layer {
+				margin-left: 0px;
+				margin-right: 3px;
+				margin-top: 5px; padding-top: 5px; padding-left: 5px; padding-bottom:5px;
+			}
+			.portal-area {
+				width: 100%;
+				background-color: ghostwhite;
+			}	
+			h4 { margin: 5px; }
+			#tableinfo { width: 99%; }		
+		</style>
+	</head>
+	<body class="portalbody portalbody-off">
+		<h4>Table Information</h4>
+		<div class="row portal-area sub-entry-layer">
+			<textarea id="tableinfo" rows="35" cols="100" readonly>
+				<%= data.dataset.tableinfo %>
+			</textarea>			
+		</div>
+	</body>
+</html>
