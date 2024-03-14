@@ -19,9 +19,15 @@ export class QuestionUtility {
             if(idx>=0) {
                 sql = sql.substring(idx+6);
             }
-            idx = sql.indexOf("```");
-            if(idx>=0) {
+            idx = sql.lastIndexOf("```");
+            if(idx>0) {
                 sql = sql.substring(0,idx);
+            }
+            if(sql.startsWith("`")) {
+                sql = sql.substring(1,sql.length-1);
+            }
+            if(sql.endsWith("`")) {
+                sql = sql.substring(0,sql.length-1);
             }
             return sql.trim();
         }

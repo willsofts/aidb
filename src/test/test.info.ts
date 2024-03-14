@@ -20,3 +20,6 @@ LIMIT 5;
 `;
 sql = handler.parseAnswer(answer);
 console.log("SQL:",sql);
+answer = "Answer: \`SELECT \"Name\" FROM \"Genre\" WHERE substr(\"Name\", 1, 1)='r';\`";
+sql = handler.parseAnswer(answer);
+console.log("SQL:",sql);

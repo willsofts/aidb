@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Q&amp;A</title>
-    <style>
+    <style nonce="YXNzdXJl">
       * { margin: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; font-size: 1rem;}
       form { background: rgb(222, 220, 220); padding: 3px; position: fixed; bottom: 0; width: 100%; }
@@ -19,6 +19,8 @@
 	  .text-success { background-color: #c3e6cb; color: black; }
 	  .topic { font-weight: bold; min-width: 80px; padding: 4px; }
 	  .text { padding: 4px; padding-left: 6px; width: 100%; white-space: pre-line; }
+	  .topic-quest { color: brown; }
+	  .topic-answer { color: green; }
 	  .fxc { display: flex; flex-direction: row; }
 	  h2 { text-align: center; margin-top: 5px; }
 	  input[type=text] { padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
@@ -32,15 +34,18 @@
 	  .table-data > tbody tr:nth-child(odd) { background-color: #f1f0f0; }
 	  .table-responsive { overflow: auto; }
 	  #waitlayer { display: none; text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-	  h4 { padding-left: 4px; } 
+	  h4 { padding: 4px; background-color: #D3D3D3;} 
+	  span.q { color: brown; }
+	  span.a { color: green; }
 	  #examplequest { padding: 3px 5px; } 
 	  #examplelist li { padding: 3px 5px; }
+	  hr { margin: 5px 0;}
     </style>	
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
-    <script>
-		const API_URL = ""; // "http://localhost:8080";
+    <script nonce="YXNzdXJl">
+		const API_URL = "";
 		$(function() {
-			$('form').submit(function() {
+			$('#questform').submit(function() {
 				if($('#query').val().trim()=="") return false;
 				sendQuery($('#query').val());
 				$('#query').val('');
@@ -51,7 +56,7 @@
 			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
 			$('#listmessages').append(li);
 			$(".input-ask").prop('disabled', true);
-			//$("body").css("cursor", "progress");
+			window.scrollTo(0,questmessages.scrollHeight);
 			$("#waitlayer").show();
 			jQuery.ajax({
 				url: API_URL+"/api/question/quest",
@@ -61,14 +66,12 @@
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 				error : function(transport,status,errorThrown) {
 					$("#waitlayer").hide();
-					//$("body").css("cursor", "default");
 					let err = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-error f-left").text("Error")).append($('<span>').addClass("text text-error f-right").text(errorThrown));
 					$('#listmessages').append(err);
 					$(".input-ask").prop('disabled', false);
 				},
 				success: function(data,status,transport) {
 					$("#waitlayer").hide();
-					//$("body").css("cursor", "default");
 					let json = $.parseJSON(data);
 					if(json) {
 						displayQueryAnswer(json.query, json.answer, json.error);
@@ -112,7 +115,7 @@
     </script>
   </head>
   <body>
-	<h2>Question &amp; Answer</h2>
+	<h2><span class="q">Question</span> &amp; <span class="a">Answer</span></h2>
 	<div id="examplequest">
 		<h4>Example Question:</h4>
 		<ul id="examplelist">
@@ -122,6 +125,7 @@
 			<li>Find out best seller 5 product's name of unit in March,2024 ?</li>
 			<li>Find out top 5 customer's name of order amount in March,2024 ?</li>
 		</ul>
+		<hr/>
 	</div>
 	<div id="questlayer">
 		<div id="questmessages">
