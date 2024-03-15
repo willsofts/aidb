@@ -66,7 +66,7 @@ export class QuestionHandler extends TknOperateHandler {
             return Promise.resolve(info);
         }
         try {
-            const aimodel = genAI.getGenerativeModel({ model: API_MODEL});
+            const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
             let input = question;
             let table_info = this.getDatabaseTableInfo(category);
             this.logger.debug(this.constructor.name+".processQuestion: input:",input);
