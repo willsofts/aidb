@@ -23,7 +23,7 @@
 	  .topic-answer { color: green; }
 	  .fxc { display: flex; flex-direction: row; }
 	  #headlayer { text-align: center; display: flex; flex-direction: row; margin-top: 5px; padding: 5px; font-size: 1.5rem; font-weight: bold; padding-bottom: 0px; }
-	  #headtitle { width: 100%; margin-top: 10px; margin-bottom: 5px; }
+	  #headtitle { width: 100%; margin-top: 5px; margin-bottom: 10px; }
 	  h2 { text-align: center; margin-top: 5px; }	  
 	  span.q { color: brown; }
 	  span.a { color: green; }
@@ -57,10 +57,12 @@
 	  }	
 	  @keyframes to { from { background-size:0 200% } }
 
-	  .m { float: right; cursor: pointer; width: 30px; }
+	  .m { cursor: pointer; width: 30px; }
+	  .m:hover { background-color: #f1f1f1; }
+	  .menu { float: right; }
 	  .dropbtn { padding: 16px; border: none; }
 	  .dropdown { position: relative; display: inline-block; font-size: 1rem; }
-	  .dropdown-content { display: none; position: absolute; right: 0; top: 50px;
+	  .dropdown-content { display: none; position: absolute; right: 0; top: 30px;
 		background-color: #f1f1f1;
   		min-width: 160px;
   		box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
@@ -153,10 +155,11 @@
   <body>
 	<div id="headlayer">
 		<div id="headtitle"><span class="q">Question</span> &amp; <span class="a">Answer</span></div>
-		<div class="m dropdown" style="float:right;">
+		<div class="menu dropdown">
 			<span class="m dropbtn">&#8942;</span>
 			<div class="dropdown-content">
 			  <a href="http://localhost:8080/gui/tableinfo/tableinfo" target="table_info_window">Table Info</a>
+			  <a href="http://localhost:8080/api/tableinfo/html" target="table_info_window" download="table_info.sql">Download</a>
 			</div>
 		  </div>
 	</div>	

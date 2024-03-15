@@ -26,6 +26,11 @@ export class TableInfoHandler extends TknOperateHandler {
         }
     }
 
+    protected override async doHtml(context: KnContextInfo, model: KnModel) : Promise<string> {
+        let category = context.params.category;
+        return this.getDatabaseTableInfo(category);
+    }
+
     public getDatabaseTableInfo(category: string = "") : string {
         return QuestionUtility.readDatabaseFileInfo(this.getDatabaseSchemaFile(category));
     }
