@@ -1,0 +1,15 @@
+version: '3.6'
+services:
+  node:
+    image: node:21.7
+    container_name: node
+    user: "node"
+    working_dir: /usr/node/app
+    environment:
+      - NODE_ENV=development
+      - NPM_TOKEN=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
+    volumes:
+      - ./:/usr/node/app
+    ports:
+      - 8080:8080
+    command: bash -c "npm install && npm start"

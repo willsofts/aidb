@@ -1,0 +1,28 @@
+version: '3.6'
+services:
+  dbs:
+    image: mysql:8.0.26
+    container_name: dbs
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 1178:3306
+    volumes:
+      - ./db/cf/my.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./db/mysql:/var/lib/mysql
+
+  node:
+    image: node:21.7
+    container_name: node
+    user: "node"
+    working_dir: /usr/node/app
+    environment:
+      - NODE_ENV=development
+      - NPM_TOKEN=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
+    volumes:
+      - ./:/usr/node/app
+    ports:
+      - 8080:8080
+    depends_on:
+      - dbs
+    command: bash -c "npm install && npm start"
