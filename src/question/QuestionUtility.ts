@@ -9,10 +9,11 @@ export class QuestionUtility {
         if(idx >= 0) {
             let sql = answer.substring(idx+7);
             sql = sql.trim();
-            if(sql.startsWith("\"")) {
+            let hasQuote = sql.startsWith("\"");
+            if(hasQuote) {
                 sql = sql.substring(1,sql.length-1);
             }
-            if(sql.endsWith("\"")) {
+            if(hasQuote && sql.endsWith("\"")) {
                 sql = sql.substring(0,sql.length-1);
             }
             idx = sql.indexOf("```sql");
@@ -23,10 +24,11 @@ export class QuestionUtility {
             if(idx>0) {
                 sql = sql.substring(0,idx);
             }
-            if(sql.startsWith("`")) {
+            let hasGrave = sql.startsWith("`");
+            if(hasGrave) {
                 sql = sql.substring(1,sql.length-1);
             }
-            if(sql.endsWith("`")) {
+            if(hasGrave && sql.endsWith("`")) {
                 sql = sql.substring(0,sql.length-1);
             }
             return sql.trim();

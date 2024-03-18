@@ -5,9 +5,9 @@
     <style nonce="YXNzdXJl">
       * { box-sizing: border-box; }
       body { margin: 0; padding: 0; font: 13px Helvetica, Arial; font-size: 1rem;}
-      form { background: rgb(222, 220, 220); padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { width: 100%; border: 0; padding: 10px; margin-right: .5%; }
-      form button { width: 100px; padding: 10px; } 
+      #questform { background: rgb(222, 220, 220); padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      #questform input { width: 100%; border: 0; padding: 10px; margin-right: .5%; }
+      #questform button { width: 100px; padding: 10px; } 
 	  #inputlayer { display: flex; flex-direction: row; }
 	  #questmessages { overflow: auto; margin-bottom: 8%; }
       #listmessages { margin: 0; list-style-type: none; }
@@ -39,10 +39,15 @@
 	  span.q { color: brown; }
 	  span.a { color: green; }
 	  #examplequest { margin: 0; padding: 0; padding-left: 20px; } 
-	  #examplelist { margin: 0; }
-	  #examplelist li { padding: 3px 5px; }
+	  .example-list { margin: 0; }
+	  .example-list li { padding: 3px 5px; }
+	  .category-layer { display: flex; flex-direction: row; margin-right: 15px; }
+	  .category { width: 50%; margin-left: 15px; margin-right: 15px;}
+	  .span-cat { float: right; }
+	  .label-cat { cursor: pointer; }
+	  #infoform { display: none; }
 	  h4 { margin: 0; padding: 0; padding: 4px; background-color: #D3D3D3;} 
-	  hr { margin: 5px 0;}
+	  hr { margin: 5px 0; margin-left: 15px; margin-right: 30px; }
 	  .typed-container { display: inline-block; width: 100%; }
 	  .typed-out { color:#0000; background:linear-gradient(black 0 0) 0 0; background-repeat:no-repeat; background-clip:text; background-size:calc(var(--n)*1ch) 200%; animation: to 3s linear forwards; }
 	  @keyframes to { from { background-size:0 200% } }
@@ -66,6 +71,17 @@
 				$('#query').val('');
 				return false;
 			});
+			$("#infolinker").click(function() {
+				let cat = $("input[name='category']:checked").val();
+				$("#infocategory").val(cat);
+				$("#infoform").submit();
+				return false;
+			});
+			$("#infodownloader").click(function() {
+				let cat = $("input[name='category']:checked").val();
+				let url = "/api/tableinfo/html?category="+cat;
+				$(this).attr("href",url);
+			});
 		});
 		function sendQuery(quest) {
 			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
@@ -73,9 +89,10 @@
 			$(".input-ask").prop('disabled', true);
 			window.scrollTo(0,questmessages.scrollHeight);
 			$("#waitlayer").show();
+			let cat = $("input[name='category']:checked").val();
 			jQuery.ajax({
 				url: API_URL+"/api/question/quest",
-				data: {category: "AIDB", query: quest},
+				data: {category: cat, query: quest},
 				type: "POST",
 				dataType: "html",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -136,20 +153,36 @@
 		<div class="menu dropdown">
 			<span class="m dropbtn">&#8942;</span>
 			<div class="dropdown-content">
-			  <a href="/gui/tableinfo/tableinfo" target="table_info_window">Table Info</a>
-			  <a href="/api/tableinfo/html" target="table_info_window" download="table_info.sql">Download</a>
-			</div>
+				<a href="#0" id="infolinker">Table Info</a>
+				<a href="#0" id="infodownloader" target="table_info_window" download="table_info.sql">Download</a>
+			  </div>
 		  </div>
 	</div>	
 	<div id="examplequest">
-		<h4>Example Question:</h4>
-		<ul id="examplelist">
-			<li>What is the cheapest product name</li>
-			<li>What is the most expensive product name</li>
-			<li>List product with name and price then order by price descending</li>
-			<li>Find out best seller of 5 products in March,2024 ?</li>
-			<li>Find out top 5 customer in March,2024 ?</li>
-		</ul>
+		<div id="examplecategory">
+			<div class="category-layer">
+				<div class="category category-first">
+					<h4><label class="label-cat" for="cat1">Forum Ordering:</label><span class="span-cat"><input type="radio" id="cat1" name="category" value="AIDB" checked/></span></h4>
+					<ul class="example-list">
+						<li>What is the cheapest product name</li>
+						<li>What is the most expensive product name</li>
+						<li>List product with name and price then order by price descending</li>
+						<li>Find out best seller 5 product's name of unit in March,2024</li>
+						<li>Find out top 5 customer's name of order amount in March,2024</li>
+					</ul>
+				</div>
+				<div class="category category-second">
+					<h4><label class="label-cat" for="cat2">Forum Training:</label><span class="span-cat"><input type="radio" id="cat2" name="category" value="AIDB2"/></span></h4>
+					<ul class="example-list">
+						<li>What is the cheapest course name from training schedule</li>
+						<li>What is the most expensive course name from training schedule</li>
+						<li>List all course name and cost from training schedule</li>
+						<li>Find out registered trainee's name in March,2024</li>
+						<li>Find out top most training days from training schedule</li>
+					</ul>
+				</div>
+			</div>
+		</div>
 		<hr/>
 	</div>
 	<div id="questlayer">
@@ -163,6 +196,9 @@
 				<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" /><button id="sendbutton" class="input-ask btn">Send</button>
 			</div>
 		</form>
+		<form id="infoform" name="infoform" method="post" action="/gui/tableinfo/tableinfo" target="table_info_window">
+			<input type="hidden" id="infocategory" name="category" />
+		</form>	
 	</div>
   </body>
 </html>

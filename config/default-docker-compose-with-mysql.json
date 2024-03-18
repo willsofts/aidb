@@ -4,13 +4,12 @@
     "API_MODEL": "gemini-pro",
     "API_ANSWER": "true",
     "BASE_URL": "",
-    "BASE_STORAGE": "session",
     "SECRET_KEY": "ASSURE_OF_SECRET_KEY",
     "VALIDATE_TOKEN": "false",
     "VALIDATE_ANOMYMOUS_TOKEN": "false",
     "ALWAYS_DB_TRACKING": "false",
     "EXCEPT_AUTHORIZE_PATH": "/health,/sign,/policy,/fetch,/forgot,/captcha,/login",
-    "DB_SECTION": "MYSQL",
-    "MYSQL" : { "alias": "mysql2", "dialect": "mysql", "url":"", "user": "root", "password": "root", "host": "dbs", "port": 3306, "database": "aidb", "options": { "charset": "utf8", "connectionLimit": 100 } },
-    "META_INFO": {"appstype":""}
+    "DB_SECTION": "AIDB",
+    "AIDB" : { "alias": "mysql2", "dialect": "mysql", "url":"", "user": "root", "password": "root", "host": "dbs", "port": 3306, "database": "aidb", "options": { "charset": "utf8", "connectionLimit": 100 } },
+    "AIDB2" : { "alias": "mysql2", "dialect": "mysql", "url":"", "user": "root", "password": "root", "host": "dbs", "port": 3306, "database": "aidb2", "options": { "charset": "utf8", "connectionLimit": 100 } }
 }
