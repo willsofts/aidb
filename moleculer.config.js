@@ -1,7 +1,7 @@
 var os = require("os");
 
 module.exports = {
-    nodeID: "gai-"+os.hostname().toLowerCase() + "-" + process.pid,
+    nodeID: "aidb-"+os.hostname().toLowerCase() + "-" + process.pid,
     logger: [
         {
             type: "Console",
