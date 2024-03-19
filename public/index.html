@@ -43,7 +43,7 @@
 	  .example-list li { padding: 3px 5px; }
 	  .category-layer { display: flex; flex-direction: row; margin-right: 15px; }
 	  .category { width: 50%; margin-left: 15px; margin-right: 15px;}
-	  .span-cat { float: right; }
+	  .span-cat { line-height: 1.5rem; }
 	  .label-cat { cursor: pointer; }
 	  #infoform { display: none; }
 	  h4 { margin: 0; padding: 0; padding: 4px; background-color: #D3D3D3;} 
@@ -54,9 +54,9 @@
 	  .m { cursor: pointer; width: 30px; }
 	  .m:hover { background-color: #f1f1f1; }
 	  .menu { float: right; }
-	  .dropbtn { padding: 16px; border: none; }
-	  .dropdown { position: relative; display: inline-block; font-size: 1rem; }
-	  .dropdown-content { display: none; position: absolute; right: 0; top: 30px; background-color: #f1f1f1; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
+	  .dropbtn { padding: 5px 10px; border: none; }
+	  .dropdown { position: relative; display: inline-block; font-size: 1rem; padding-top: 3px; }
+	  .dropdown-content { display: none; position: absolute; right: 0; top: 25px; background-color: #f1f1f1; min-width: 120px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
 	  .dropdown-content a { color: black; padding: 12px 16px; text-decoration: none; display: block; }
 	  .dropdown-content a:hover { background-color: #ddd; }
 	  .dropdown:hover .dropdown-content { display: block; }
@@ -71,16 +71,20 @@
 				$('#query').val('');
 				return false;
 			});
-			$("#infolinker").click(function() {
-				let cat = $("input[name='category']:checked").val();
-				$("#infocategory").val(cat);
-				$("#infoform").submit();
-				return false;
+			$("a.info-linker").each(function(index,element) {
+				$(element).click(function() {
+					let cat = $(this).attr("data-cat");
+					$("#infocategory").val(cat);
+					$("#infoform").submit();
+					return false;
+				});
 			});
-			$("#infodownloader").click(function() {
-				let cat = $("input[name='category']:checked").val();
-				let url = "/api/tableinfo/html?category="+cat;
-				$(this).attr("href",url);
+			$("a.info-downloader").each(function(index,element) {
+				$(element).click(function() {
+					let cat = $(this).attr("data-cat");
+					let url = "/api/tableinfo/html?category="+cat;
+					$(this).attr("href",url);
+				});
 			});
 		});
 		function sendQuery(quest) {
@@ -150,19 +154,22 @@
   <body>
 	<div id="headlayer">
 		<div id="headtitle"><span class="q">Question</span> &amp; <span class="a">Answer</span></div>
-		<div class="menu dropdown">
-			<span class="m dropbtn">&#8942;</span>
-			<div class="dropdown-content">
-				<a href="#0" id="infolinker">Table Info</a>
-				<a href="#0" id="infodownloader" target="table_info_window" download="table_info.sql">Download</a>
-			  </div>
-		  </div>
 	</div>	
 	<div id="examplequest">
 		<div id="examplecategory">
 			<div class="category-layer">
 				<div class="category category-first">
-					<h4><label class="label-cat" for="cat1">Forum Ordering:</label><span class="span-cat"><input type="radio" id="cat1" name="category" value="AIDB" checked/></span></h4>
+					<h4>
+						<span class="span-cat"><input type="radio" id="cat1" name="category" value="AIDB" checked/></span>
+						<label class="label-cat" for="cat1">Product Selling</label>
+						<div class="menu dropdown">
+							<span class="m dropbtn">&#8942;</span>
+							<div class="dropdown-content">
+							  <a href="#0" class="info-linker" data-cat="AIDB">Table Info</a>
+							  <a href="#0" class="info-downloader" data-cat="AIDB" target="table_info_window" download="selling_schema.sql">Download</a>
+							</div>
+						</div>
+					</h4>
 					<ul class="example-list">
 						<li>What is the cheapest product name</li>
 						<li>What is the most expensive product name</li>
@@ -172,10 +179,20 @@
 					</ul>
 				</div>
 				<div class="category category-second">
-					<h4><label class="label-cat" for="cat2">Forum Training:</label><span class="span-cat"><input type="radio" id="cat2" name="category" value="AIDB2"/></span></h4>
+					<h4>
+						<span class="span-cat"><input type="radio" id="cat2" name="category" value="AIDB2"/></span>
+						<label class="label-cat" for="cat2">Course Training</label>
+						<div class="menu dropdown">
+							<span class="m dropbtn">&#8942;</span>
+							<div class="dropdown-content">
+							  <a href="#0" class="info-linker" data-cat="AIDB2">Table Info</a>
+							  <a href="#0" class="info-downloader" data-cat="AIDB2" target="table_info_window" download="training_schema.sql">Download</a>
+							</div>
+						</div>
+					</h4>
 					<ul class="example-list">
-						<li>What is the cheapest course name from training schedule</li>
-						<li>What is the most expensive course name from training schedule</li>
+						<li>What is the cheapest course in training schedule</li>
+						<li>What is the most expensive course in training schedule</li>
 						<li>List all course name and cost from training schedule</li>
 						<li>Find out registered trainee's name in March,2024</li>
 						<li>Find out top most training days from training schedule</li>
