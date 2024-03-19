@@ -39,4 +39,14 @@ export class PromptUtility {
         `;
     }
        
+    public createAskPrompt(input: string) : string {
+        return `Given an input question then return the answer.
+        Use the following format:
+        
+        Question: "Question here"
+        Answer: "An answer in double quotes"
+        
+        Question: ${input}`;
+    }
+
 }

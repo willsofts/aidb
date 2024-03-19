@@ -26,10 +26,14 @@ export class QuestionHandler extends TknOperateHandler {
         name: "tquestion", 
         alias: { privateAlias: this.section }, 
     };
-    public handlers = [ {name: "quest"} ];
+    public handlers = [ {name: "quest"}, {name: "ask"} ];
 
     public async quest(context: KnContextInfo) : Promise<InquiryInfo> {
         return this.callFunctional(context, {operate: "quest", raw: true}, this.doQuest);
+    }
+
+    public async ask(context: KnContextInfo) : Promise<InquiryInfo> {
+        return this.callFunctional(context, {operate: "ask", raw: true}, this.doAsk);
     }
 
     protected override validateRequireFields(context: KnContextInfo, model: KnModel, action: string) : Promise<KnValidateInfo> {
@@ -45,7 +49,11 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public async doQuest(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
-        return this.processQuestion(context.params.query,context.params.category);
+        return this.processQuest(context.params.query,context.params.category);
+    }
+
+    public async doAsk(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
+        return this.processAsk(context.params.query);
     }
 
     public async doInquiry(sql: string, section: string = this.section) : Promise<KnRecordSet> {
@@ -58,7 +66,7 @@ export class QuestionHandler extends TknOperateHandler {
         }
     }
 
-    public async processQuestion(question: string, category: string = "AIDB") : Promise<InquiryInfo> {
+    public async processQuest(question: string, category: string = "AIDB") : Promise<InquiryInfo> {
         let info = { error: false, question: question, query: "", answer: "", dataset: [] };
         if(!question || question.length == 0) {
             info.error = true;
@@ -113,6 +121,34 @@ export class QuestionHandler extends TknOperateHandler {
             info.answer = this.getDBError(ex).message;
         }
         this.logger.debug(this.constructor.name+".processQuestion: return:",JSON.stringify(info));
+        return info;
+    }
+
+    public async processAsk(question: string) : Promise<InquiryInfo> {
+        let info = { error: false, question: question, query: "", answer: "", dataset: [] };
+        if(!question || question.length == 0) {
+            info.error = true;
+            info.answer = "No question found.";
+            return Promise.resolve(info);
+        }
+        try {
+            const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+            let input = question;
+            let prmutil = new PromptUtility();
+            let prompt = prmutil.createAskPrompt(input);
+            let { totalTokens } = await aimodel.countTokens(prompt);            
+            this.logger.debug(this.constructor.name+".processAsk: total tokens:", totalTokens);
+            let result = await aimodel.generateContent(prompt);
+            let response = result.response;
+            let text = response.text();
+            this.logger.debug(this.constructor.name+".processAsk: response:",text);
+            info.answer = this.parseAnswer(text);
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            info.error = true;
+            info.answer = this.getDBError(ex).message;
+        }
+        this.logger.debug(this.constructor.name+".processAsk: return:",JSON.stringify(info));
         return info;
     }
 

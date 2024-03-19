@@ -89,6 +89,7 @@
 				$('#query').val('');
 				return false;
 			});
+			$('#query').focus();
 			$("a.info-linker").each(function(index,element) {
 				$(element).click(function() {
 					let cat = $(this).attr("data-cat");
