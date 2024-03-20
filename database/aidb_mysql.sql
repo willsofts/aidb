@@ -114,6 +114,7 @@ CREATE TABLE IF NOT EXISTS `tattachfile` (
   `attachmillis` bigint NOT NULL,
   `attachuser` varchar(50) DEFAULT NULL,
   `attachremark` varchar(250) DEFAULT NULL,
+  `mimetype` varchar(50) DEFAULT NULL,
   `attachgroup` varchar(50) DEFAULT NULL,
   `attachpath` varchar(350) DEFAULT NULL,
   `attachurl` varchar(250) DEFAULT NULL,
