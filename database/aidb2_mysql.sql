@@ -30,7 +30,7 @@ INSERT INTO `train_course` (`course_id`, `course_name`) VALUES
 
 CREATE TABLE IF NOT EXISTS `train_register` (
   `schedule_id` varchar(50) NOT NULL COMMENT 'train_schedule.schedule_id',
-  `trainee_id` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'train_trainee.trainee_id',
+  `trainee_id` varchar(50) NOT NULL COMMENT 'train_trainee.trainee_id',
   `register_date` date NOT NULL,
   `register_time` time NOT NULL,
   `train_amount` decimal(20,2) NOT NULL DEFAULT '0.00',

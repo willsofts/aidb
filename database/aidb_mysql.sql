@@ -11,9 +11,9 @@ CREATE DATABASE IF NOT EXISTS `aidb` /*!40100 DEFAULT CHARACTER SET utf8mb3 */ /
 USE `aidb`;
 
 CREATE TABLE IF NOT EXISTS `cust_info` (
-  `customer_id` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'customer id',
-  `customer_name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'customer name',
-  `customer_surname` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'customer surname',
+  `customer_id` varchar(50) NOT NULL COMMENT 'customer id',
+  `customer_name` varchar(50) NOT NULL COMMENT 'customer name',
+  `customer_surname` varchar(50) NOT NULL COMMENT 'customer surname',
   PRIMARY KEY (`customer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep customer information';
 
@@ -32,8 +32,8 @@ INSERT INTO `cust_info` (`customer_id`, `customer_name`, `customer_surname`) VAL
 	('CUST-10012', 'Mariah', 'Carey');
 
 CREATE TABLE IF NOT EXISTS `cust_order` (
-  `order_id` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'order id',
-  `customer_id` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'customer id from table cust_info.customer_id',
+  `order_id` varchar(50) NOT NULL COMMENT 'order id',
+  `customer_id` varchar(50) NOT NULL COMMENT 'customer id from table cust_info.customer_id',
   `order_date` date NOT NULL COMMENT 'order date',
   `order_time` time NOT NULL COMMENT 'order time',
   `order_unit` bigint NOT NULL DEFAULT (0) COMMENT 'order unit',
@@ -56,8 +56,8 @@ INSERT INTO `cust_order` (`order_id`, `customer_id`, `order_date`, `order_time`,
 	('ORD-00012', 'CUST-10012', '2024-03-07', '09:14:58', 2, 318.00);
 
 CREATE TABLE IF NOT EXISTS `cust_order_detail` (
-  `order_id` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'order id from table cust_order.order_id',
-  `product_id` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'product id from table cust_product.product_id',
+  `order_id` varchar(50) NOT NULL COMMENT 'order id from table cust_order.order_id',
+  `product_id` varchar(50) NOT NULL COMMENT 'product id from table cust_product.product_id',
   `order_date` date NOT NULL COMMENT 'order date',
   `order_time` time NOT NULL COMMENT 'order time',
   `order_unit` bigint NOT NULL COMMENT 'order unit',
@@ -84,8 +84,8 @@ INSERT INTO `cust_order_detail` (`order_id`, `product_id`, `order_date`, `order_
 	('ORD-00012', 'PR006', '2024-03-07', '09:14:58', 2, 159.00, 318.00);
 
 CREATE TABLE IF NOT EXISTS `cust_product` (
-  `product_id` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'product id',
-  `product_name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT 'product name',
+  `product_id` varchar(50) NOT NULL COMMENT 'product id',
+  `product_name` varchar(50) DEFAULT NULL COMMENT 'product name',
   `product_price` decimal(16,2) DEFAULT NULL COMMENT 'product price',
   `product_index` int DEFAULT NULL,
   PRIMARY KEY (`product_id`) USING BTREE
@@ -102,6 +102,26 @@ INSERT INTO `cust_product` (`product_id`, `product_name`, `product_price`, `prod
 	('PR008', 'Working Pant', 179.00, 8),
 	('PR009', 'Aerobic Pant', 189.00, 9),
 	('PR010', 'Warming Pant', 199.00, 10);
+
+CREATE TABLE IF NOT EXISTS `tattachfile` (
+  `attachid` varchar(50) NOT NULL,
+  `attachno` varchar(50) NOT NULL,
+  `attachtype` varchar(10) NOT NULL,
+  `attachfile` varchar(150) NOT NULL,
+  `sourcefile` varchar(150) NOT NULL,
+  `attachdate` date NOT NULL,
+  `attachtime` time NOT NULL,
+  `attachmillis` bigint NOT NULL,
+  `attachuser` varchar(50) DEFAULT NULL,
+  `attachremark` varchar(250) DEFAULT NULL,
+  `attachgroup` varchar(50) DEFAULT NULL,
+  `attachpath` varchar(350) DEFAULT NULL,
+  `attachurl` varchar(250) DEFAULT NULL,
+  `attachsize` bigint DEFAULT NULL,
+  `attachstream` longtext,
+  PRIMARY KEY (`attachid`),
+  KEY `attachno` (`attachno`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep attach file';
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
