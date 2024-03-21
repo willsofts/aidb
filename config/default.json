@@ -2,6 +2,7 @@
     "HTTP_PORT": 8080,
     "API_KEY": "AIzaSyDB3AjxSvK54EbngBB95_3xAIQucGctAGc",
     "API_MODEL": "gemini-pro",
+    "API_VISION_MODEL": "gemini-pro-vision",
     "API_ANSWER": "true",
     "BASE_URL": "",
     "SECRET_KEY": "ASSURE_OF_SECRET_KEY",

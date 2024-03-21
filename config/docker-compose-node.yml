@@ -8,8 +8,9 @@ services:
     environment:
       - NODE_ENV=development
       - NPM_TOKEN=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
+    restart: always
     volumes:
       - ./:/usr/node/app
     ports:
       - 8080:8080
-    command: bash -c "npm install && npm start"
+    command: bash -c "npm install && npm run build && npm start"

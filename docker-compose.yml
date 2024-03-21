@@ -8,6 +8,7 @@ services:
     environment:
       - NODE_ENV=development
       - NPM_TOKEN=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
+    restart: always
     volumes:
       - ./:/usr/node/app
     ports:
