@@ -77,20 +77,18 @@ export class QuestionHandler extends TknOperateHandler {
             const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
             let input = question;
             let table_info = this.getDatabaseTableInfo(category);
-            this.logger.debug(this.constructor.name+".processQuestion: input:",input);
-            this.logger.debug(this.constructor.name+".processQuestion: category:",category);
+            this.logger.debug(this.constructor.name+".processQuest: input:",input);
+            this.logger.debug(this.constructor.name+".processQuest: category:",category);
             //create question prompt with table info
             let prmutil = new PromptUtility();
             let prompt = prmutil.createQueryPrompt(input, table_info);
-            let { totalTokens } = await aimodel.countTokens(prompt);            
             let result = await aimodel.generateContent(prompt);
             let response = result.response;
             let text = response.text();
-            this.logger.debug(this.constructor.name+".processQuestion: response:",text);
-            this.logger.debug(this.constructor.name+".processQuestion: total tokens:", totalTokens);
+            this.logger.debug(this.constructor.name+".processQuest: response:",text);
             //try to extract SQL from the response
             let sql = this.parseAnswer(text,false);
-            this.logger.debug(this.constructor.name+".processQuestion: sql:",sql);
+            this.logger.debug(this.constructor.name+".processQuest: sql:",sql);
             if(sql.length == 0) {
                 info.error = true;
                 info.answer = "No SQL found in the response.";
@@ -99,7 +97,7 @@ export class QuestionHandler extends TknOperateHandler {
             info.query = sql;
             //then run the SQL query
             let rs = await this.doInquiry(sql, category);
-            this.logger.debug(this.constructor.name+".processQuestion: rs:",rs);
+            this.logger.debug(this.constructor.name+".processQuest: rs:",rs);
             if(rs.records == 0) {
                 info.answer = "Record not found.";
                 return Promise.resolve(info);
@@ -108,11 +106,11 @@ export class QuestionHandler extends TknOperateHandler {
             if(API_ANSWER) {
                 let datarows = JSON.stringify(rs.rows);
                 //create reply prompt from sql and result set
-                prompt = prmutil.createQuestPrompt(input, datarows, sql, "");
+                prompt = prmutil.createAnswerPrompt(input, datarows, sql, "");
                 result = await aimodel.generateContent(prompt);
                 response = result.response;
                 text = response.text();
-                this.logger.debug(this.constructor.name+".processQuestion: response:",text);
+                this.logger.debug(this.constructor.name+".processQuest: response:",text);
                 info.answer = this.parseAnswer(text);
             }
         } catch(ex: any) {
@@ -120,7 +118,7 @@ export class QuestionHandler extends TknOperateHandler {
             info.error = true;
             info.answer = this.getDBError(ex).message;
         }
-        this.logger.debug(this.constructor.name+".processQuestion: return:",JSON.stringify(info));
+        this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
         return info;
     }
 
@@ -136,8 +134,6 @@ export class QuestionHandler extends TknOperateHandler {
             let input = question;
             let prmutil = new PromptUtility();
             let prompt = prmutil.createAskPrompt(input);
-            let { totalTokens } = await aimodel.countTokens(prompt);            
-            this.logger.debug(this.constructor.name+".processAsk: total tokens:", totalTokens);
             let result = await aimodel.generateContent(prompt);
             let response = result.response;
             let text = response.text();

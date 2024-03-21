@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Q&amp;A</title>
+    <title>Chat</title>
     <style nonce="YXNzdXJl">
       * { box-sizing: border-box; }
       body { margin: 0; padding: 0; font: 13px Helvetica, Arial; font-size: 1rem;}
@@ -97,7 +97,7 @@
 			$("#waitlayer").show();
 			let cat = $("input[name='category']:checked").val();
 			jQuery.ajax({
-				url: API_URL+"/api/question/quest",
+				url: API_URL+"/api/chat/quest",
 				data: {category: cat, query: quest},
 				type: "POST",
 				dataType: "html",
