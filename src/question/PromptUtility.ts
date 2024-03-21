@@ -18,7 +18,7 @@ export class PromptUtility {
         
         ${table_info}
                 
-        Always using alias name or full table name within columns in query statement.
+        Always using alias name or full table name within columns in query statement and avoid field list is ambiguous.
         If someone asks for the table foobar, they really mean the product table.
                 
         `;
@@ -35,7 +35,7 @@ export class PromptUtility {
         
         ${table_info}
                 
-        Always using alias name or full table name within columns in query statement.
+        Always using alias name or full table name within columns in query statement and avoid field list is ambiguous.
         If someone asks for the table foobar, they really mean the product table.
                 
         Question: ${input}`;
