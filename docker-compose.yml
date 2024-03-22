@@ -7,7 +7,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     restart: always
     ports:
-      - 1178:3306
+      - 3306:3306
     volumes:
       - ./db/cf/my.cnf:/etc/mysql/conf.d/mysql.cnf
       - ./db/mysql:/var/lib/mysql
