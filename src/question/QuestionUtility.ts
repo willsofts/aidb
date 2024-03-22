@@ -3,6 +3,12 @@ import path from 'path';
 
 export class QuestionUtility {
 
+    public static hasIntensiveQuery(query: string | undefined) : boolean {
+        if(!query || query.trim().length==0) return false;
+        let q = query.toLowerCase();
+        return q.indexOf("insert") >= 0 || q.indexOf("update") >= 0 || q.indexOf("delete") >= 0 || q.indexOf("drop") >= 0 || q.indexOf("alter") >= 0 || q.indexOf("execute") >= 0 || q.indexOf("exec") >= 0;
+    }
+
     public static parseAnswer(answer: string, defaultAnswer: boolean = true) : string {
         answer = answer.trim();
         let ans = answer;

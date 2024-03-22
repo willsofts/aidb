@@ -23,3 +23,17 @@ console.log("SQL:",sql);
 answer = "Answer: \`SELECT \"Name\" FROM \"Genre\" WHERE substr(\"Name\", 1, 1)='r';\`";
 sql = handler.parseAnswer(answer);
 console.log("SQL:",sql);
+
+let info = { error: false, question: "List all product", query: "", answer: "", dataset: [] };
+sql = "SELECT * FROM product";
+let valid = handler.isValidQuery(sql,info);
+console.log("SQL:",sql,", Valid:",valid);
+sql = "DELETE FROM product";
+valid = handler.isValidQuery(sql,info);
+console.log("SQL:",sql,", Valid:",valid);
+sql = "UPDATE product set product_price=0";
+valid = handler.isValidQuery(sql,info);
+console.log("SQL:",sql,", Valid:",valid);
+sql = "DROP table product";
+valid = handler.isValidQuery(sql,info);
+console.log("SQL:",sql,", Valid:",valid);

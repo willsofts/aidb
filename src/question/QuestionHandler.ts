@@ -89,9 +89,7 @@ export class QuestionHandler extends TknOperateHandler {
             //try to extract SQL from the response
             let sql = this.parseAnswer(text,false);
             this.logger.debug(this.constructor.name+".processQuest: sql:",sql);
-            if(sql.length == 0) {
-                info.error = true;
-                info.answer = "No SQL found in the response.";
+            if(!this.isValidQuery(sql,info)) {
                 return Promise.resolve(info);
             }
             info.query = sql;
@@ -146,6 +144,20 @@ export class QuestionHandler extends TknOperateHandler {
         }
         this.logger.debug(this.constructor.name+".processAsk: return:",JSON.stringify(info));
         return info;
+    }
+
+    public isValidQuery(sql: string, info: InquiryInfo) : boolean {
+        if(sql.trim().length == 0) {
+            info.error = true;
+            info.answer = "No SQL found in the response.";
+            return false;
+        }
+        if(QuestionUtility.hasIntensiveQuery(sql)) {
+            info.error = true;
+            info.answer = "Intensive query not allow.";
+            return false;            
+        }
+        return true;
     }
 
     public parseAnswer(answer: string, defaultAnswer: boolean = true) : string {

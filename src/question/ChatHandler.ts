@@ -65,9 +65,7 @@ export class ChatHandler extends QuestionHandler {
             //try to extract SQL from the response
             let sql = this.parseAnswer(text,true);
             this.logger.debug(this.constructor.name+".processQuest: sql:",sql);
-            if(sql.length == 0) {
-                info.error = true;
-                info.answer = "No SQL found in the response.";
+            if(!this.isValidQuery(sql,info)) {
                 return Promise.resolve(info);
             }
             info.query = sql;

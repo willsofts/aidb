@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `cust_order` (
   `customer_id` varchar(50) NOT NULL COMMENT 'customer id from table cust_info.customer_id',
   `order_date` date NOT NULL COMMENT 'order date',
   `order_time` time NOT NULL COMMENT 'order time',
+  `order_status` varchar(50) DEFAULT NULL,
   `order_unit` bigint NOT NULL DEFAULT (0) COMMENT 'order unit',
   `order_amount` decimal(20,2) NOT NULL COMMENT 'order amount',
   PRIMARY KEY (`order_id`,`customer_id`) USING BTREE
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `cust_order_detail` (
   `order_time` time NOT NULL COMMENT 'order time',
   `order_unit` bigint NOT NULL COMMENT 'order unit',
   `order_price` decimal(20,2) NOT NULL COMMENT 'order price',
+  `order_discount` decimal(20,2) NOT NULL,
   `order_amount` decimal(20,2) NOT NULL COMMENT 'order amount',
   PRIMARY KEY (`order_id`,`product_id`)
 ) ENGINE=InnoDB COMMENT='table keep product under order from table torder';
