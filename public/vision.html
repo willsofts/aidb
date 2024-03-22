@@ -1,17 +1,20 @@
 <!doctype html>
 <html>
   <head>
-    <title>Ask</title>
+    <title>Vision</title>
 	<link href="/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <style nonce="YXNzdXJl">
       * { box-sizing: border-box; }
       body { margin: 0; padding: 0; font: 13px Helvetica, Arial; font-size: 1rem;}
-      #questform { background: rgb(222, 220, 220); padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      #formlayer { background: rgb(222, 220, 220); padding: 5px; position: fixed; bottom: 0; width: 100%; }
       #questform input { width: 100%; border: 0; padding: 10px; margin-right: .5%; }
       #questform button { width: 100px; padding: 10px; } 
-	  #inputlayer { display: flex; flex-direction: row; }
+	  #inputlayer { display: flex; flex-direction: row; margin-top: 2px; }
+      #uploadform input { width: 100%; border: 0; padding: 10px; margin-right: .5%; cursor: pointer; }
+      #uploadform button { width: 100px; padding: 10px; } 
+	  #uploadlayer { display: flex; flex-direction: row; }
 	  #questlayer { margin-right: 25px; }
-	  #questmessages { overflow: auto; margin-bottom: 8%; }
+	  #questmessages { overflow: auto; margin-bottom: 10%; }
       #listmessages { margin: 0; list-style-type: none; }
       #listmessages li { padding: 5px; }
       .text-quest { background: ghostwhite; color: black; font-weight: bold; }
@@ -48,10 +51,13 @@
     <script nonce="YXNzdXJl">
 		const API_URL = "";
 		$(function() {
+			$("#filename").change(function() { uploadFile(); });
 			$('#questform').submit(function() {
-				if($('#query').val().trim()=="") return false;
+				if($.trim($('#query').val())=="") { $('#query').focus(); return false; }
+				if($.trim($("#fileid").val())=="") { $("#filename").click(); return false; }
 				sendQuery($('#query').val());
-				$('#query').val('');
+				$("#fileid").val('');
+				//$('#query').val('');
 				return false;
 			});
 			$('#query').focus();
@@ -63,8 +69,8 @@
 			window.scrollTo(0,questmessages.scrollHeight);
 			$("#waitlayer").show();
 			jQuery.ajax({
-				url: API_URL+"/api/question/ask",
-				data: {query: quest},
+				url: API_URL+"/api/vision/ask",
+				data: {image: $("#fileid").val(), query: quest},
 				type: "POST",
 				dataType: "html",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -91,11 +97,53 @@
 			let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("Answer")).append(txt);
 			$('#listmessages').append(ans);
 		}
+		function uploadFile(aform) {
+			if(!aform) aform = uploadform;
+			let fileExtension = ['png', 'jpg', 'jpeg'];
+        	if ($.inArray($("#filename").val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+            	alert("Only image file type are allowed : "+fileExtension.join(', '));
+				return false;
+        	}			
+			$("#fileid").val('');
+			$("#waitlayer").show();
+			let fd = new FormData(aform);
+			jQuery.ajax({
+				url: "/upload/file",
+				type: "POST",
+				dataType: "html",
+				data: fd,
+				enctype: "multipart/form-data",
+				processData: false, 
+				contentType: false, 
+				error : function(transport,status,errorThrown) { 
+					$("#waitlayer").hide();
+					try {
+						let json = $.parseJSON($.trim(data));
+						if(json && json["head"]) {
+							alert(json.head["errordesc"]);
+						}
+						return;
+					} catch(ex) { }
+					alert(errorThrown);
+				},
+				success: function(data,status,transport){ 
+					console.log("response : "+transport.responseText);
+					$("#waitlayer").hide();
+					let json = $.parseJSON($.trim(data));
+					if(json && json["body"]) {
+						let rows = json.body["rows"];
+						if(rows && rows["attachid"]) {
+							$("#fileid").val(rows["attachid"]);
+						}
+					}
+				}
+			});	
+		}
     </script>
   </head>
   <body>
 	<div id="headlayer">
-		<div id="headtitle"><span class="q">Question</span> &amp; <span class="a">Answer</span></div>
+		<div id="headtitle"><span class="q">Question</span> &amp; <span class="a">Vision</span></div>
 	</div>	
 	<div id="examplequest">
 		<hr/>
@@ -105,11 +153,21 @@
     		<ul id="listmessages"></ul>
 		</div>
 		<div id="waitlayer"><img id="waitimg" src="https://cdn.jsdelivr.net/gh/willsofts/will-asset@1.0.0/img/waiting.gif" width="50px" height="50px" alt="" /></div>
-		<form id="questform" name="questform" action="" onsubmit="return false;">
-			<div id="inputlayer">
-				<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" /><button id="sendbutton" class="input-ask btn">Send</button>
-			</div>
-		</form>
+		<div id="formlayer">
+			<form id="uploadform" name="uploadform" action="" onsubmit="return false;">
+				<div id="uploadlayer">
+					<input type="hidden" id="fileid" name="id" />
+					<input type="hidden" id="filetype" name="type" value="VISION" />
+					<input type="file" id="filename" name="filename" class="input input-md input-ask" accept=".png,.jpg,.jpeg"/>
+				</div>
+			</form>
+			<form id="questform" name="questform" action="" onsubmit="return false;">
+				<div id="inputlayer">
+					<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" value="Extract text from image"/>
+					<button id="sendbutton" class="input-ask btn">Send</button>
+				</div>
+			</form>
+		</div>
 	</div>
   </body>
 </html>
