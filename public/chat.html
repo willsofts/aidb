@@ -14,11 +14,11 @@
 	  #questmessages { overflow: auto; margin-bottom: 8%; }
       #listmessages { margin: 0; list-style-type: none; }
       #listmessages li { padding: 5px; }
-      .text-quest { background: ghostwhite; color: black; font-weight: bold; }
-      .text-query { background: floralwhite; color: black; }
-	  .text-answer { background: whitesmoke; color: black;}
-	  .text-error { background-color: #f8d7da; color: black;}
-	  .text-success { background-color: #c3e6cb; color: black; }
+      .text-quest { background: ghostwhite; color: black !important; font-weight: bold; }
+      .text-query { background: floralwhite; color: black !important; }
+	  .text-answer { background: whitesmoke; color: black !important;}
+	  .text-error { background-color: #f8d7da; color: black !important;}
+	  .text-success { background-color: #c3e6cb; color: black !important; }
 	  .topic { font-weight: bold; min-width: 80px; padding: 4px; }
 	  .text { padding: 4px; padding-left: 6px; width: 100%; white-space: pre-line; }
 	  .topic-quest { color: brown; }
@@ -48,7 +48,7 @@
 	  .span-cat { line-height: 1.5rem; }
 	  .label-cat { cursor: pointer; }
 	  #infoform { display: none; }
-	  h4 { margin: 0; padding: 0; padding: 4px; background-color: #D3D3D3;} 
+	  h4 { margin: 0; padding: 4px 6px; background-color: #D3D3D3;} 
 	  hr { margin: 5px 0; margin-left: 15px; margin-right: 30px; }
 	  .typed-container { display: inline-block; width: 100%; }
 	  .typed-out { color:#0000; background:linear-gradient(black 0 0) 0 0; background-repeat:no-repeat; background-clip:text; background-size:calc(var(--n)*1ch) 200%; animation: to 3s linear forwards; }
@@ -133,7 +133,7 @@
 				let div = $('<div>').addClass("text text-answer table-responsive f-right");
 				let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("")).append(div);
 				$('#listmessages').append(li);
-				let table = $('<table>').addClass("table table-data table-bordered");
+				let table = $('<table>').addClass("tables table-data table-bordered");
 				let rowhead = $('<tr>');
 				let first = data[0];
 				for(let key in first) {
@@ -161,6 +161,7 @@
 			<span class="m dropbtn">&#8942;</span>
 			<div class="dropdown-content">
 			  <a href="/ask.html" target="ask_me_window">Ask Me</a>
+			  <a href="/vision.html" target="vision_me_window">Vision Me</a>
 			</div>
 		</div>
 	</div>	
@@ -169,13 +170,13 @@
 			<div class="category-layer">
 				<div class="category category-first">
 					<h4>
-						<span class="span-cat"><input type="radio" id="cat1" name="category" value="AIDB" checked/></span>
+						<span class="span-cat"><input type="radio" id="cat1" name="category" value="AIDB1" checked/></span>
 						<label class="label-cat" for="cat1">Product Selling</label>
 						<div class="menu dropdown">
 							<span class="m dropbtn">&#8942;</span>
 							<div class="dropdown-content">
-							  <a href="#0" class="info-linker" data-cat="AIDB">Table Info</a>
-							  <a href="#0" class="info-downloader" data-cat="AIDB" target="table_info_window" download="selling_schema.sql">Download</a>
+							  <a href="#0" class="info-linker" data-cat="AIDB1">Table Info</a>
+							  <a href="#0" class="info-downloader" data-cat="AIDB1" target="table_info_window" download="selling_schema.sql">Download</a>
 							</div>
 						</div>
 					</h4>

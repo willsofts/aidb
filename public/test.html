@@ -150,7 +150,7 @@
 				let div = $('<div>').addClass("text text-answer table-responsive f-right");
 				let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("")).append(div);
 				$('#listmessages').append(li);
-				let table = $('<table>').addClass("table table-data table-bordered");
+				let table = $('<table>').addClass("tables table-data table-bordered");
 				let rowhead = $('<tr>');
 				let first = data[0];
 				for(let key in first) {
@@ -179,19 +179,26 @@
   <body>
 	<div id="headlayer">
 		<div id="headtitle"><span class="q">Question</span> &amp; <span class="a">Answer</span></div>
+		<div class="menu dropdown">
+			<span class="m dropbtn">&#8942;</span>
+			<div class="dropdown-content">
+			  <a href="/ask.html" target="ask_me_window">Ask Me</a>
+			  <a href="/vision.html" target="vision_me_window">Vision Me</a>
+			</div>
+		</div>
 	</div>	
 	<div id="examplequest">
 		<div id="examplecategory">
 			<div class="category-layer">
 				<div class="category category-first">
 					<h4>
-						<span class="span-cat"><input type="radio" id="cat1" name="category" value="AIDB" checked/></span>
+						<span class="span-cat"><input type="radio" id="cat1" name="category" value="AIDB1" checked/></span>
 						<label class="label-cat" for="cat1">Product Selling</label>
 						<div class="menu dropdown">
 							<span class="m dropbtn">&#8942;</span>
 							<div class="dropdown-content">
-							  <a href="#0" class="info-linker" data-cat="AIDB">Table Info</a>
-							  <a href="#0" class="info-downloader" data-cat="AIDB" target="table_info_window" download="selling_schema.sql">Download</a>
+							  <a href="#0" class="info-linker" data-cat="AIDB1">Table Info</a>
+							  <a href="#0" class="info-downloader" data-cat="AIDB1" target="table_info_window" download="selling_schema.sql">Download</a>
 							</div>
 						</div>
 					</h4>
