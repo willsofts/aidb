@@ -10,9 +10,10 @@ $(function() {
 	$('#query').focus();
 	$("#clearlinker").click(function() { $("#listmessages").empty(); });
 	setupCategories();
+	bindingSettings();
 });
 function sendQuery(quest) {
-	let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
+	let li = $('<li>').addClass("fxc li-topic").append($('<span>').addClass("topic topic-quest").text("Question")).append($('<span>').addClass("text text-quest").text(quest));
 	$('#listmessages').append(li);
 	$(".input-ask").prop('disabled', true);
 	questmessages.scrollTo(0,questmessages.scrollHeight);
@@ -26,7 +27,7 @@ function sendQuery(quest) {
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 		error : function(transport,status,errorThrown) {
 			$("#waitlayer").hide();
-			let err = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-error f-left").text("Error")).append($('<span>').addClass("text text-error f-right").text(errorThrown));
+			let err = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-error").text("Error")).append($('<span>').addClass("text text-error").text(errorThrown));
 			$('#listmessages').append(err);
 			$(".input-ask").prop('disabled', false);
 		},
@@ -44,20 +45,19 @@ function sendQuery(quest) {
 }
 function displayQueryAnswer(query, answer, error) {
 	let span = $('<span>').addClass("typed-out").attr("style","--n:"+answer.length).text(answer);
-	let txt =  $('<div>').addClass(error?"typed-container text text-error f-right":"typed-container text text-success f-right").append(span);
-	let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("Answer")).append(txt);
-	let queryboxchk = $("#querybox").prop("checked");
-	if(queryboxchk) {
-		let qry = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-query f-left").text("Query")).append($('<span>').addClass("text text-query f-right").text(query));
-		$('#listmessages').append(qry);
-	}
-	$('#listmessages').append(ans);
+	let txt =  $('<div>').addClass(error?"typed-container text text-error":"typed-container text text-success").append(span);
+	let ans = $('<li>').addClass("fxc li-answer").append($('<span>').addClass("topic topic-answer").text("Answer")).append(txt);
+	let qry = $('<li>').addClass("fxc li-query").append($('<span>').addClass("topic topic-query").text("Query")).append($('<span>').addClass("text text-query").text(query));
+	let queryboxchk = $("#querybox").is(":checked");
+	if(!queryboxchk) qry.addClass("fa-hidden");
+	$('#listmessages').append(qry).append(ans);
 }
 function displayDataSet(data) {
-	if(!$("#datasetbox").prop("checked")) return;
 	if(data && data.length>0) {
-		let div = $('<div>').addClass("text text-answer table-responsive f-right");
-		let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("")).append(div);
+		let dsboxchk = $("#datasetbox").is(":checked");
+		let div = $('<div>').addClass("text text-answer table-responsive");
+		let li = $('<li>').addClass("fxc li-dataset").append($('<span>').addClass("topic topic-answer").text("")).append(div);
+		if(!dsboxchk) li.addClass("fa-hidden");
 		$('#listmessages').append(li);
 		let table = $('<table>').addClass("tables table-data table-bordered");
 		let rowhead = $('<tr>');
@@ -164,6 +164,22 @@ function bindingCategories() {
 			let cat = $(this).attr("data-cat");
 			let url = "/api/tableinfo/html?category="+cat;
 			$(this).attr("href",url);
+		});
+	});
+}
+function bindingSettings() {
+	$("#querybox").change(function() {
+		let chk = $(this).is(":checked");
+		$("li.li-query").each(function(index,element) {
+			if(chk) $(element).removeClass("fa-hidden");
+			else $(element).addClass("fa-hidden");
+		});
+	});
+	$("#datasetbox").change(function() {
+		let chk = $(this).is(":checked");
+		$("li.li-dataset").each(function(index,element) {
+			if(chk) $(element).removeClass("fa-hidden");
+			else $(element).addClass("fa-hidden");
 		});
 	});
 }
