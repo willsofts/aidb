@@ -1,6 +1,6 @@
 import config from "@willsofts/will-util";
 import { KnModel, KnTrackingInfo } from "@willsofts/will-db";
-import { KnRecordSet } from "@willsofts/will-sql";
+import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 import { HTTP } from "@willsofts/will-api";
 import { KnContextInfo, KnValidateInfo, VerifyError } from "@willsofts/will-core";
 import { TknOperateHandler } from '@willsofts/will-serv';
@@ -38,15 +38,19 @@ export class InquiryHandler extends TknOperateHandler {
     public async processInquire(query: string, section: string = this.section, model: KnModel = this.model) : Promise<KnRecordSet> {
         let db = config.has(section) ? this.getConnector(section) : this.getPrivateConnector(model);
         try {
-            let rs = await db.executeQuery(query);
-            this.logger.debug(this.constructor.name+".processInquire: rs",rs);
-            return this.createRecordSet(rs);
+            return this.processQuery(db, query);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             return Promise.reject(this.getDBError(ex));
         } finally {
             if(db) db.close();
         }
+    }
+
+    public async processQuery(db: KnDBConnector, query: string) : Promise<KnRecordSet> {
+        let rs = await db.executeQuery(query);
+        this.logger.debug(this.constructor.name+".processQuery: rs",rs);
+        return this.createRecordSet(rs);
     }
 
 }

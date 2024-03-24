@@ -28,6 +28,10 @@ export class QuestionUtility {
         if(idx>=0) {
             ans = ans.substring(idx+6);
         }
+        idx = ans.indexOf("```");
+        if(idx>=0) {
+            ans = ans.substring(idx+3);
+        }
         idx = ans.lastIndexOf("```");
         if(idx>0) {
             ans = ans.substring(0,idx);
