@@ -147,7 +147,7 @@
 			let ul = $("#examplelisting").empty();
 			if(!info) return;
 			$(info.examples).each(function(index,element) {
-				let li = $('<li>').text(element.quest);
+				let li = $('<li>').text(element.question);
 				ul.append(li);
 				li.click(function() { 
 					$("#query").val(li.text());
