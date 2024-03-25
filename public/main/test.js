@@ -1,17 +1,13 @@
 const API_URL = "";
 $(function() {
 	$('#questform').submit(function() {
+		test();
 		if($('#query').val().trim()=="") return false;
 		sendQuery($('#query').val());
 		$('#query').val('');
 		return false;
-	});
-	$('#query').bind("keypress",function(e){
-		if ((e.keyCode || e.which) == 13) {
-			$('#questform').trigger("submit");
-			return false;
-		}
-	}).focus();
+	});	
+	$('#query').focus();
 	$("#clearlinker").click(function() { $("#listmessages").empty(); });
 	setupCategories();
 	bindingSettings();
@@ -50,7 +46,7 @@ function sendQuery(quest) {
 function displayQueryAnswer(query, answer, error) {
 	let span = $('<span>').addClass("typed-out").attr("style","--n:"+answer.length).text(answer);
 	let txt =  $('<div>').addClass(error?"typed-container text text-error":"typed-container text text-success").append(span);
-	let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer").text("Answer")).append(txt);
+	let ans = $('<li>').addClass("fxc li-answer").append($('<span>').addClass("topic topic-answer").text("Answer")).append(txt);
 	let qry = $('<li>').addClass("fxc li-query").append($('<span>').addClass("topic topic-query").text("Query")).append($('<span>').addClass("text text-query").text(query));
 	let queryboxchk = $("#querybox").is(":checked");
 	if(!queryboxchk) qry.addClass("fa-hidden");
@@ -81,6 +77,12 @@ function displayDataSet(data) {
 		table.append(tbody);
 		div.append(table);
 	}
+}
+function test() {			
+	let data = [{name: "John", age: 30, city: "New York"}, {name: "Peter", age: 25, city: "Paris"}, {name: "Mary", age: 28, city: "London"}];
+	displayQueryAnswer("What is your name?", "My name is John");
+	displayDataSet(data);
+	questmessages.scrollTo(0,questmessages.scrollHeight);
 }
 function setupCategories() {
 	buildCategories();

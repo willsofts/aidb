@@ -13,6 +13,8 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
     <script src="main/category.js"></script>
     <script src="main/test2.js"></script>
+	<style>
+	</style>
   </head>
   <body>
 	<div id="headlayer">
@@ -58,6 +60,8 @@
 					</li>
 				</ul>
 			</div>
+		</div>
+		<div id="questlayer">
 			<div id="settinglayer">
 				<div id="questsetting" class="menu dropdown setting-menu">
 					<span class="m dropbtn setting">&#9881;</span>
@@ -68,8 +72,6 @@
 					  </div>
 		  		</div>
 			</div>
-		</div>
-		<div id="questlayer">
 			<div id="questmessages">
 				<ul id="listmessages">
 					<li class="fxc li-topic">
@@ -187,7 +189,7 @@
 			<div id="formlayer">
 				<form id="questform" name="questform" action="" onsubmit="return false;">
 					<div id="inputlayer">
-						<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" /><button id="sendbutton" class="input-ask btn">Send</button>
+						<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off"></textarea><button id="sendbutton" class="input-ask btn">Send</button>
 					</div>
 				</form>
 				<form id="infoform" name="infoform" method="post" action="/gui/tableinfo/tableinfo" target="table_info_window">

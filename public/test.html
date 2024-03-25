@@ -2,309 +2,211 @@
 <html>
   <head>
     <title>Q&amp;A</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="Cache-Control" content="no-store">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="-1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-    <style>
-      * { box-sizing: border-box; }
-      body { margin: 0; padding: 0; font: 13px Helvetica, Arial; font-size: 1rem;}
-      #questform { background: rgb(222, 220, 220); padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      #questform input { width: 100%; border: 0; padding: 10px; margin-right: .5%; }
-      #questform button { width: 100px; padding: 10px; } 
-	  #inputlayer { display: flex; flex-direction: row; }
-	  #questlayer { margin-right: 25px; }
-	  #questmessages { overflow: auto; margin-bottom: 8%; }
-      #listmessages { margin: 0; list-style-type: none; }
-      #listmessages li { padding: 5px; }
-      .text-quest { background: ghostwhite; color: black; font-weight: bold; }
-      .text-query { background: floralwhite; color: black; }
-	  .text-answer { background: whitesmoke; color: black;}
-	  .text-error { background-color: #f8d7da; color: black;}
-	  .text-success { background-color: #c3e6cb; color: black; }
-	  .topic { font-weight: bold; min-width: 80px; padding: 4px; }
-	  .text { padding: 4px; padding-left: 6px; width: 100%; white-space: pre-line; }
-	  .topic-quest { color: brown; }
-	  .topic-answer { color: green; }
-	  .fxc { display: flex; flex-direction: row; }
-	  #headlayer { text-align: center; display: flex; flex-direction: row; margin-top: 5px; padding: 5px; font-size: 1.5rem; font-weight: bold; padding-bottom: 0px; }
-	  #headtitle { width: 100%; margin-top: 5px; margin-bottom: 10px; }
-	  h2 { text-align: center; margin-top: 5px; }	  
-	  span.q { color: brown; }
-	  span.a { color: green; }
-	  #examplequest { margin: 0; padding: 0; padding-left: 20px; } 
-	  .example-list { margin: 0; }
-	  .example-list li { padding: 3px 5px; }
-	  .category-layer { display: flex; flex-direction: row; margin-right: 15px; }
-	  .category { width: 50%; margin-left: 15px; margin-right: 15px;}
-	  .span-cat { line-height: 1.5rem; }
-	  .label-cat { cursor: pointer; }
-	  #infoform { display: none; }
-	  h4 { margin: 0; padding: 4px; background-color: #D3D3D3;} 
-	  hr { margin: 5px 0; margin-left: 15px; margin-right: 30px; }
-	  input[type=text] { padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
-	  #sendbutton { padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; color: white; background-color: #6c757d; border-radius: .25rem; }
-	  #sendbutton:hover { background-color: #5a6268; }
-	  button[disabled]:hover { pointer-events: none; }
-	  input[disabled] { background-color: #eee; }
-	  .table-data { border-collapse: collapse; }
-	  .table-data th { background-color: #D3D3D3; }
-	  .table-data th, td { padding: 7px; border: 1px solid #ddd; }	
-	  .table-data > tbody tr:nth-child(odd) { background-color: #f1f0f0; }
-	  .table-responsive { overflow: auto; }
-	  .typed-container { display: inline-block; width: 100%; }
-	  /*
-	  .typed-out { overflow: hidden; white-space: nowrap; width: 0; animation: typing 2s forwards; }
-	  @keyframes typing { from { width: 0 } to { width: 100% } }
-	  */
-	  .typed-out { 
-		color:#0000;
-		background:linear-gradient(black 0 0) 0 0;
-  		background-repeat:no-repeat;
-		background-clip:text;
-		background-size:calc(var(--n)*1ch) 200%;
-		animation: to 3s linear forwards;
-	  }	
-	  @keyframes to { from { background-size:0 200% } }
-
-	  .m { cursor: pointer; width: 30px; }
-	  .m:hover { background-color: #f1f1f1; }
-	  .menu { float: right; }
-	  .dropbtn { padding: 5px 10px; border: none; }
-	  .dropdown { position: relative; display: inline-block; font-size: 1rem; padding-top: 3px; }
-	  .dropdown-content { display: none; position: absolute; right: 0; top: 25px;
-		background-color: #f1f1f1;
-  		min-width: 120px;
-  		box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  		z-index: 1;  		
-	  }
-	  .dropdown-content a { color: black; padding: 12px 16px; text-decoration: none; display: block; }
-	  .dropdown-content a:hover { background-color: #ddd; }
-	  .dropdown:hover .dropdown-content { display: block; }
-    </style>	
+	<link rel="stylesheet" type="text/css" href="main/test.css" />
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
-    <script>
-		const API_URL = ""; // "http://localhost:8080";
-		$(function() {
-			$('#questform').submit(function() {
-				test();
-				if($('#query').val().trim()=="") return false;
-				sendQuery($('#query').val());
-				$('#query').val('');
-				return false;
-			});
-			$('#query').focus();
-			$("a.info-linker").each(function(index,element) {
-				$(element).click(function() {
-					let cat = $(this).attr("data-cat");
-					$("#infocategory").val(cat);
-					$("#infoform").submit();
-					return false;
-				});
-			});
-			$("a.info-downloader").each(function(index,element) {
-				$(element).click(function() {
-					let cat = $(this).attr("data-cat");
-					let url = "/api/tableinfo/html?category="+cat;
-					$(this).attr("href",url);
-				});
-			});
-		});
-		function sendQuery(quest) {
-			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
-			$('#listmessages').append(li);
-			$(".input-ask").prop('disabled', true);
-			$("body").css("cursor", "progress");
-			let cat = $("input[name='category']:checked").val();
-			jQuery.ajax({
-				url: API_URL+"/api/question/quest",
-				data: {category: cat, query: quest},
-				type: "POST",
-				dataType: "html",
-				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-				error : function(transport,status,errorThrown) {
-					$("body").css("cursor", "default");
-					let err = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-error f-left").text("Error")).append($('<span>').addClass("text text-error f-right").text(errorThrown));
-					$('#listmessages').append(err);
-					$(".input-ask").prop('disabled', false);
-				},
-				success: function(data,status,transport) {
-					$("body").css("cursor", "default");
-					let json = $.parseJSON(data);
-					if(json) {
-						displayQueryAnswer(json.query, json.answer, json.error);
-						displayDataSet(json.dataset);
-					}
-					$(".input-ask").prop('disabled', false);
-					window.scrollTo(0,questmessages.scrollHeight);
-				}
-			});	
-		}
-		function displayQueryAnswer(query, answer, error) {
-			let span = $('<span>').addClass("typed-out").attr("style","--n:"+answer.length).text(answer);
-			let txt =  $('<div>').addClass(error?"typed-container text text-error f-right":"typed-container text text-success f-right").append(span);
-			let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("Answer")).append(txt);
-			let qry = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-query f-left").text("Query")).append($('<span>').addClass("text text-query f-right").text(query));
-			//let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("Answer")).append($('<span>').addClass(error?"text text-error f-right":"text text-success f-right").text(answer));
-			$('#listmessages').append(qry).append(ans);
-		}
-		function displayDataSet(data) {
-			if(data && data.length>0) {
-				let div = $('<div>').addClass("text text-answer table-responsive f-right");
-				let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("")).append(div);
-				$('#listmessages').append(li);
-				let table = $('<table>').addClass("tables table-data table-bordered");
-				let rowhead = $('<tr>');
-				let first = data[0];
-				for(let key in first) {
-					rowhead.append($('<th>').text(key));
-				}
-				table.append($('<thead>').append(rowhead));
-				let tbody = $('<tbody>');
-				$(data).each(function(index, item) {
-					let tr = $('<tr>');
-					for(let key in item) {
-						tr.append($('<td>').text(item[key]));
-					}
-					tbody.append(tr);
-				});
-				table.append(tbody);
-				div.append(table);
-			}
-		}
-		function test() {			
-			let data = [{name: "John", age: 30, city: "New York"}, {name: "Peter", age: 25, city: "Paris"}, {name: "Mary", age: 28, city: "London"}];
-			displayQueryAnswer("What is your name?", "My name is John");
-			displayDataSet(data);
-		}
-    </script>
+    <script src="main/category.js"></script>
+    <script src="main/test.js"></script>
   </head>
   <body>
 	<div id="headlayer">
 		<div id="headtitle"><span class="q">Question</span> &amp; <span class="a">Answer</span></div>
-		<div class="menu dropdown">
-			<span class="m dropbtn">&#8942;</span>
+		<div class="menu dropdown">			
+			<span class="m dropbtn">&#9776;</span>
 			<div class="dropdown-content">
 			  <a href="/ask.html" target="ask_me_window">Ask Me</a>
 			  <a href="/vision.html" target="vision_me_window">Vision Me</a>
 			</div>
 		</div>
-	</div>	
-	<div id="examplequest">
-		<div id="examplecategory">
-			<div class="category-layer">
-				<div class="category category-first">
-					<h4>
-						<span class="span-cat"><input type="radio" id="cat1" name="category" value="AIDB1" checked/></span>
-						<label class="label-cat" for="cat1">Product Selling</label>
-						<div class="menu dropdown">
+	</div>
+	<div id="bodylayer">
+		<div id="categorylayer">
+			<h4 class="system">System</h4>
+			<div id="categorylist">
+				<ul id="categorylisting" class="category-list">
+					<li>
+						<div class="category-info">
+							<span class="span-cat"><label class="cat-pointer">&#187;</label><input type="radio" class="cat-radio" id="cat1" name="category" value="AIDB1" checked/></span>
+							<label class="label-cat cat-selected" for="cat1">Product Selling</label>
+						</div>
+						<div class="menu dropdown cat-menu">
 							<span class="m dropbtn">&#8942;</span>
-							<div class="dropdown-content">
+							<div class="dropdown-content cat-content">
 							  <a href="#0" class="info-linker" data-cat="AIDB1">Table Info</a>
 							  <a href="#0" class="info-downloader" data-cat="AIDB1" target="table_info_window" download="selling_schema.sql">Download</a>
 							</div>
 						</div>
-					</h4>
-					<ul class="example-list">
-						<li>What is the cheapest product name</li>
-						<li>What is the most expensive product name</li>
-						<li>List product with name and price then order by price descending</li>
-						<li>Find out best seller 5 product's name of unit in March,2024 ?</li>
-						<li>Find out top 5 customer's name of order amount in March,2024 ?</li>
-					</ul>
-				</div>
-				<div class="category category-second">
-					<h4>
-						<span class="span-cat"><input type="radio" id="cat2" name="category" value="AIDB2"/></span>
-						<label class="label-cat" for="cat2">Course Training</label>
-						<div class="menu dropdown">
+					</li>
+					<li>
+						<div class="category-info">
+							<span class="span-cat"><label class="cat-pointer">&#160;&#160;</label><input type="radio" class="cat-radio" id="cat2" name="category" value="AIDB2"/></span>
+							<label class="label-cat" for="cat2">Course Training</label>
+						</div>
+						<div class="menu dropdown cat-menu">
 							<span class="m dropbtn">&#8942;</span>
-							<div class="dropdown-content">
+							<div class="dropdown-content cat-content">
 							  <a href="#0" class="info-linker" data-cat="AIDB2">Table Info</a>
 							  <a href="#0" class="info-downloader" data-cat="AIDB2" target="table_info_window" download="training_schema.sql">Download</a>
 							</div>
 						</div>
-					</h4>
-					<ul class="example-list">
-						<li>What is the cheapest course in training schedule</li>
-						<li>What is the most expensive course in training schedule</li>
-						<li>List all course name and cost from training schedule</li>
-						<li>Find out registered trainee's name in March,2024 ?</li>
-						<li>Find out top most training days from training schedule ?</li>
-					</ul>
-				</div>
+					</li>
+				</ul>
+			</div>
+			<div id="settinglayer">
+				<div id="questsetting" class="menu dropdown setting-menu">
+					<span class="m dropbtn setting">&#9881;</span>
+					<div class="dropdown-content setting-content">
+						<a href="#0"><input type="checkbox" id="querybox" checked /><label for="querybox">Query<label></label></a>
+						<a href="#0"><input type="checkbox" id="datasetbox" checked /><label for="datasetbox">Data Set</label></a>
+						<a href="#0" id="clearlinker"><span>&#128465;</span><label id="clearlabel">Clear</label></a>
+					  </div>
+		  		</div>
 			</div>
 		</div>
-		<hr/>
-	</div>
-	<div id="questlayer">
-		<div id="questmessages">
-    		<ul id="listmessages">
-				<li class="fxc">
-					<span class="topic topic-quest">Question</span>
-					<span class="text text-quest">Welcome to the Q&amp;A system. Please ask your question.</span>
-				</li>
-				<li class="fxc">
-					<span class="topic topic-query">Query</span>
-					<span class="text text-query">Your query.</span>
-				</li>
-				<li class="fxc">
-					<span class="topic topic-answer">Answer</span>
-					<span class="text text-success">The answer here.</span>
-				</li>
-				<li class="fxc">
-					<span class="topic topic-answer"></span>
-					<div class="text text-answer table-responsive">
-						<table class="table table-data table-bordered">
-							<thead>
-							<tr>
-								<th>Question</th>
-								<th>Answer</th>
-							</tr>
-							</thead>
-							<tbody>
-							<tr>
-								<td>What is your name?</td>
-								<td>My name is Q&amp;A.</td>
-							</tr>
-							<tr>
-								<td>What is your name?</td>
-								<td>My name is Q&amp;A.</td>
-							</tr>
-							<tr>
-								<td>What is your name?</td>
-								<td>My name is Q&amp;A.</td>
-							</tr>
-							</tbody>
-						</table>
-					</div>
-				</li>
-				<li class="fxc">
-					<span class="topic topic-answer">Answer</span>
-					<div class="typed-container text text-success">
-						<span class="typed-out" style="--n:200">
-							Record not found.
-							Record not found. 
-							Record not found.
-							Record not found.
-							Record not found.
-							Record not found.
-							Record not found.
-							Record not found.
-							Record not found.
-							Record not found.
-							Record not found.
-							Record not found.							
-						</span>
-					</div>
-				</li>
-			</ul>
-		</div>
-		<form id="questform" name="questform" action="" onsubmit="return false;">
-			<div id="inputlayer">
-				<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" /><button id="sendbutton" class="input-ask btn">Send</button>
+		<div id="questlayer">
+			<div id="questmessages">
+				<ul id="listmessages">
+					<li class="fxc li-topic">
+						<span class="topic topic-quest">Question</span>
+						<span class="text text-quest">Welcome to the Q&amp;A system. Please ask your question.</span>
+					</li>
+					<li class="fxc li-query">
+						<span class="topic topic-query">Query</span>
+						<span class="text text-query">Your query.</span>
+					</li>
+					<li class="fxc li-answer">
+						<span class="topic topic-answer">Answer</span>
+						<span class="text text-success">The answer here.</span>
+					</li>
+					<li class="fxc li-dataset">
+						<span class="topic topic-answer"></span>
+						<div class="text text-answer table-responsive">
+							<table class="tables table-data table-bordered">
+								<thead>
+								<tr>
+									<th>Question</th>
+									<th>Answer</th>
+									<th>Answer</th>
+									<th>Answer</th>
+									<th>Answer</th>
+									<th>Answer</th>
+									<th>Answer</th>
+									<th>Answer</th>
+									<th>Answer</th>
+									<th>Answer</th>
+									<th>Answer</th>
+									<th>Answer</th>
+									<th>Answer</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr>
+									<td>What is your name?</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+								</tr>
+								<tr>
+									<td>What is your name?</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+								</tr>
+								<tr>
+									<td>What is your name?</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+									<td>My name is Q&amp;A.</td>
+								</tr>
+								</tbody>
+							</table>
+						</div>
+					</li>
+					<li class="fxc li-answer">
+						<span class="topic topic-answer">Answer</span>
+						<div class="typed-container text text-success">
+							<span class="typed-out" style="--n:200">Record not found.
+								Record not found. 
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+								Record not found.
+							</span>
+						</div>
+					</li>
+				</ul>
 			</div>
-		</form>
-		<form id="infoform" name="infoform" method="post" action="/gui/tableinfo/tableinfo" target="table_info_window">
-			<input type="hidden" id="infocategory" name="category" />
-		</form>	
-	</div>
+			<div id="waitlayer"><img id="waitimg" src="https://cdn.jsdelivr.net/gh/willsofts/will-asset@1.0.0/img/waiting.gif" width="50px" height="50px" alt="" /></div>
+			<div id="formlayer">
+				<form id="questform" name="questform" action="" onsubmit="return false;">
+					<div id="inputlayer">
+						<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" /><button id="sendbutton" class="input-ask btn">Send</button>
+					</div>
+				</form>
+				<form id="infoform" name="infoform" method="post" action="/gui/tableinfo/tableinfo" target="table_info_window">
+					<input type="hidden" id="infocategory" name="category" />
+				</form>	
+			</div>
+		</div>
+		<div id="examplelayer">
+			<h4 class="example">Example</h4>
+			<div id="examplelist">
+				<ul id="examplelisting" class="example-list">
+					<li>What is the cheapest product name</li>
+					<li>What is the most expensive product name</li>
+					<li>List product with name and price then order by price descending</li>
+					<li>Find out best seller 5 product's name of unit in March,2024</li>
+					<li>Find out top 5 customer's name of order amount in March,2024</li>
+				</ul>
+			</div>
+		</div>
+	</div>	
   </body>
 </html>

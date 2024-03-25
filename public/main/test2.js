@@ -6,8 +6,13 @@ $(function() {
 		sendQuery($('#query').val());
 		$('#query').val('');
 		return false;
-	});
-	$('#query').focus();
+	});	
+	$('#query').bind("keypress",function(e){
+		if ((e.keyCode || e.which) == 13) {
+			$('#questform').trigger("submit");
+			return false;
+		}
+	}).focus();
 	$("#clearlinker").click(function() { $("#listmessages").empty(); });
 	setupCategories();
 	bindingSettings();
