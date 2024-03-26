@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Verification</title>
+		<%- include('../asset/meta') %>
+		<%- include('../asset/styleserror') %>		
+		<style nonce="YXNzdXJl">
+			a { font-size: 1.5rem; text-decoration: none; } 
+			.portalbody { margin:0px; font-size:1rem; font-weight:400;line-height:1.5; }
+			.page-header-title { margin-top:0px; margin-bottom:0.5rem; }
+		</style>
+		<script nonce="YXNzdXJl">
+			function doGoBack() {
+				window.history.back();
+			}
+			window.onload = function() {
+				gobacklinker.onclick = doGoBack;
+			}
+		</script>
+	</head>
+	<body class="portalbody portalbody-off">
+		<div id="ptsearchpager" class="pt-page pt-page-current pt-page-controller">
+			<div class="header-layer">
+				<h1 class="page-header-title">
+					<label>Verification</label>
+				</h1>
+			</div>
+			<div id="searchpanel" class="panel-body">
+				<div id="messagepanellayer" class="message-panel-class">
+					Sorry, Information not found.
+				</div>
+				<br/>
+				<div id="gobacklayer" class="goback-class">
+					<a href="#" id="gobacklinker">Go Back</a>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

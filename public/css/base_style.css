@@ -299,7 +299,7 @@ div.col-label { text-align: left; padding-top: 10px; }
 		text-align: right;
 	}
 }
-.pt-page-controller { width: 99.8%; }
+.pt-page-controller { width: 99%; }
 
 /* record set - input dialog */
 .recordset-detail-class { margin-left: 15px; }

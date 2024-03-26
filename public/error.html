@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Error</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="Cache-Control" content="no-store">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Expires" content="-1">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="css/component.css" />
+		<link rel="stylesheet" type="text/css" href="css/base_style.css" />
+		<link rel="stylesheet" type="text/css" href="css/user_style.css" />
+		<link rel="stylesheet" type="text/css" href="css/program_style.css" />		
+		<style nonce="YXNzdXJl">
+			a { font-size: 1.5rem; text-decoration: none; } 
+			.info { text-align: center; color:red; font-size: 1.2rem; }
+			.text-center { text-align: center; }
+			.portalbody { margin:0px; font-size:1rem; font-weight:400;line-height:1.5; }
+			.page-header-title { margin-top:0px; margin-bottom:0.5rem; }
+			#ptsearchpager { padding: 5px; }
+		</style>
+		<script nonce="YXNzdXJl">
+			function doGoBack() {
+				window.history.back();
+			}
+			window.onload = function() {
+				gobacklinker.onclick = doGoBack;
+			}
+		</script>
+	</head>
+	<body class="portalbody portalbody-off">
+		<div id="ptsearchpager" class="pt-page pt-page-current pt-page-controller">
+			<div class="header-layer">
+				<h1 class="page-header-title">
+					<label>Error</label>
+				</h1>
+			</div>
+			<div id="searchpanel" class="panel-body">
+				<br/>
+				<div id="messagepanellayer" class="message-panel-class">
+					General Protection Error Occured
+				</div>
+				<br/>
+				<div id="gobacklayer" class="goback-class">
+					<a href="#" id="gobacklinker">Go Back</a>
+				</div>
+				<br/>
+			</div>
+		</div>
+	</body>
+</html>

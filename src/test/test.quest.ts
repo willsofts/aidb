@@ -2,7 +2,7 @@ import { QuestionHandler } from "../question/QuestionHandler";
 
 const input = "Find out best seller of 5 products in March,2024 ?";
 const handler = new QuestionHandler();
-handler.processQuest(input).then((result) => {
+handler.processQuestion(input,"AIDB1").then((result) => {
     console.log("Result:",result);
 }).catch((err) => {
     console.error("Error:",err);

@@ -1,4 +1,5 @@
 import { KnModel } from "@willsofts/will-db";
+import { KnContextInfo } from "@willsofts/will-core";
 import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_MODEL, API_ANSWER } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
@@ -15,8 +16,7 @@ export class ChatHandler extends QuestionHandler {
         alias: { privateAlias: this.section }, 
     };
 
-    public getChatHistory(category: string) {
-        let table_info = this.getDatabaseTableInfo(category);
+    public getChatHistory(category: string, table_info: string) {
         let prmutil = new PromptUtility();
         let prompt = prmutil.createChatPrompt("", table_info);
         return [
@@ -31,22 +31,26 @@ export class ChatHandler extends QuestionHandler {
         ];
     }
 
-    public override async processQuest(question: string, category: string = "AIDB") : Promise<InquiryInfo> {
+    public async processQuest(context: KnContextInfo, question: string, category: string = "AIDB", model: KnModel = this.model) : Promise<InquiryInfo> {
         let info = { error: false, question: question, query: "", answer: "", dataset: [] };
         if(!question || question.length == 0) {
             info.error = true;
             info.answer = "No question found.";
             return Promise.resolve(info);
         }
+        const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+        let input = question;
+        let db = this.getPrivateConnector(model);
         try {
-            const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
-            let input = question;
+            let forum = await this.getForumConfig(context,db,category);
+            this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
             this.logger.debug(this.constructor.name+".processQuest: input:",input);
             this.logger.debug(this.constructor.name+".processQuest: category:",category);
             this.logger.debug(this.constructor.name+".processQuest: chatmap.size:",chatmap.size);
+            let table_info = forum.tableinfo;
             let chat = chatmap.get(category);
             if(!chat) {
-                let history = this.getChatHistory(category);
+                let history = this.getChatHistory(category, table_info);
                 chat = aimodel.startChat({
                     history: history,
                     generationConfig: {
@@ -70,7 +74,7 @@ export class ChatHandler extends QuestionHandler {
             }
             info.query = sql;
             //then run the SQL query
-            let rs = await this.doInquiry(sql, category);
+            let rs = await this.doEnquiry(sql, forum);
             this.logger.debug(this.constructor.name+".processQuest: rs:",rs);
             if(rs.records == 0) {
                 info.answer = "Record not found.";
@@ -79,6 +83,7 @@ export class ChatHandler extends QuestionHandler {
             info.dataset = rs.rows;
             if(API_ANSWER) {
                 let datarows = JSON.stringify(rs.rows);
+                this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
                 //create reply prompt from sql and result set
                 let prmutil = new PromptUtility();
                 let prompt = prmutil.createAnswerPrompt(input, datarows, sql, "");

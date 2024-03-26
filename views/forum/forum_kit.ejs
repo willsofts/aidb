@@ -1,0 +1,140 @@
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-4">
+<label for="forumtype" id="forumtype_label" class="control-label"><%=label.get('forumtype_label','Type')%></label>
+<div class="input-group">
+<%-page.html('select',{map: data.entity?.tforumtype, value: data.dataset?.forumtype, id: "forumtype", name: "forumtype", class: "form-control input-md"})%>
+<div class="input-group-required"><label class="required">*</label></div></div><div id="forumtype_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumtype_alert','You can not leave this empty')%></div>
+					</div>
+					<div class="col-height col-md-4">
+<label for="forumdialect" id="forumdialect_label" class="control-label"><%=label.get('forumdialect_label','Dialect')%></label>
+<div class="input-group">
+<%-page.html('select',{map: data.entity?.tdialect, value: data.dataset?.forumdialect, id: "forumdialect", name: "forumdialect", class: "form-control input-md"})%>
+<div class="input-group-required"><label class="required">*</label></div></div><div id="forumdialect_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumdialect_alert','You can not leave this empty')%></div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div id="apilayer">
+	<div class="row row-height">
+		<div class="col-md-12 col-height">
+				<div class="table-layer-class">
+					<div class="row row-height">
+						<div class="col-height col-md-10">
+	<label for="forumapi" id="forumapi_label" class="control-label"><%=label.get('forumapi_label','API URL')%></label>
+	<div class="input-group"><input type="text" id="forumapi" name="forumapi" class="form-control input-md irequired alert-input" maxlength="150" value="<%=data.dataset?.forumapi%>" /><div class="input-group-required"><label class="required">*</label></div></div><div id="forumapi_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumapi_alert','You can not leave this empty')%></div>
+						</div>
+					</div>
+				</div>
+		</div>
+	</div>
+</div>
+<div id="dblayer">
+	<div id="providedlayer">
+		<div id="urllayer">
+			<div class="row row-height">
+				<div class="col-md-12 col-height">
+						<div class="table-layer-class">
+							<div class="row row-height">
+								<div class="col-height col-md-10">
+			<label for="forumurl" id="forumurl_label" class="control-label"><%=label.get('forumurl_label','Connection URL')%></label>
+			<div class="input-group"><input type="text" id="forumurl" name="forumurl" class="form-control input-md irequired alert-input" maxlength="50" value="<%=data.dataset?.forumurl%>" /><div class="input-group-required"><label class="required">*</label></div></div><div id="forumurl_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumurl_alert','You can not leave this empty')%></div>
+								</div>
+							</div>
+						</div>
+				</div>
+			</div>
+		</div>
+		<div id="unurllayer">
+			<div class="row row-height">
+				<div class="col-md-12 col-height">
+						<div class="table-layer-class">
+							<div class="row row-height">
+								<div class="col-height col-md-4">
+			<label for="forumuser" id="forumuser_label" class="control-label"><%=label.get('forumuser_label','User')%></label>
+			<div class="input-group"><input type="text" id="forumuser" name="forumuser" class="form-control input-md irequired alert-input" maxlength="200" value="<%=data.dataset?.forumuser%>" /><div class="input-group-required"><label class="required">*</label></div></div><div id="forumuser_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumuser_alert','You can not leave this empty')%></div>
+								</div>
+								<div class="col-height col-md-4">
+			<label for="forumpassword" id="forumpassword_label" class="control-label"><%=label.get('forumpassword_label','Password')%></label>
+			<div class="input-group"><input type="password" id="forumpassword" name="forumpassword" class="form-control input-md irequired alert-input" maxlength="50" value="<%=data.dataset?.forumpassword%>" /><div class="input-group-required"><label class="required">*</label></div></div><div id="forumpassword_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumpassword_alert','You can not leave this empty')%></div>
+								</div>
+							</div>
+						</div>
+				</div>
+			</div>
+			<div class="row row-height">
+				<div class="col-md-12 col-height">
+						<div class="table-layer-class">
+							<div class="row row-height">
+								<div class="col-height col-md-4">
+			<label for="forumdatabase" id="forumdatabase_label" class="control-label"><%=label.get('forumdatabasen_label','Database')%></label>
+			<div class="input-group"><input type="text" id="forumdatabase" name="forumdatabase" class="form-control input-md irequired alert-input" maxlength="50" value="<%=data.dataset?.forumdatabase%>" /><div class="input-group-required"><label class="required">*</label></div></div><div id="forumdatabase_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumdatabase_alert','You can not leave this empty')%></div>
+								</div>
+								<div class="col-height col-md-4">
+			<label for="forumhost" id="forumhost_label" class="control-label"><%=label.get('forumhost_label','Host')%></label>
+			<div class="input-group"><input type="text" id="forumhost" name="forumhost" class="form-control input-md irequired alert-input" maxlength="50" value="<%=data.dataset?.forumhost%>" /><div class="input-group-required"><label class="required">*</label></div></div><div id="forumhost_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumhost_alert','You can not leave this empty')%></div>
+								</div>
+								<div class="col-height col-md-4">
+			<label for="forumport" id="forumport_label" class="control-label"><%=label.get('forumport_label','Port')%></label>
+			<div class="input-group"><input type="text" id="forumport" name="forumport" class="form-control input-md irequired alert-input iint" maxlength="50" value="<%=data.dataset?.forumport%>" /><div class="input-group-required"><label class="required">*</label></div></div><div id="forumport_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumport_alert','You can not leave this empty')%></div>
+								</div>
+							</div>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row row-height" id="unprovidedlayer">
+		<div class="col-md-12 col-height">
+				<div class="table-layer-class">
+					<div class="row row-height">
+						<div class="col-height col-md-12">
+	<label id="unprovided_label" class="control-label"><%=label.get('unprovided_label','Does not supported')%></label>
+						</div>
+					</div>
+				</div>
+		</div>
+	</div>	
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-12">
+<label for="forumtable" id="forumtable_label" class="control-label"><%=label.get('forumtable_label','Table Info')%></label>
+<div class="input-group"><textarea id="forumtable" name="forumtable" class="form-control input-md irequired alert-input" rows="15"><%=data.dataset?.forumtable%></textarea><div class="input-group-required"><label class="required">*</label></div></div><div id="forumtable_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumtable_alert','You can not leave this empty')%></div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-12">
+<label for="forumquestions" id="forumquestions_label" class="control-label"><%=label.get('forumquestions_label','Questions')%></label>
+<a href="#0" id="addquestion" class="btn btn-primary btn-md" title="Add Question"><i class="fa fa-plus fa-btn-icon" aria-hidden="true"></i></a>
+<div id="questionslayer">
+	<%	let questions = data.dataset?.questions;
+	let rowcount = 5;
+	if(questions && questions.length>0) { 
+		rowcount = 5 - questions.length;
+		for(let index=0; index < questions.length; index++) { 
+			let item = questions[index]; %>
+			<div class="quest-input"><input type="text" name="question" class="form-control input-md" value="<%=item%>"/></div>
+		<%}
+	}
+	for(let index=0; index < rowcount; index++) { %>
+		<div class="quest-input"><input type="text" name="question" class="form-control input-md" value=""/></div>
+<%	}	%>
+</div>						
+					</div>
+				</div>
+			</div>
+	</div>
+</div>

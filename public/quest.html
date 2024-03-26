@@ -9,10 +9,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" type="text/css" href="main/quest.css" />
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>	
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="main/category.js"></script>
     <script src="main/quest.js"></script>
   </head>
@@ -29,11 +27,13 @@
 	</div>
 	<div id="bodylayer">
 		<div id="categorylayer">
-			<h4 class="system">System</h4>
+			<h4 class="system">System<a href="#0" id="addforumlinker" title="Add Forum">&#10009;</a></h4>
 			<div id="categorylist">
 				<ul id="categorylisting" class="category-list">
 				</ul>
 			</div>
+		</div>
+		<div id="questlayer">
 			<div id="settinglayer">
 				<div id="questsetting" class="menu dropdown setting-menu">
 					<span class="m dropbtn setting">&#9881;</span>
@@ -44,8 +44,6 @@
 					  </div>
 		  		</div>
 			</div>
-		</div>
-		<div id="questlayer">
 			<div id="questmessages">
 				<ul id="listmessages">
 				</ul>
@@ -54,11 +52,11 @@
 			<div id="formlayer">
 				<form id="questform" name="questform" action="" onsubmit="return false;">
 					<div id="inputlayer">
-						<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" /><button id="sendbutton" class="input-ask btn">Send</button>
+						<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off"></textarea><button id="sendbutton" class="input-ask btn">Send</button>
 					</div>
 				</form>
-				<form id="infoform" name="infoform" method="post" action="/gui/tableinfo/tableinfo" target="table_info_window">
-					<input type="hidden" id="infocategory" name="category" />
+				<form id="infoform" name="infoform" method="post" action="/gui/forum/view" target="table_info_window">
+					<input type="hidden" id="infocategory" name="forumid" />
 				</form>	
 			</div>
 		</div>

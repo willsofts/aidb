@@ -1,7 +1,7 @@
 const system_categories = {
 	"AIDB1": {
 		title: "Product Selling",
-		examples: [
+		questions: [
 			{"question":"What is the cheapest product name"},
 			{"question":"What is the most expensive product name"},
 			{"question":"List product with name and price then order by price descending"},
@@ -12,7 +12,7 @@ const system_categories = {
 	},
 	"AIDB2": {
 		title: "Course Training",
-		examples: [
+		questions: [
 			{"question":"What is the cheapest course in training schedule"},
 			{"question":"What is the most expensive course in training schedule"},
 			{"question":"List all course name and cost from training schedule"},

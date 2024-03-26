@@ -1,0 +1,14 @@
+[
+	{
+		"language": "TH",
+		"label": [
+			{"name": "caption", "value": "Forum Setting"}
+		]
+	},
+	{
+		"language": "EN",
+		"label": [
+			{"name": "caption", "value": "Forum Setting"}
+		]
+	}
+]

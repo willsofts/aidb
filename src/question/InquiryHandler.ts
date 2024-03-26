@@ -38,7 +38,7 @@ export class InquiryHandler extends TknOperateHandler {
     public async processInquire(query: string, section: string = this.section, model: KnModel = this.model) : Promise<KnRecordSet> {
         let db = config.has(section) ? this.getConnector(section) : this.getPrivateConnector(model);
         try {
-            return this.processQuery(db, query);
+            return await this.processEnquiry(query, db);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             return Promise.reject(this.getDBError(ex));
@@ -47,9 +47,10 @@ export class InquiryHandler extends TknOperateHandler {
         }
     }
 
-    public async processQuery(db: KnDBConnector, query: string) : Promise<KnRecordSet> {
+    public async processEnquiry(query: string, db: KnDBConnector) : Promise<KnRecordSet> {
+        this.logger.debug(this.constructor.name+".processEnquiry: query",query);
         let rs = await db.executeQuery(query);
-        this.logger.debug(this.constructor.name+".processQuery: rs",rs);
+        this.logger.debug(this.constructor.name+".processEnquiry: rs",rs);
         return this.createRecordSet(rs);
     }
 

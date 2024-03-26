@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Forum Setting</title>
+		<%- include('../asset/meta') %>		
+		<%- include('../asset/styles') %>		
+		<%- include('../asset/scripts') %>	
+		<link rel="stylesheet" type="text/css" href="<%=meta.base_url%>/forum/forum.css" />
+		<script type="text/javascript" src="<%=meta.base_url%>/forum/forum.js"></script>
+		<script type="text/javascript" nonce="YXNzdXJl">
+			const forum_dialects = <%- JSON.stringify(data.entity?.dialects) %>;
+		</script>
+	</head>
+	<body class="portalbody portalbody-off">
+		<%- include('../partials/page_waiting') %>
+		<div id="ptmainpager" class="pt-page pt-page-current pt-page-controller sfte012-entry-pager">
+			<%- page.createHeader({pid: 'forum', title: label.get('caption','Forum Setting')}) %>
+			<div id="entrypanel">
+				<div id="entrylayer" class="entry-layer">
+					<div class="row">
+						<div class="col-md-12 pull-right text-right">
+							<a href="/document/api.html" target="api_manual_window" id="apimanuallinker"><%=label.get('manual_linker','API Manual')%></a>
+						</div>
+					</div>
+					<form id="fsentryform" name="fsentryform" method="post">	
+						<input type="hidden" name="rowsPerPage" value="<%=page.setting?.rowsPerPage%>"/>
+						<input type="hidden" name="limit" value="<%=page.setting?.limit%>"/>
+						<input type="hidden" name="page" value="<%=page.setting?.page%>"/>
+						<div id="entrylayerarea" class="portal-area sub-entry-layer">
+							<%- include('./forum_key') %>
+							<%- include('./forum_kit') %>
+							<div class="row">
+								<div id="fs_controlbuttonfooterlayer" class="col-md-12 pull-right text-right">
+									<% if(page.isUpdateMode()) {%>
+										<% if(data.dataset?.editflag=="1") {%>
+											<input type="button" id="updatebutton" class="btn btn-dark btn-sm" value="<%=label.get('updatebutton','Update')%>"/>
+										<% } %>
+									<% } %>
+									<% if(!page.isUpdateMode()) {%>
+										<input type="button" id="savebutton" class="btn btn-dark btn-sm" value="<%=label.get('savebutton','Save')%>"/>
+									<% } %>
+									<input type="button" id="cancelbutton" class="btn btn-dark btn-sm" data-dismiss="modal" value="<%=label.get('cancelbutton','Cancel')%>"/>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

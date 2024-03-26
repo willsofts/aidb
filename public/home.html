@@ -9,10 +9,10 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-	<link rel="stylesheet" type="text/css" href="main/main.css" />
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="main/quest.css" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="main/category.js"></script>
-    <script src="main/main.js"></script>
+    <script src="main/quest.js"></script>
   </head>
   <body>
 	<div id="headlayer">
@@ -27,7 +27,7 @@
 	</div>
 	<div id="bodylayer">
 		<div id="categorylayer">
-			<h4 class="system">System</h4>
+			<h4 class="system">System<a href="#0" id="addforumlinker" title="Add Forum">&#10009;</a></h4>
 			<div id="categorylist">
 				<ul id="categorylisting" class="category-list">
 				</ul>
@@ -55,8 +55,8 @@
 						<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off"></textarea><button id="sendbutton" class="input-ask btn">Send</button>
 					</div>
 				</form>
-				<form id="infoform" name="infoform" method="post" action="/gui/tableinfo/tableinfo" target="table_info_window">
-					<input type="hidden" id="infocategory" name="category" />
+				<form id="infoform" name="infoform" method="post" action="/gui/forum/view" target="table_info_window">
+					<input type="hidden" id="infocategory" name="forumid" />
 				</form>	
 			</div>
 		</div>

@@ -140,7 +140,7 @@ function buildExamples(cat) {
 	let info = system_categories[cat];
 	let ul = $("#examplelisting").empty();
 	if(!info) return;
-	$(info.examples).each(function(index,element) {
+	$(info.questions).each(function(index,element) {
 		let li = $('<li>').text(element.question);
 		ul.append(li);
 		li.click(function() { 

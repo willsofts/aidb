@@ -1,0 +1,15 @@
+<% let display = page.isUpdateMode()?"":"fa-hidden"; %>
+		<input type="hidden" id="forumid" name="forumid" value="<%=data.dataset?.forumid%>" />
+		<input type="hidden" id="forumcode" name="forumcode" value="<%=data.dataset?.forumcode%>" />
+		<div class="row row-height">
+			<div class="col-md-12 col-height">
+					<div class="table-layer-class">
+						<div class="row row-height">
+							<div class="col-height col-md-10">
+<label for="forumtitle" id="forumtitle_label" class="control-label"><%=label.get('forumtitle_label','Title')%></label>
+<div class="input-group"><input type="text" id="forumtitle" name="forumtitle" class="form-control input-md irequired alert-input" maxlength="50" value="<%=data.dataset?.forumtitle%>" /><span></span><div class="input-group-required"><label class="required">*</label></div></div><div id="forumtitle_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumtitle_alert','You can not leave this empty')%></div>
+							</div>
+						</div>
+					</div>
+			</div>
+		</div>

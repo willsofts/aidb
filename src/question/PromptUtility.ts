@@ -46,7 +46,6 @@ export class PromptUtility {
         Use the following format:
         
         Question: "Question here"
-        SQLResult: "Result of the SQLQuery"
         Answer: "Final answer here"
                 
         If result not found then return No result.

@@ -7,7 +7,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_MODEL, API_ANSWER } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
-import { KnRecordSet } from "@willsofts/will-sql";
+import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
+import { ForumHandler, ForumConfig } from "../forum/ForumHandler";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -37,11 +38,19 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     protected override validateRequireFields(context: KnContextInfo, model: KnModel, action: string) : Promise<KnValidateInfo> {
-        let vi = this.validateParameters(context.params,"query");
+        return this.validateInputFields(context, model, "query");
+    }
+
+    protected validateInputFields(context: KnContextInfo, model: KnModel, ...fieldname: string[]) : Promise<KnValidateInfo> {
+        let vi = this.validateParameters(context.params,...fieldname);
         if(!vi.valid) {
             return Promise.reject(new VerifyError("Parameter not found ("+vi.info+")",HTTP.NOT_ACCEPTABLE,-16061));
         }
         return Promise.resolve(vi);
+    }
+
+    public async performQuest(context: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        return this.processQuest(context, context.params.query, context.params.category, model);
     }
 
     public override track(context: KnContextInfo, info: KnTrackingInfo): Promise<void> {
@@ -49,10 +58,12 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public async doQuest(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
-        return this.processQuest(context.params.query,context.params.category);
+        await this.validateInputFields(context, model, "query", "category");
+        return this.performQuest(context, model);
     }
 
     public async doAsk(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
+        await this.validateInputFields(context, model, "query");
         return this.processAsk(context.params.query);
     }
 
@@ -66,7 +77,88 @@ export class QuestionHandler extends TknOperateHandler {
         }
     }
 
-    public async processQuest(question: string, category: string = "AIDB") : Promise<InquiryInfo> {
+    public async doEnquiry(sql: string, forum: ForumConfig) : Promise<KnRecordSet> {
+        if(forum.type=="DB") {
+            return this.processEnquiry(sql, forum);
+        }
+        return this.processAPI(sql, forum);
+    }
+
+    public async processEnquiry(sql: string, forum: ForumConfig) : Promise<KnRecordSet> {
+        let db = this.getConnector(forum);
+        try {
+            let handler = new InquiryHandler();
+            return await handler.processEnquiry(sql, db);
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            return Promise.reject(this.getDBError(ex));
+        } finally {
+            if(db) db.close();
+        }
+    }
+
+    public async processQuest(context: KnContextInfo, question: string, category: string, model: KnModel = this.model) : Promise<InquiryInfo> {
+        let info = { error: false, question: question, query: "", answer: "", dataset: [] };
+        if(!question || question.length == 0) {
+            info.error = true;
+            info.answer = "No question found.";
+            return Promise.resolve(info);
+        }
+        const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+        let input = question;
+        let db = this.getPrivateConnector(model);
+        try {
+            let forum = await this.getForumConfig(context,db,category);
+            let table_info = forum.tableinfo;
+            this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
+            this.logger.debug(this.constructor.name+".processQuest: input:",input);
+            this.logger.debug(this.constructor.name+".processQuest: category:",category);
+            //create question prompt with table info
+            let prmutil = new PromptUtility();
+            let prompt = prmutil.createQueryPrompt(input, table_info);
+            let result = await aimodel.generateContent(prompt);
+            let response = result.response;
+            let text = response.text();
+            this.logger.debug(this.constructor.name+".processQuest: response:",text);
+            //try to extract SQL from the response
+            let sql = this.parseAnswer(text,false);
+            this.logger.debug(this.constructor.name+".processQuest: sql:",sql);
+            if(!this.isValidQuery(sql,info)) {
+                return Promise.resolve(info);
+            }
+            info.query = sql;
+            //then run the SQL query
+            let rs = await this.doEnquiry(sql, forum);
+            this.logger.debug(this.constructor.name+".processQuest: rs:",rs);
+            if(rs.records == 0) {
+                info.answer = "Record not found.";
+                return Promise.resolve(info);
+            }
+            info.dataset = rs.rows;
+            if(API_ANSWER) {
+                let datarows = JSON.stringify(rs.rows);
+                this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
+                //create reply prompt from sql and result set
+                prompt = prmutil.createAnswerPrompt(input, datarows, sql, "");
+                result = await aimodel.generateContent(prompt);
+                response = result.response;
+                text = response.text();
+                this.logger.debug(this.constructor.name+".processQuest: response:",text);
+                info.answer = this.parseAnswer(text);
+            }
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            info.error = true;
+            info.answer = this.getDBError(ex).message;
+		} finally {
+			if(db) db.close();
+        }
+        this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
+        return info;
+    }
+
+    public async processQuestion(question: string, category: string = "AIDB", model: KnModel = this.model) : Promise<InquiryInfo> {
+        //old fashion by file system handler
         let info = { error: false, question: question, query: "", answer: "", dataset: [] };
         if(!question || question.length == 0) {
             info.error = true;
@@ -103,6 +195,7 @@ export class QuestionHandler extends TknOperateHandler {
             info.dataset = rs.rows;
             if(API_ANSWER) {
                 let datarows = JSON.stringify(rs.rows);
+                this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
                 //create reply prompt from sql and result set
                 prompt = prmutil.createAnswerPrompt(input, datarows, sql, "");
                 result = await aimodel.generateContent(prompt);
@@ -170,6 +263,57 @@ export class QuestionHandler extends TknOperateHandler {
 
     public getDatabaseSchemaFile(category: string = "") : string {
         return QuestionUtility.getDatabaseSchemaFile(category);
+    }
+
+    public async getForumConfig(context: KnContextInfo,db: KnDBConnector, category: string) : Promise<ForumConfig> {
+        let handler = new ForumHandler();
+        let result = await handler.getForumConfig(context,db,category);
+        if(!result) {
+            return Promise.reject(new VerifyError("Configuration not found",HTTP.NOT_FOUND,-16004));
+        }
+        return result;
+    }
+
+    public async processAPI(sql: string, forum: ForumConfig) : Promise<KnRecordSet> {
+        if(forum.api && forum.api.trim().length>0) {
+            return this.requestAPI(sql, forum);
+        }
+        return Promise.reject(new VerifyError("API setting not found",HTTP.NOT_FOUND,-16004));
+    }
+
+    protected async requestAPI(sql: string, forum: ForumConfig) : Promise<KnRecordSet> {
+        let response;
+        let body = JSON.stringify({ query: sql });
+        let url = forum.api as string;
+        let params = {};
+        try {
+            response = await fetch(url, Object.assign(Object.assign({}, params), { method: "POST", headers: {
+                    "Content-Type": "application/json",
+                }, body }));
+            if (!response.ok) {
+                let msg = "Response error";
+                try {
+                    const json = await response.json();
+                    this.logger.debug(this.constructor.name+".requestAPI: response not ok:",json);
+                    if(json.head.errordesc) {
+                        msg = json.head.errordesc as string;
+                    }
+                } catch (e) { }                
+                this.logger.error(this.constructor.name+".requestAPI: response error:",msg);
+                throw new Error(`[${response.status}] ${msg}`);
+            }
+            try {
+                const json = await response.json();
+                if("Y"==json.head.errorflag || "1"==json.head.errorflag) {
+                    throw new Error(json.head.errordesc as string);
+                }
+                return json.body as KnRecordSet;
+            } catch (e) { }
+        } catch (ex: any) {
+            this.logger.error(this.constructor.name+".requestAPI: error:",ex);
+            return Promise.reject(new VerifyError(ex.message,HTTP.INTERNAL_SERVER_ERROR,-11102));
+        } 
+        return { records: 0, rows: [], columns: [] };       
     }
 
 }

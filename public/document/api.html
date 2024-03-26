@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>API Information</title>
+		<link href="../img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="api.css" />
+	</head>
+<body>
+	<h2>How to Integrate with Query API</h2>
+	<p>In order to send SQL command to API service from the system. 
+	This article describes how to provide query API services. 
+	</p>
+	<h3>Application Registration</h3>
+	<p>
+	Your application needs to trust the security by the system. 
+	First step create your own forum with API url provided. 	
+	</p>
+	<p>
+	The most referenced registration setting are : 
+	</p>
+	<ul>
+		<li><strong>Type</strong> - this type should be API.</li>
+		<li><strong>Dialect</strong> - this value is the database dialect in order to generate query command syntactically.</li>
+		<li><strong>API URL</strong> - this url point to your API service location.</li>
+	</ul>
+	<h3>How to make the Request</h3>
+	<p>
+	Your service need to accept request parameter by POST method : 	
+	</p>
+	<table class="code-table">
+		<tr>
+			<th>Request</th>
+			<th></th>
+		</tr>
+	</table>
+	<pre tabindex="-1">
+	POST with parameters in JSON format {query: "sql-command"}
+	</pre>
+	<table class="code-table">
+		<tr>
+			<th>Example Request</th>
+			<th></th>
+		</tr>
+	</table>
+	</pre>
+	<pre tabindex="-1">
+	curl -X POST -H "Content-Type: application/json" http://localhost:8080/api/inquiry/inquire -d "{\"query\":\"select * from cust_product\"}"
+	</pre>
+	<h3>How to make the Response</h3>
+	<p>
+	The response accept JSON format with the following structure : 	
+	</p>
+	<table class="code-table">
+		<tr>
+			<th>Response</th>
+			<th></th>
+		</tr>
+	</table>
+	<pre tabindex="-1">
+	{
+		"head": {
+			"model": "api-model", 
+			"method": "api-method"
+			"errorcode": "api-error-code"
+			"errorflag": "api-error-flag Y if error or N if no error",
+			"errordesc": "api-error-description"
+		}, 
+		"body": {
+			"records": number of records,
+			"rows": [array of result set],
+			"columns": [array of column schema, this can be null]	
+		}
+	}
+	</pre>
+	<h3>Response Example</h3>
+	<p>Example data in database</p>
+	<table id="exampledatatable" class="table table-bordered">
+		<thead>
+			<tr><th>product_id</th><th>product_name</th><th>product_price</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>PR001</td><td>Casual Shirt</td><td>129.00</td></tr>
+			<tr><td>PR002</td><td>Labour Shirt</td><td>159.00</td></tr>
+			<tr><td>PR003</td><td>Side Seeing Shirt</td><td>139.00</td></tr>
+		</tbody>
+	</table>
+	<table class="code-table">
+		<tr>
+			<th>Example Response</th>
+			<th></th>
+		</tr>
+	</table>
+	<pre tabindex="-1">
+	{
+		"head": {
+			"model": "api", 
+			"method": "inquiry.inquire"
+			"errorcode": "0"
+			"errorflag": "N",
+			"errordesc": ""
+		}, 
+		"body": {
+			"records": 3,
+			"rows": [
+			{
+				"product_id": "PR001",
+				"product_name": "Casual Shirt",
+				"product_price": "129.00"
+			  },
+			  {
+				"product_id": "PR002",
+				"product_name": "Labour Shirt",
+				"product_price": "159.00"
+			  },
+			  {
+				"product_id": "PR003",
+				"product_name": "Side Seeing Shirt",
+				"product_price": "139.00"
+			  }
+			],
+			"columns": null	
+		}
+	}
+	</pre>
+	<p>Example in case of failure</p>
+	<table class="code-table">
+		<tr>
+			<th>Fail Response</th>
+			<th></th>
+		</tr>
+	</table>
+	<pre tabindex="-1">
+	{
+		"head": {
+			"model": "api", 
+			"method": "inquiry.inquire"
+			"errorcode": "-31000"
+			"errorflag": "Y",
+			"errordesc": "Unknown column 'inactive' in 'where clause'"
+		}, 
+		"body": { }
+	}
+	</pre>
+</body>
+</html>
