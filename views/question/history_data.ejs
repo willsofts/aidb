@@ -1,0 +1,39 @@
+<table id="datatable" class="table table-bordered table-hover table-striped tablesorter">
+	<thead>
+		<tr>
+			<th class="text-center th-sequence"><label id="seqno_headerlabel"><%=label.get('seqno_headerlabel','No.')%></label></th>
+			<th class="text-center th-data"><label><%=label.get('chattitle_headerlabel','Messages')%></label></th>
+		</tr>
+	</thead>
+	<tbody id="datatablebody">	
+		<%	let rows = data.dataset?.history;
+			if(rows && rows.length>0) { 
+				for(let index=0; index < rows.length; index++) { 
+					let item = rows[index]; %>
+					<tr class="<%=item?.role%>">
+						<td class="text-center"><%=index+1%></td>
+						<td>
+							<%
+							let parts = item?.parts;
+							if(parts) {
+								for(let i=0; i<parts.length; i++) {
+									let part = parts[i];
+									%>
+<pre><%=part?.text%></pre>
+								<%}
+							}
+							%>
+						</td>
+					</tr>
+		<%		}
+			} else {
+				if(rows) { %>
+				<tr>
+					<td class="text-center" colspan="6">
+						<%=label.get('recordnotfound','Record not found')%>
+					</td>
+				</tr>
+		<%		}
+			}	%>
+	</tbody>
+</table>	

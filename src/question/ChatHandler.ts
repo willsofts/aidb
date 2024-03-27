@@ -1,12 +1,12 @@
-import { KnModel } from "@willsofts/will-db";
-import { KnContextInfo } from "@willsofts/will-core";
+import { KnModel, KnOperation } from "@willsofts/will-db";
+import { KnContextInfo, KnDataTable } from "@willsofts/will-core";
 import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_MODEL, API_ANSWER } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { InquiryInfo, QuestionHandler } from "./QuestionHandler";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
-const chatmap = new Map<String,ChatSession>();
+export const chatmap = new Map<String,ChatSession>();
 
 export class ChatHandler extends QuestionHandler {
 
@@ -15,6 +15,20 @@ export class ChatHandler extends QuestionHandler {
         name: "tchat", 
         alias: { privateAlias: this.section }, 
     };
+    public handlers = [ {name: "quest"}, {name: "ask"}, {name: "history"}, {name: "view"}];
+
+    public async history(context: KnContextInfo) : Promise<InquiryInfo> {
+        return this.callFunctional(context, {operate: "history", raw: false}, this.doHistory);
+    }
+
+    public async doHistory(context: KnContextInfo, model: KnModel) : Promise<any> {
+        await this.validateInputFields(context, model, "query");
+        let query = context.params.query;
+        if(query && query.trim().length>0) {
+            return this.getHistory(context.params.query);
+        }
+        return [];
+    }
 
     public getChatHistory(category: string, table_info: string) {
         let prmutil = new PromptUtility();
@@ -107,12 +121,29 @@ export class ChatHandler extends QuestionHandler {
     }
 
     public sendError(chat: ChatSession, errmsg: string) {
-        let msg = "Question: "+errmsg;
+        let msg = "Error: "+errmsg;
         chat.sendMessage(msg).then((msg: any) => { 
             this.logger.info(this.constructor.name+".sendError",msg); 
         }).catch((ex: any) => { 
             this.logger.error(this.constructor.name+".sendError",ex); 
         });
     }
+
+    public async getHistory(category: string) {
+        let chat = chatmap.get(category);
+        if(chat) {
+            return chat.getHistory();
+        }
+        return Promise.resolve([]);
+    }
+
+    public async getDataView(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
+        let history : any = [];
+        let query = context.params.query;
+        if(query && query.trim().length>0) {
+            history = await this.getHistory(query);
+        }
+        return this.createDataTable(KnOperation.VIEW, {history: history}, {}, "question/history");        
+    }    
 
 }

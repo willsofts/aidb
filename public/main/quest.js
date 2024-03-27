@@ -121,6 +121,7 @@ function buildCategories(categories) {
 		let content = $('<div>').addClass("dropdown-content cat-content");
 		let link1 = $('<a>').attr("href","#0").addClass("info-linker").attr("data-cat",cat).text("Setting");
 		let link2 = $('<a>').attr("href","#0").addClass("info-downloader").attr("data-cat",cat).attr("target","table_info_window").attr("download",catname+"_schema.sql").text("Download");
+		let link3 = $('<a>').attr("href","#0").addClass("info-history").attr("data-cat",cat).text("History");
 		link1.click(function() {
 			let cat = $(this).attr("data-cat");
 			$("#infocategory").val(cat);
@@ -132,7 +133,13 @@ function buildCategories(categories) {
 			let url = "/api/tableinfo/html?category="+cat;
 			$(this).attr("href",url);
 		});
-		content.append(link1).append(link2);
+		link3.click(function() {
+			let cat = $(this).attr("data-cat");
+			$("#historyquery").val(cat);
+			$("#historyform").submit();
+			return false;
+		});
+		content.append(link1).append(link2).append(link3);
 		menu.append(m).append(content);
 		li.append(div).append(menu);
 		ul.append(li);

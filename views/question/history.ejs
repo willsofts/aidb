@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Chat History</title>
+		<%- include('../asset/meta') %>		
+		<%- include('../asset/styles') %>
+		<style nonce="YXNzdXJl">
+			pre { margin: 0px; }
+		</style>		
+	</head>
+	<body class="portalbody portalbody-off">
+		<div id="ptsearchpager" class="pt-page pt-page-current pt-page-controller sfte018-search-pager">
+			<%- page.createHeader({pid: 'chat', title: label.get('caption','Chat History')}) %>
+			<div id="searchpanel" class="panel-body">
+				<div id="listpanel" class="table-responsive fa-list-panel">
+					<%- include('./history_data') %>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

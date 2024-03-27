@@ -205,16 +205,25 @@ export class ForumHandler extends TknOperateHandler {
         return super.performUpdating(context, model, db);
     }
 
-    protected async insertQuestions(context: any, model: KnModel, db: KnDBConnector) : Promise<KnRecordSet> {
-        let result : KnRecordSet = { records: 0, rows: [], columns: []};
-        let forumid = context.params.forumid;
+    protected async performClearing(context: any, model: KnModel, db: KnDBConnector) : Promise<KnResultSet> {
+        await this.deleteQuestions(context, model, db, context.params.forumid);
+        return super.performClearing(context, model, db);
+    }
+
+    protected async deleteQuestions(context: any, model: KnModel, db: KnDBConnector, forumid: string) : Promise<KnResultSet> {
         let knsql = new KnSQL();
         knsql.append("delete from tforumquest where forumid = ?forumid ");
         knsql.set("forumid",forumid);
-        knsql.executeUpdate(db,context);
+        return await knsql.executeUpdate(db,context);
+    }
+
+    protected async insertQuestions(context: any, model: KnModel, db: KnDBConnector) : Promise<KnRecordSet> {
+        let result : KnRecordSet = { records: 0, rows: [], columns: []};
+        let forumid = context.params.forumid;
+        await this.deleteQuestions(context, model, db, forumid);
         let question = context.params["question[]"];
         if(question && Array.isArray(question) && question.length>0) {
-            knsql.clear();
+            let knsql = new KnSQL();
             knsql.append("insert into tforumquest(forumid,questid,question,seqno) values(?forumid,?questid,?question,?seqno) ");
             for(let i=0; i<question.length; i++) {
                 let quest = question[i];

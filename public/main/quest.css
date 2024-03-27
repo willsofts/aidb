@@ -99,3 +99,4 @@ h4.example { color: brown; }
 .fa-hidden { display: none; }
 #addforumlinker { float: right; text-decoration: none; color: brown; padding: 1px 4px; }
 #addforumlinker:hover { color: orange; background-color: #ddd; border-radius: 5px; }
+.info-history { border-top: 1px solid #e0e0e0; }
