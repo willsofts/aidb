@@ -159,11 +159,19 @@ function validSaveForm(callback) {
 function save(aform) {
 	//#(190000) programmer code begin;
 	console.log("fs_requiredfields",fs_requiredfields);
+	$("#forumsetting").parent().removeClass("has-error");
+	$("#forumsetting_alert").hide();
 	//#(190000) programmer code end;
 	if(!aform) aform = fsentryform;
 	if(!validNumericFields(aform)) return false;
 	validSaveForm(function() {
 		//#(195000) programmer code begin;
+		if(!validateForumSettings()) {
+			$("#forumsetting").focus();	
+			$("#forumsetting").parent().addClass("has-error");
+			$("#forumsetting_alert").show();
+			return;
+		}
 		//#(195000) programmer code end;
 		confirmSave(function() {
 			let formdata = serializeDataForm(aform);
@@ -200,11 +208,19 @@ function save(aform) {
 function update(aform) {
 	//#(230000) programmer code begin;
 	console.log("fs_requiredfields",fs_requiredfields);
+	$("#forumsetting").parent().removeClass("has-error");
+	$("#forumsetting_alert").hide();
 	//#(230000) programmer code end;
 	if(!aform) aform = fsentryform;
 	if(!validNumericFields(aform)) return false;
 	validSaveForm(function() {
 		//#(235000) programmer code begin;
+		if(!validateForumSettings()) {
+			$("#forumsetting").focus();
+			$("#forumsetting").parent().addClass("has-error");
+			$("#forumsetting_alert").show();
+			return;
+		}
 		//#(235000) programmer code end;
 		confirmUpdate(function() {
 			let formdata = serializeDataForm(aform);
@@ -530,6 +546,19 @@ function setupInputs() {
 		}
 		console.log("setupInputs: forumdialect.change - cat="+$(this).val()+", fs_requiredfields",fs_requiredfields);
 	}).trigger("change");
+	$("#forumsetting").focus(function() {
+		$(this).parent().removeClass("has-error");
+		$("#forumsetting_alert").hide();
+	});
+}
+function validateForumSettings() {
+	if($("#forumtype").val()=="API" && $.trim($("#forumsetting").val())!="") {
+		try {
+			JSON.parse($("#forumsetting").val());
+		} catch(ex) {
+			return false;
+		}
+	}
+	return true;
 }
 //#(390000) programmer code end;
-

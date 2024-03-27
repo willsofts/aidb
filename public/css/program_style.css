@@ -77,6 +77,9 @@ div.entry-key-layer { padding: 5px; }
 .has-error select {
 	border-color : #A94442;
 }
+.has-error textarea {
+	border-color: #A94442;
+}
 #messagepanellayer { 
 	font-size: 24px; 
 	font-weight: bold; 

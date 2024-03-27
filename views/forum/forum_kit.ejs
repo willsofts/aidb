@@ -37,7 +37,8 @@
 					<div class="row row-height">
 						<div class="col-height col-md-10">
 	<label for="forumsetting" id="forumsetting_label" class="control-label"><%=label.get('forumsetting_label','API Header Setting')%></label>
-	<textarea id="forumsetting" name="forumsetting" class="form-control input-md" rows="2"><%=data.dataset?.forumsetting%></textarea>
+	<div class="input-group"><textarea id="forumsetting" name="forumsetting" class="form-control input-md" rows="2"><%=data.dataset?.forumsetting%></textarea><div class="input-group-required"><label class="required"></label></div></div>
+	<div id="forumsetting_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumsetting_alert','Invalid setting format')%></div>
 	<label id="forumsettinginfo_label"><%=label.get('forumsettinginfo_label','JSON format settings eg. {"key1":"value1","key2":"value2"}')%></label>
 						</div>
 					</div>
