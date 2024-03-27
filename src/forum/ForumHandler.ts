@@ -478,6 +478,18 @@ export class ForumHandler extends TknOperateHandler {
 			if(db) db.close();
         }        
     }
+
+    public async getForumInfo(context: KnContextInfo, forumid: string, model: KnModel = this.model) : Promise<KnRecordSet> {
+        let db = this.getPrivateConnector(model);
+        try {
+            return await this.performRetrieving(context, db, forumid);
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            return Promise.reject(this.getDBError(ex));
+		} finally {
+			if(db) db.close();
+        }
+    }
     
     public async getForumRecord(context: KnContextInfo, db: KnDBConnector, forumid: string, model: KnModel = this.model) : Promise<KnRecordSet> {
         try {

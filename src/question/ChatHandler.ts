@@ -4,6 +4,7 @@ import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_MODEL, API_ANSWER } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { InquiryInfo, QuestionHandler } from "./QuestionHandler";
+import { ForumHandler } from "../forum/ForumHandler";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 export const chatmap = new Map<String,ChatSession>();
@@ -143,7 +144,14 @@ export class ChatHandler extends QuestionHandler {
         if(query && query.trim().length>0) {
             history = await this.getHistory(query);
         }
-        return this.createDataTable(KnOperation.VIEW, {history: history}, {}, "question/history");        
+        let title = "History";
+        let forum = new ForumHandler();
+        let rs = await forum.getForumInfo(context, query);
+        if(rs.rows.length>0) {
+            let row = rs.rows[0];
+            title = row.forumtitle;
+        }
+        return this.createDataTable(KnOperation.VIEW, {title: title, history: history}, {}, "question/history");        
     }    
 
 }

@@ -6,12 +6,14 @@
 		<%- include('../asset/styles') %>
 		<style nonce="YXNzdXJl">
 			pre { margin: 0px; }
+			.topic-title { margin: 0px; }
 		</style>		
 	</head>
 	<body class="portalbody portalbody-off">
 		<div id="ptsearchpager" class="pt-page pt-page-current pt-page-controller sfte018-search-pager">
 			<%- page.createHeader({pid: 'chat', title: label.get('caption','Chat History')}) %>
 			<div id="searchpanel" class="panel-body">
+				<label class="topic-title"><%=data.dataset?.title%></label>
 				<div id="listpanel" class="table-responsive fa-list-panel">
 					<%- include('./history_data') %>
 				</div>
