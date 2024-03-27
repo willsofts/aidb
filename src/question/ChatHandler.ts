@@ -102,10 +102,7 @@ export class ChatHandler extends QuestionHandler {
                 this.logger.error(this.constructor.name,ex);
                 info.error = true;
                 info.answer = this.getDBError(ex).message;
-                let chat = chatmap.get(category);
-                if(chat) {
-                    this.sendError(chat,info.answer);
-                }
+                this.sendError(chat,info.answer);
                 return Promise.resolve(info);
             }
             info.dataset = rs.rows;
