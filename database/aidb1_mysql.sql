@@ -37,12 +37,12 @@ CREATE TABLE IF NOT EXISTS `cust_order` (
   `order_date` date NOT NULL COMMENT 'order date',
   `order_time` time NOT NULL COMMENT 'order time',
   `order_status` varchar(50) DEFAULT NULL,
-  `order_unit` bigint NOT NULL DEFAULT (0) COMMENT 'order unit',
-  `order_amount` decimal(20,2) NOT NULL COMMENT 'order amount',
+  `order_total_unit` bigint NOT NULL DEFAULT (0) COMMENT 'order total unit',
+  `order_total_amount` decimal(20,2) NOT NULL COMMENT 'order total amount',
   PRIMARY KEY (`order_id`,`customer_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep order master';
 
-INSERT INTO `cust_order` (`order_id`, `customer_id`, `order_date`, `order_time`, `order_status`, `order_unit`, `order_amount`) VALUES
+INSERT INTO `cust_order` (`order_id`, `customer_id`, `order_date`, `order_time`, `order_status`, `order_total_unit`, `order_total_amount`) VALUES
 	('ORD-00001', 'CUST-10001', '2024-03-01', '08:43:45', 'CONFIRM', 2, 258.00),
 	('ORD-00002', 'CUST-10002', '2024-03-02', '08:47:45', 'CONFIRM', 3, 417.00),
 	('ORD-00003', 'CUST-10003', '2024-03-03', '08:50:58', 'CONFIRM', 5, 795.00),

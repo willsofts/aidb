@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS `cust_order` (
   `order_date` date NOT NULL COMMENT 'order date',
   `order_time` time NOT NULL COMMENT 'order time',
   `order_status` varchar(50) DEFAULT NULL,
-  `order_unit` bigint NOT NULL DEFAULT (0) COMMENT 'order unit',
-  `order_amount` decimal(20,2) NOT NULL COMMENT 'order amount',
+  `order_total_unit` bigint NOT NULL DEFAULT (0) COMMENT 'order total unit',
+  `order_total_amount` decimal(20,2) NOT NULL COMMENT 'order total amount',
   PRIMARY KEY (`order_id`,`customer_id`) USING BTREE
 ) ENGINE=InnoDB COMMENT='table keep order master';
 
