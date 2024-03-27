@@ -198,6 +198,9 @@ export class ForumHandler extends TknOperateHandler {
     }
 
     protected async performUpdating(context: any, model: KnModel, db: KnDBConnector) : Promise<KnResultSet> {
+        if(context.params.forumport.trim().length==0) {
+            context.params.forumport = Utilities.parseInteger(context.params.forumport,0);
+        } 
         await this.insertQuestions(context, model, db);
         return super.performUpdating(context, model, db);
     }
@@ -354,7 +357,7 @@ export class ForumHandler extends TknOperateHandler {
         this.assignParameters(context,knsql,KnOperation.CREATE,KnOperation.CREATE);
         knsql.set("forumid",record.forumid);
         knsql.set("forumcode",record.forumcode);
-        knsql.set("forumport",context.params.forumport.replaceAll(",",""));
+        knsql.set("forumport",Utilities.parseInteger(context.params.forumport,0));
         knsql.set("createmillis",record.createmillis);
         knsql.set("createdate",record.createdate,"DATE");
         knsql.set("createtime",record.createtime,"TIME");

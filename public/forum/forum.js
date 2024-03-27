@@ -463,31 +463,28 @@ function setupInputs() {
 			$("#dblayer").show();
 			$("#apilayer").hide();
 			delete fs_requiredfields["forumapi"];
-			/*
 			fs_requiredfields["forumurl"] = {msg:"URL is required"};
 			fs_requiredfields["forumuser"] = {msg:"User is required"};
 			fs_requiredfields["forumpassword"] = {msg:"Password is required"};
 			fs_requiredfields["forumdatabase"] = {msg:"Database is required"};
 			fs_requiredfields["forumhost"] = {msg:"Host is required"};
 			fs_requiredfields["forumport"] = {msg:"Port is required"};
-			*/
 			$("#forumdialect").trigger("change");
 		} else if(val == "API") {
 			$("#apilayer").show();
 			$("#dblayer").hide();
-			/*
 			delete fs_requiredfields["forumurl"];
 			delete fs_requiredfields["forumuser"];
 			delete fs_requiredfields["forumpassword"];
 			delete fs_requiredfields["forumdatabase"];
 			delete fs_requiredfields["forumhost"];
 			delete fs_requiredfields["forumport"];
-			*/
 			fs_requiredfields["forumapi"] = {msg : "API is required"};
-			$("#forumdialect").trigger("change");
 		}
+		console.log("setupInputs: forumtype.change - value="+val+", fs_requiredfields",fs_requiredfields);
 	}).trigger("change");
 	$("#forumdialect").change(function() {
+		if($("#forumtype").val()=="API") return;
 		let cat = forum_dialects[$(this).val()];
 		if(cat.providedflag=="1") {
 			$("#providedlayer").show();
@@ -531,6 +528,7 @@ function setupInputs() {
 				fs_requiredfields["forumport"] = {msg:"Port is required"};
 			}
 		}
+		console.log("setupInputs: forumdialect.change - cat="+$(this).val()+", fs_requiredfields",fs_requiredfields);
 	}).trigger("change");
 }
 //#(390000) programmer code end;
