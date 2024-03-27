@@ -1,18 +1,11 @@
 import { v4 as uuid } from 'uuid';
 import { KnModel, KnOperation, KnSetting } from "@willsofts/will-db";
-import { KnDBConnector, KnSQLInterface, KnRecordSet, KnResultSet, KnSQL, KnDBConfig } from "@willsofts/will-sql";
+import { KnDBConnector, KnSQLInterface, KnRecordSet, KnResultSet, KnSQL } from "@willsofts/will-sql";
 import { HTTP } from "@willsofts/will-api";
 import { VerifyError, KnValidateInfo, KnContextInfo, KnDataTable, KnPageUtility, KnDataMapEntitySetting, KnDataSet, KnDataEntity } from '@willsofts/will-core';
 import { Utilities } from "@willsofts/will-util";
 import { TknOperateHandler, OPERATE_HANDLERS } from '@willsofts/will-serv';
-
-export interface ForumConfig extends KnDBConfig {
-    title: string; //dialecttitle
-    type: string; //forumtype
-    tableinfo: string; //forumtable
-    api?: string; //forumapi
-    setting?: string; //forumsetting
-}
+import { ForumConfig } from "../models/QuestionAlias";
 
 export class ForumHandler extends TknOperateHandler {
 

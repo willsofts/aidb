@@ -1,9 +1,11 @@
 import { KnModel, KnOperation } from "@willsofts/will-db";
 import { KnContextInfo, KnDataTable } from "@willsofts/will-core";
+import { KnRecordSet } from "@willsofts/will-sql";
 import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
-import { API_KEY, API_MODEL, API_ANSWER } from "../utils/EnvironmentVariable";
+import { API_KEY, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
-import { InquiryInfo, QuestionHandler } from "./QuestionHandler";
+import { QuestionHandler } from "./QuestionHandler";
+import { InquiryInfo } from "../models/QuestionAlias";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 export const chatmap = new Map<String,ChatSession>();
@@ -88,10 +90,22 @@ export class ChatHandler extends QuestionHandler {
             }
             info.query = sql;
             //then run the SQL query
-            let rs = await this.doEnquiry(sql, forum);
-            this.logger.debug(this.constructor.name+".processQuest: rs:",rs);
-            if(rs.records == 0) {
-                info.answer = "Record not found.";
+            let rs : KnRecordSet = { records: 0, rows: [], columns: [] };
+            try {
+                rs = await this.doEnquiry(sql, forum);
+                this.logger.debug(this.constructor.name+".processQuest: rs:",rs);
+                if(rs.records == 0 && API_ANSWER_RECORD_NOT_FOUND) {
+                    info.answer = "Record not found.";
+                    return Promise.resolve(info);
+                }
+            } catch(ex: any) {
+                this.logger.error(this.constructor.name,ex);
+                info.error = true;
+                info.answer = this.getDBError(ex).message;
+                let chat = chatmap.get(category);
+                if(chat) {
+                    this.sendError(chat,info.answer);
+                }
                 return Promise.resolve(info);
             }
             info.dataset = rs.rows;
@@ -111,10 +125,6 @@ export class ChatHandler extends QuestionHandler {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
             info.answer = this.getDBError(ex).message;
-            let chat = chatmap.get(category);
-            if(chat) {
-                this.sendError(chat,info.answer);
-            }
         }
         this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
         return info;

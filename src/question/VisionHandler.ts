@@ -5,16 +5,11 @@ import { TknOperateHandler } from '@willsofts/will-serv';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_VISION_MODEL } from "../utils/EnvironmentVariable";
 import { QuestionUtility } from "./QuestionUtility";
-import { InquiryInfo } from "./QuestionHandler";
+import { InquiryInfo } from "../models/QuestionAlias";
 import { TknAttachHandler } from "@willsofts/will-core";
 import { KnRecordSet } from "@willsofts/will-sql";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
-
-export interface ImageInfo {
-    image: string;
-    mime: string;
-}
 
 export class VisionHandler extends TknOperateHandler {
 

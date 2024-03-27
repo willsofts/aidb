@@ -1,5 +1,5 @@
 import { QuestionHandler } from "../question/QuestionHandler";
-import { ForumConfig } from "../forum/ForumHandler";
+import { ForumConfig } from "../models/QuestionAlias";
 import { Arguments } from "@willsofts/will-util";
 
 const args = process.argv.slice(2);

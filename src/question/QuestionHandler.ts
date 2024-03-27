@@ -1,24 +1,17 @@
 import { KnModel, KnTrackingInfo } from "@willsofts/will-db";
 import { HTTP } from "@willsofts/will-api";
 import { KnContextInfo, KnValidateInfo, VerifyError } from "@willsofts/will-core";
+import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 import { InquiryHandler } from "./InquiryHandler";
 import { TknOperateHandler } from '@willsofts/will-serv';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_MODEL, API_ANSWER } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
-import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
-import { ForumHandler, ForumConfig } from "../forum/ForumHandler";
+import { InquiryInfo, ForumConfig } from "../models/QuestionAlias";
+import { ForumHandler } from "../forum/ForumHandler";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
-
-export interface InquiryInfo {
-    error: boolean;
-    question: string;
-    query: string;
-    answer: string;
-    dataset: any;
-}
 
 export class QuestionHandler extends TknOperateHandler {
 
