@@ -286,9 +286,16 @@ export class QuestionHandler extends TknOperateHandler {
         let body = JSON.stringify({ query: sql });
         let url = forum.api as string;
         let params = {};
+        let settings = {};
+        if(forum.setting && forum.setting.trim().length>0) {
+            try { 
+                settings = JSON.parse(forum.setting);
+            } catch(ex) { settings = {}; }
+        }
+        this.logger.debug(this.constructor.name+".requestAPI: fetch : url=",url," body=",body," settings=",settings);
         try {
             response = await fetch(url, Object.assign(Object.assign({}, params), { method: "POST", headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json", ...settings
                 }, body }));
             if (!response.ok) {
                 let msg = "Response error";
