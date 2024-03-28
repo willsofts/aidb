@@ -13,6 +13,9 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="main/category.js"></script>
     <script src="main/quest.js"></script>
+	<style>
+		
+	</style>
   </head>
   <body>
 	<div id="headlayer">
@@ -52,7 +55,9 @@
 			<div id="formlayer">
 				<form id="questform" name="questform" action="" onsubmit="return false;">
 					<div id="inputlayer">
-						<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off"></textarea><button id="sendbutton" class="input-ask btn">Send</button>
+						<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off"></textarea>
+						<button id="speechbutton" class="input-ask btn" title="Speech"><img id="blinker" src="img/mic.svg"></button>
+						<button id="sendbutton" class="input-ask btn">Send</button>
 					</div>
 				</form>
 				<form id="infoform" name="infoform" method="post" action="/gui/forum/view" target="table_info_window">

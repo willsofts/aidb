@@ -14,6 +14,7 @@ $(function() {
 	}).focus();
 	$("#clearlinker").click(function() { $("#listmessages").empty(); });
 	$("#addforumlinker").click(function() { window.open("/gui/forum/entry","table_info_window"); });
+	$("#speechbutton").click(function() { try { recognition.start(); } catch(ex) { } return false; });
 	setupCategories();
 	bindingSettings();
 	loadCategories();
@@ -216,3 +217,22 @@ function loadCategories() {
 		}
 	});	
 }
+
+let blinker;
+function blinking() {
+    $('#blinker').fadeOut(500);
+    $('#blinker').fadeIn(500);
+}
+
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+recognition.lang = 'th';
+recognition.onstart = () => {
+	blinker = setInterval(blinking, 1000);
+};
+recognition.onresult = (event) => {
+	const transcript = event.results[0][0].transcript;
+	$("#query").val(transcript);
+};
+recognition.onend = () => {
+	if(blinker) clearInterval(blinker);
+};

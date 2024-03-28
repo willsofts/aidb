@@ -17,7 +17,15 @@ class ChatHistoryHandler extends ChatHandler {
         let query = context.params.query;
         if(query && query.trim().length>0) {
             try {                
-                history = await this.getHistory(query);
+                let found = false;
+                if(context.meta.session) {
+                    let chat = context.meta.session[query];
+                    if(chat && chat._history) {
+                        history = chat._history
+                        found = true;
+                    }
+                }
+                if(!found) history = await this.getHistory(query);
             } catch(ex: any) {
                 this.logger.error(this.constructor.name,ex);
             }
