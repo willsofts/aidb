@@ -36,6 +36,7 @@ function sendQuery(quest) {
 			let err = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-error").text("Error")).append($('<span>').addClass("text text-error").text(errorThrown));
 			$('#listmessages').append(err);
 			$(".input-ask").prop('disabled', false);
+			$('#query').focus();
 		},
 		success: function(data,status,transport) {
 			$("#waitlayer").hide();
@@ -46,6 +47,7 @@ function sendQuery(quest) {
 			}
 			$(".input-ask").prop('disabled', false);
 			questmessages.scrollTo(0,questmessages.scrollHeight);
+			$('#query').focus();
 		}
 	});	
 }

@@ -5,7 +5,7 @@ import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 import { InquiryHandler } from "./InquiryHandler";
 import { TknOperateHandler } from '@willsofts/will-serv';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { API_KEY, API_MODEL, API_ANSWER } from "../utils/EnvironmentVariable";
+import { API_KEY, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
 import { InquiryInfo, ForumConfig } from "../models/QuestionAlias";
@@ -20,7 +20,12 @@ export class QuestionHandler extends TknOperateHandler {
         name: "tquestion", 
         alias: { privateAlias: this.section }, 
     };
-    public handlers = [ {name: "quest"}, {name: "ask"} ];
+
+    public handlers = [ {name: "quest"}, {name: "ask"}, {name: "history"}, {name: "view"}];
+
+    public async history(context: KnContextInfo) : Promise<InquiryInfo> {
+        return this.callFunctional(context, {operate: "history", raw: false}, this.doHistory);
+    }
 
     public async quest(context: KnContextInfo) : Promise<InquiryInfo> {
         return this.callFunctional(context, {operate: "quest", raw: true}, this.doQuest);
@@ -104,8 +109,7 @@ export class QuestionHandler extends TknOperateHandler {
             let forum = await this.getForumConfig(context,db,category);
             let table_info = forum.tableinfo;
             this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
-            this.logger.debug(this.constructor.name+".processQuest: input:",input);
-            this.logger.debug(this.constructor.name+".processQuest: category:",category);
+            this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
             //create question prompt with table info
             let prmutil = new PromptUtility();
             let prompt = prmutil.createQueryPrompt(input, table_info);
@@ -123,7 +127,7 @@ export class QuestionHandler extends TknOperateHandler {
             //then run the SQL query
             let rs = await this.doEnquiry(sql, forum);
             this.logger.debug(this.constructor.name+".processQuest: rs:",rs);
-            if(rs.records == 0) {
+            if(rs.records == 0 && API_ANSWER_RECORD_NOT_FOUND) {
                 info.answer = "Record not found.";
                 return Promise.resolve(info);
             }
@@ -162,8 +166,7 @@ export class QuestionHandler extends TknOperateHandler {
             const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
             let input = question;
             let table_info = this.getDatabaseTableInfo(category);
-            this.logger.debug(this.constructor.name+".processQuest: input:",input);
-            this.logger.debug(this.constructor.name+".processQuest: category:",category);
+            this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
             //create question prompt with table info
             let prmutil = new PromptUtility();
             let prompt = prmutil.createQueryPrompt(input, table_info);
@@ -181,7 +184,7 @@ export class QuestionHandler extends TknOperateHandler {
             //then run the SQL query
             let rs = await this.doInquiry(sql, category);
             this.logger.debug(this.constructor.name+".processQuest: rs:",rs);
-            if(rs.records == 0) {
+            if(rs.records == 0 && API_ANSWER_RECORD_NOT_FOUND) {
                 info.answer = "Record not found.";
                 return Promise.resolve(info);
             }
@@ -316,4 +319,17 @@ export class QuestionHandler extends TknOperateHandler {
         return { records: 0, rows: [], columns: [] };       
     }
 
+    public async getHistory(category: string) : Promise<any[]>{
+        return Promise.resolve([]);
+    }
+
+    public async doHistory(context: KnContextInfo, model: KnModel) : Promise<any> {
+        await this.validateInputFields(context, model, "query");
+        let query = context.params.query;
+        if(query && query.trim().length>0) {
+            return this.getHistory(context.params.query);
+        }
+        return [];
+    }
+    
 }

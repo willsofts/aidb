@@ -6,30 +6,19 @@ import { API_KEY, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../
 import { PromptUtility } from "./PromptUtility";
 import { QuestionHandler } from "./QuestionHandler";
 import { InquiryInfo } from "../models/QuestionAlias";
+import { ChatRepository } from "./ChatRepository";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
-export const chatmap = new Map<String,ChatSession>();
 
 export class ChatHandler extends QuestionHandler {
-
     public progid = "chat";
     public model : KnModel = { 
         name: "tchat", 
         alias: { privateAlias: this.section }, 
     };
-    public handlers = [ {name: "quest"}, {name: "ask"}, {name: "history"}, {name: "view"}];
 
-    public async history(context: KnContextInfo) : Promise<InquiryInfo> {
-        return this.callFunctional(context, {operate: "history", raw: false}, this.doHistory);
-    }
-
-    public async doHistory(context: KnContextInfo, model: KnModel) : Promise<any> {
-        await this.validateInputFields(context, model, "query");
-        let query = context.params.query;
-        if(query && query.trim().length>0) {
-            return this.getHistory(context.params.query);
-        }
-        return [];
+    public static getChatRepository()  {
+        return ChatRepository.getInstance();
     }
 
     public getChatHistory(category: string, table_info: string) {
@@ -58,11 +47,10 @@ export class ChatHandler extends QuestionHandler {
         let input = question;
         let db = this.getPrivateConnector(model);
         try {
+            const chatmap = ChatRepository.getInstance();
             let forum = await this.getForumConfig(context,db,category);
             this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
-            this.logger.debug(this.constructor.name+".processQuest: input:",input);
-            this.logger.debug(this.constructor.name+".processQuest: category:",category);
-            this.logger.debug(this.constructor.name+".processQuest: chatmap.size:",chatmap.size);
+            this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
             let table_info = forum.tableinfo;
             let chat = chatmap.get(category);
             if(!chat) {
@@ -80,8 +68,6 @@ export class ChatHandler extends QuestionHandler {
             let response = result.response;
             let text = response.text();
             this.logger.debug(this.constructor.name+".processQuest: response:",text);
-            let hischat = await chat.getHistory();
-            this.logger.debug(this.constructor.name+".processQuest: history.length:",hischat?hischat.length:0);
             //try to extract SQL from the response
             let sql = this.parseAnswer(text,true);
             this.logger.debug(this.constructor.name+".processQuest: sql:",sql);
@@ -136,8 +122,8 @@ export class ChatHandler extends QuestionHandler {
         });
     }
 
-    public async getHistory(category: string) {
-        let chat = chatmap.get(category);
+    public async getHistory(category: string, map?:  Map<String,ChatSession>) : Promise<any[]>{
+        let chat = map?map.get(category):ChatRepository.getInstance().get(category); 
         if(chat) {
             return chat.getHistory();
         }
