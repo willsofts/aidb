@@ -1,7 +1,10 @@
 const API_URL = "";
 $(function() {
 	$('#questform').submit(function() {
-		if($('#query').val().trim()=="") return false;
+		if($('#query').val().trim()=="") {
+			$('#query').focus();
+			return false;
+		}
 		sendQuery($('#query').val());
 		$('#query').val('');
 		return false;
