@@ -11,6 +11,10 @@ $(function() {
 			$('#questform').trigger("submit");
 			return false;
 		}
+	}).bind("focus",function() { 
+		$("#queryinputlayer").addClass("input-focus");
+	}).bind("blur",function() {
+		$("#queryinputlayer").removeClass("input-focus");
 	}).focus();
 	$("#clearlinker").click(function() { $("#listmessages").empty(); });
 	$("#addforumlinker").click(function() { window.open("/gui/forum/entry","table_info_window"); });

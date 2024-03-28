@@ -14,7 +14,12 @@
     <script src="main/category.js"></script>
     <script src="main/quest.js"></script>
 	<style>
-		
+		textarea:focus, input:focus {
+    		outline: none;
+		}
+		.input-icons:focus-within {
+			background-color: antiquewhite;
+		}
 	</style>
   </head>
   <body>
@@ -55,8 +60,10 @@
 			<div id="formlayer">
 				<form id="questform" name="questform" action="" onsubmit="return false;">
 					<div id="inputlayer">
-						<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off"></textarea>
-						<button id="speechbutton" class="input-ask btn" title="Speech"><img id="blinker" src="img/mic.svg"></button>
+						<div id="queryinputlayer" class="input-normal">
+							<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off"></textarea>
+							<a href="#0" id="speechbutton" class="input-ask btn" title="Speech"><img id="blinker" src="img/mic.svg"></a>
+						</div>
 						<button id="sendbutton" class="input-ask btn">Send</button>
 					</div>
 				</form>
