@@ -21,8 +21,13 @@ $(function() {
 	}).focus();
 	$("#clearlinker").click(function() { $("#listmessages").empty(); });
 	$("#addforumlinker").click(function() { window.open("/gui/forum/entry","table_info_window"); });
-	$("#speechbutton").click(function() { try { recognition.start(); } catch(ex) { } return false; });
+	$("#speechbutton").click(function() { 
+		$("#queryinputlayer").addClass("input-focus");
+		try { recognition.start(); } catch(ex) { } 
+		return false; 
+	});
 	$("#queryspeechlang").click(function() { 
+		$("#queryinputlayer").addClass("input-focus");
 		//try { console.log("recognition.stop ..."); recognition.stop(); } catch(ex) { }
 		if($(this).text() == "EN") {
 			$(this).text("TH");
