@@ -102,7 +102,9 @@ h4.example { color: brown; }
 .info-history { border-top: 1px solid #e0e0e0; }
 /*#speechbutton { width: 45px; padding: 0px; padding-top: 4px; margin-right: 2px; font-size: 1.5rem; color: white; background-color: #6c757d; border-radius: .25rem; }*/
 /*#blinker { -webkit-filter: invert(100%); filter: invert(100%); }*/
-#speechbutton { width: 30px; margin-top: 10px; text-decoration: none; }
+#speechbutton { width: 30px; text-decoration: none; /*margin-top: 10px;*/}
 #queryinputlayer { display: flex; flex-direction: row; width:100%; border-radius: .25rem; margin-right: 2px; }
 .input-normal { background-color: white; border: 2px solid #DDD; }
 .input-focus { background-color: white; border: 2px solid #6c757d; }
+#queryspeechlayer { width: 30px; }
+#queryspeechlang { float:right; font-size: 0.7rem; font-weight: bold; margin-bottom: 4px; padding-right: 2px; color: brown; text-decoration: none; }

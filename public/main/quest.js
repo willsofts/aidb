@@ -22,6 +22,16 @@ $(function() {
 	$("#clearlinker").click(function() { $("#listmessages").empty(); });
 	$("#addforumlinker").click(function() { window.open("/gui/forum/entry","table_info_window"); });
 	$("#speechbutton").click(function() { try { recognition.start(); } catch(ex) { } return false; });
+	$("#queryspeechlang").click(function() { 
+		//try { console.log("recognition.stop ..."); recognition.stop(); } catch(ex) { }
+		if($(this).text() == "EN") {
+			$(this).text("TH");
+			changeRecognitionLanguage("th");
+		} else {
+			$(this).text("EN");
+			changeRecognitionLanguage("en");
+		}
+	});
 	setupCategories();
 	bindingSettings();
 	loadCategories();
@@ -230,16 +240,26 @@ function blinking() {
     $('#blinker').fadeOut(500);
     $('#blinker').fadeIn(500);
 }
-
-const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
-recognition.lang = 'th';
-recognition.onstart = () => {
-	blinker = setInterval(blinking, 1000);
-};
-recognition.onresult = (event) => {
-	const transcript = event.results[0][0].transcript;
-	$("#query").val(transcript);
-};
-recognition.onend = () => {
-	if(blinker) clearInterval(blinker);
-};
+function createRecognition(lang) {
+	if(!lang) lang = 'th';
+	let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+	recognition.lang = lang;
+	recognition.onstart = function() {
+		console.log("recognition start: lang="+recognition.lang);
+		blinker = setInterval(blinking, 1000);
+	};
+	recognition.onresult = function(event) {
+		const transcript = event.results[0][0].transcript;
+		$("#query").val(transcript);
+	};
+	recognition.onend = function() {
+		console.log("recognition end: lang="+recognition.lang);
+		if(blinker) clearInterval(blinker);
+	};
+	return recognition;
+}
+const recognition = createRecognition('th');
+function changeRecognitionLanguage(newLang) {
+    try { console.log("change recognition language : "+newLang); recognition.stop(); } catch(ex) { }
+    recognition.lang = newLang;
+}
