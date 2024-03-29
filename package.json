@@ -29,7 +29,7 @@
     "@willsofts/will-db": "^1.0.48",
     "@willsofts/will-lib": "^1.0.23",
     "@willsofts/will-run": "^1.0.9",
-    "@willsofts/will-serv": "^1.0.23",
+    "@willsofts/will-serv": "^1.0.24",
     "@willsofts/will-sql": "^1.0.28",
     "@willsofts/will-util": "^1.0.14",
     "config": "^3.3.11",
