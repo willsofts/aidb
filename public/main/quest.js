@@ -181,7 +181,7 @@ function buildExamples(cat,categories) {
 		let li = $('<li>').text(element.question);
 		ul.append(li);
 		li.click(function() { 
-			$("#query").val(li.text());
+			$("#query").val(li.text()).focus();
 		});
 	});
 }
