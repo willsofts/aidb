@@ -18,11 +18,8 @@ services:
     user: "node"
     working_dir: /usr/node/app
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - NPM_TOKEN=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
-      - EXPRESS_HTTPS=true
-      - EXPRESS_KEY=./cert/key.pem
-      - EXPRESS_CERT=./cert/cert.pem
     restart: always
     volumes:
       - ./:/usr/node/app
