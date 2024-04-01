@@ -28,14 +28,14 @@
 		<div class="menu dropdown">			
 			<span class="m dropbtn">&#9776;</span>
 			<div class="dropdown-content">
-			  <a href="/ask.html" target="ask_me_window">Ask Me</a>
-			  <a href="/vision.html" target="vision_me_window">Vision Me</a>
+			  <a href="/ask.html" target="ask_me_window" tabindex="-1">Ask Me</a>
+			  <a href="/vision.html" target="vision_me_window" tabindex="-1">Vision Me</a>
 			</div>
 		</div>
 	</div>
 	<div id="bodylayer">
 		<div id="categorylayer">
-			<h4 class="system">System<a href="#0" id="addforumlinker" title="Add Forum">&#10009;</a></h4>
+			<h4 class="system">System<a href="#0" id="addforumlinker" title="Add Forum" tabindex="-1">&#10009;</a></h4>
 			<div id="categorylist">
 				<ul id="categorylisting" class="category-list">
 				</ul>
@@ -46,9 +46,9 @@
 				<div id="questsetting" class="menu dropdown setting-menu">
 					<span class="m dropbtn setting">&#9881;</span>
 					<div class="dropdown-content setting-content">
-						<a href="#0"><input type="checkbox" id="querybox" checked /><label for="querybox">Query<label></label></a>
-						<a href="#0"><input type="checkbox" id="datasetbox" checked /><label for="datasetbox">Data Set</label></a>
-						<a href="#0" id="clearlinker"><span>&#128465;</span><label id="clearlabel">Clear</label></a>
+						<a href="#0" tabindex="-1"><input type="checkbox" id="querybox" checked /><label for="querybox">Query<label></label></a>
+						<a href="#0" tabindex="-1"><input type="checkbox" id="datasetbox" checked /><label for="datasetbox">Data Set</label></a>
+						<a href="#0" id="clearlinker" tabindex="-1"><span>&#128465;</span><label id="clearlabel">Clear</label></a>
 					  </div>
 		  		</div>
 			</div>
@@ -63,8 +63,8 @@
 						<div id="queryinputlayer" class="input-normal">
 							<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off"></textarea>
 							<div id="queryspeechlayer">
-								<a href="#0" id="queryspeechlang">TH</a>
-								<a href="#0" id="speechbutton" class="input-ask btn" title="Speech"><img id="blinker" src="img/mic.svg" ></a>
+								<a href="#0" id="queryspeechlang" tabindex="-1">TH</a>
+								<a href="#0" id="speechbutton" class="input-ask btn" title="Speech" tabindex="-1"><img id="blinker" src="img/mic.svg" ></a>
 							</div>
 						</div>
 						<button id="sendbutton" class="input-ask btn">Send</button>
