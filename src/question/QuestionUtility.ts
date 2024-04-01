@@ -24,12 +24,14 @@ export class QuestionUtility {
         if(hasQuote && ans.endsWith("\"")) {
             ans = ans.substring(0,ans.length-1);
         }
+        let foundsql = false;
         idx = ans.indexOf("```sql");
         if(idx>=0) {
+            foundsql = true;
             ans = ans.substring(idx+6);
         }
         idx = ans.indexOf("```");
-        if(idx>=0) {
+        if(!foundsql && idx>=0) {
             ans = ans.substring(idx+3);
         }
         idx = ans.lastIndexOf("```");

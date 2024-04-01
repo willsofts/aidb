@@ -1,6 +1,6 @@
 import { KnModel, KnOperation } from "@willsofts/will-db";
 import { KnContextInfo, KnDataTable } from "@willsofts/will-core";
-import { KnRecordSet } from "@willsofts/will-sql";
+import { KnDBError, KnRecordSet } from "@willsofts/will-sql";
 import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
@@ -86,10 +86,44 @@ export class ChatHandler extends QuestionHandler {
                 }
             } catch(ex: any) {
                 this.logger.error(this.constructor.name,ex);
-                info.error = true;
-                info.answer = this.getDBError(ex).message;
-                this.sendError(chat,info.answer);
-                return Promise.resolve(info);
+                if(ex instanceof KnDBError) {
+                    //try again
+                    let msg = "Error: "+ex.message;
+                    let result = await chat.sendMessage(msg);
+                    let response = result.response;
+                    let text = response.text();
+                    this.logger.debug(this.constructor.name+".processQuest: catch response:",text);
+                    let sql = this.parseAnswer(text,true);
+                    this.logger.debug(this.constructor.name+".processQuest: catch sql:",sql);
+                    if(!sql || sql.trim().length==0) {
+                        info.error = true;
+                        info.answer = this.getDBError(ex).message;
+                        return Promise.resolve(info);    
+                    }
+                    if(!this.isValidQuery(sql,info)) {
+                        return Promise.resolve(info);
+                    }
+                    info.query = sql;
+                    try {
+                        rs = await this.doEnquiry(sql, forum);
+                        this.logger.debug(this.constructor.name+".processQuest: catch rs:",rs);
+                        if(rs.records == 0 && API_ANSWER_RECORD_NOT_FOUND) {
+                            info.answer = "Record not found.";
+                            return Promise.resolve(info);
+                        }
+                    } catch(exc: any) {
+                        this.logger.error(this.constructor.name,exc);
+                        info.error = true;
+                        info.answer = this.getDBError(exc).message;
+                        this.sendError(chat,info.answer);
+                        return Promise.resolve(info);                    
+                    }
+                } else {
+                    info.error = true;
+                    info.answer = this.getDBError(ex).message;
+                    this.sendError(chat,info.answer);
+                    return Promise.resolve(info);
+                }
             }
             info.dataset = rs.rows;
             if(API_ANSWER) {
