@@ -39,4 +39,4 @@ handler.doEnquiry(sql,cfg).then((rs) => {
     console.error(ex);
 });
 
-//node dist/sql.js -sql "select * from cust_product" -s MYDB -t DB -as mysql2 -d mysql -u root -p root -h localhost -po 3306 -db aidb
+//node dist/query.js -sql "select * from cust_product" -s MYDB -t DB -as mysql2 -d mysql -u root -p root -h localhost -po 3306 -db aidb
