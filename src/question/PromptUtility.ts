@@ -49,6 +49,7 @@ export class PromptUtility {
         Answer: "Final answer here"
                 
         If result not found then return No result.
+        when the question ask about the object, use the object name not object id
         
         Question: ${input}
         SQLResult: ${rs}
