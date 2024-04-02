@@ -8,6 +8,7 @@
       body { margin: 0; padding: 0; font: 13px Helvetica, Arial; font-size: 1rem;}
       #questform { background: rgb(222, 220, 220); padding: 3px; position: fixed; bottom: 0; width: 100%; }
       #questform input { width: 100%; border: 0; padding: 10px; margin-right: .5%; }
+      #questform textarea { width: 100%; border: 0; padding: 10px; margin-right: .5%; }
       #questform button { width: 100px; padding: 10px; } 
 	  #inputlayer { display: flex; flex-direction: row; }
 	  #questlayer { margin-right: 25px; }
@@ -27,6 +28,7 @@
 	  #headlayer { text-align: center; display: flex; flex-direction: row; margin-top: 5px; padding: 5px; font-size: 1.5rem; font-weight: bold; padding-bottom: 0px; }
 	  #headtitle { width: 100%; margin-top: 5px; margin-bottom: 10px; }
 	  input[type=text] { padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
+	  textarea { padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; resize: none; }
 	  #sendbutton { padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; color: white; background-color: #6c757d; border-radius: .25rem; }
 	  #sendbutton:hover { background-color: #5a6268; }
 	  button[disabled]:hover { pointer-events: none; }
@@ -54,7 +56,12 @@
 				$('#query').val('');
 				return false;
 			});
-			$('#query').focus();
+			$('#query').bind("keypress",function(e){
+				if ((e.keyCode || e.which) == 13) {
+					$('#questform').trigger("submit");
+					return false;
+				}
+			}).focus();
 		});
 		function sendQuery(quest) {
 			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
@@ -73,6 +80,7 @@
 					let err = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-error f-left").text("Error")).append($('<span>').addClass("text text-error f-right").text(errorThrown));
 					$('#listmessages').append(err);
 					$(".input-ask").prop('disabled', false);
+					$('#query').focus();
 				},
 				success: function(data,status,transport) {
 					$("#waitlayer").hide();
@@ -82,6 +90,7 @@
 					}
 					$(".input-ask").prop('disabled', false);
 					window.scrollTo(0,questmessages.scrollHeight);
+					$('#query').focus();
 				}
 			});	
 		}
@@ -107,7 +116,9 @@
 		<div id="waitlayer"><img id="waitimg" src="https://cdn.jsdelivr.net/gh/willsofts/will-asset@1.0.0/img/waiting.gif" width="50px" height="50px" alt="" /></div>
 		<form id="questform" name="questform" action="" onsubmit="return false;">
 			<div id="inputlayer">
-				<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" /><button id="sendbutton" class="input-ask btn">Send</button>
+				<!--<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" />-->
+				<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off"></textarea>
+				<button id="sendbutton" class="input-ask btn">Send</button>
 			</div>
 		</form>
 	</div>
