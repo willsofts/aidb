@@ -37,7 +37,9 @@
 						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit" data-key="<%=item?.forumid%>"><%-page.serializeInactive(item?.inactive)%></a></td>
 						<td class="text-center">
 							<button class="btn-edit fa-data-edit" data-key="<%=item?.forumid%>" title="<%=label.get('btnedit_tooltip')%>"></button>
+							<% if(item?.editflag=="1") {%>
 							<button class="btn-delete fa-data-delete" data-key="<%=item?.forumid%>" data-name="<%=item?.forumtitle%>" title="<%=label.get('btndelete_tooltip')%>" ></button>
+							<% } %>
 						</td>
 					</tr>
 		<%		}

@@ -1,3 +1,6 @@
+const ANSWER_PROMPT_INFO = `If result not found then return No result.
+        When the question ask about the object, use the object name not object id.`;
+
 export class PromptUtility {
     public readonly dialect : string = "MySQL";
 
@@ -41,16 +44,16 @@ export class PromptUtility {
         Question: ${input}`;
     }
     
-    public createAnswerPrompt(input: string, rs: string, sql: string, table_info: string, dialect: string = this.dialect) : string {
+    public createAnswerPrompt(input: string, rs: string, prompt_info: string | undefined = undefined) : string {
+        if(!prompt_info || prompt_info.trim().length==0) prompt_info = ANSWER_PROMPT_INFO;
         return `Given an input question, then look at the results of the query and return the answer.
         Use the following format:
         
         Question: "Question here"
         Answer: "Final answer here"
-                
-        If result not found then return No result.
-        when the question ask about the object, use the object name not object id
-        
+               
+        ${prompt_info}
+                        
         Question: ${input}
         SQLResult: ${rs}
         `;

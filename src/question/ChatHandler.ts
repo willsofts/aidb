@@ -131,7 +131,7 @@ export class ChatHandler extends QuestionHandler {
                 this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
                 //create reply prompt from sql and result set
                 let prmutil = new PromptUtility();
-                let prompt = prmutil.createAnswerPrompt(input, datarows, sql, "");
+                let prompt = prmutil.createAnswerPrompt(input, datarows, forum.prompt);
                 result = await aimodel.generateContent(prompt);
                 response = result.response;
                 text = response.text();

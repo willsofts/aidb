@@ -31,6 +31,7 @@ export class ForumHandler extends TknOperateHandler {
             forumsetting: { type: "STRING" },
             forumtable: { type: "STRING" },
             forumremark: { type: "STRING" },
+            forumprompt: { type: "STRING" },
             inactive: { type: "STRING", selected: true, created: false, updated: false, defaultValue: "0" },
             editflag: { type: "STRING", selected: true, created: true, updated: false, defaultValue: "1" },
             createmillis: { type: "BIGINT", selected: true, created: true, updated: true, defaultValue: Utilities.currentTimeMillis() },
@@ -521,7 +522,8 @@ export class ForumHandler extends TknOperateHandler {
                 type: row.forumtype,
                 tableinfo: row.forumtable,
                 api: row.forumapi,
-                setting: row.forumsetting
+                setting: row.forumsetting,
+                prompt: row.forumprompt
             };            
         }
         return result;

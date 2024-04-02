@@ -136,7 +136,7 @@ export class QuestionHandler extends TknOperateHandler {
                 let datarows = JSON.stringify(rs.rows);
                 this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
                 //create reply prompt from sql and result set
-                prompt = prmutil.createAnswerPrompt(input, datarows, sql, "");
+                prompt = prmutil.createAnswerPrompt(input, datarows, forum.prompt);
                 result = await aimodel.generateContent(prompt);
                 response = result.response;
                 text = response.text();
@@ -193,7 +193,7 @@ export class QuestionHandler extends TknOperateHandler {
                 let datarows = JSON.stringify(rs.rows);
                 this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
                 //create reply prompt from sql and result set
-                prompt = prmutil.createAnswerPrompt(input, datarows, sql, "");
+                prompt = prmutil.createAnswerPrompt(input, datarows);
                 result = await aimodel.generateContent(prompt);
                 response = result.response;
                 text = response.text();

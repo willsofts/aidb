@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS `tforum` (
   `forumsetting` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
   `forumtable` text,
   `forumremark` text,
+  `forumprompt` text,
   `inactive` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '0' COMMENT '1=Inactive',
   `createdate` date DEFAULT NULL,
   `createtime` time DEFAULT NULL,

@@ -37,7 +37,7 @@
 					<div class="row row-height">
 						<div class="col-height col-md-10">
 	<label for="forumsetting" id="forumsetting_label" class="control-label"><%=label.get('forumsetting_label','API Header Setting')%></label>
-	<div class="input-group"><textarea id="forumsetting" name="forumsetting" class="form-control input-md" rows="2"><%=data.dataset?.forumsetting%></textarea><div class="input-group-required"><label class="required"></label></div></div>
+	<div class="input-group"><textarea id="forumsetting" name="forumsetting" class="form-control input-md" rows="2"><%=data.dataset?.forumsetting%></textarea><div class="input-group-required"><label class="required">&#160;</label></div></div>
 	<div id="forumsetting_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumsetting_alert','Invalid setting format')%></div>
 	<label id="forumsettinginfo_label"><%=label.get('forumsettinginfo_label','JSON format settings eg. {"key1":"value1","key2":"value2"}')%></label>
 						</div>
@@ -118,7 +118,19 @@
 			<div class="table-layer-class">
 				<div class="row row-height">
 					<div class="col-height col-md-12">
-<label for="forumtable" id="forumtable_label" class="control-label"><%=label.get('forumtable_label','Table Info')%></label>
+<label for="forumprompt" id="forumprompt_label" class="control-label"><%=label.get('forumprompt_label','Answer Prompt Info')%></label>
+<div class="input-group"><textarea id="forumprompt" name="forumprompt" class="form-control input-md" rows="2"><%=data.dataset?.forumprompt%></textarea><div class="input-group-required"><label class="required">&#160;</label></div></div><div id="forumprompt_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumprompt_alert','You can not leave this empty')%></div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-12">
+<label for="forumtable" id="forumtable_label" class="control-label"><%=label.get('forumtable_label','Table Schema Info')%></label>
 <div class="input-group"><textarea id="forumtable" name="forumtable" class="form-control input-md irequired alert-input" rows="15"><%=data.dataset?.forumtable%></textarea><div class="input-group-required"><label class="required">*</label></div></div><div id="forumtable_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumtable_alert','You can not leave this empty')%></div>
 					</div>
 				</div>
