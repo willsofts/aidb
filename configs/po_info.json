@@ -1,0 +1,11 @@
+{  
+	"name": "PO",
+	"file": "po.jpg",
+	"doctype": "POLICY_INFO",
+	"captions": [
+		{ "code": "LBL001", "labels": ["Policy NO.:"] },
+		{ "code": "LBL002", "labels": ["Policy Amount:"] },
+		{ "code": "LBL003", "labels": ["Policy Date:"] },
+		{ "code": "LBL004", "labels": ["Payment Type:"] }
+	]
+}

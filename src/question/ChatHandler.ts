@@ -48,7 +48,7 @@ export class ChatHandler extends QuestionHandler {
         let db = this.getPrivateConnector(model);
         try {
             const chatmap = ChatRepository.getInstance();
-            let forum = await this.getForumConfig(context,db,category);
+            let forum = await this.getForumConfig(db,category,context);
             this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
             this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
             let table_info = forum.tableinfo;
@@ -142,6 +142,8 @@ export class ChatHandler extends QuestionHandler {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
             info.answer = this.getDBError(ex).message;
+		} finally {
+			if(db) db.close();
         }
         this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
         return info;

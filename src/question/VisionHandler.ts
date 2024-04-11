@@ -1,13 +1,13 @@
-import { KnModel, KnTrackingInfo } from "@willsofts/will-db";
+import { KnModel } from "@willsofts/will-db";
 import { HTTP } from "@willsofts/will-api";
 import { KnContextInfo, KnValidateInfo, VerifyError } from "@willsofts/will-core";
 import { TknOperateHandler } from '@willsofts/will-serv';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { API_KEY, API_VISION_MODEL } from "../utils/EnvironmentVariable";
+import { API_KEY, API_VISION_MODEL, ALWAYS_REMOVE_ATTACH } from "../utils/EnvironmentVariable";
 import { QuestionUtility } from "./QuestionUtility";
-import { InquiryInfo } from "../models/QuestionAlias";
+import { InquiryInfo, InlineImage } from "../models/QuestionAlias";
 import { TknAttachHandler } from "@willsofts/will-core";
-import { KnRecordSet } from "@willsofts/will-sql";
+import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -36,12 +36,8 @@ export class VisionHandler extends TknOperateHandler {
         return Promise.resolve(vi);
     }
 
-    public override track(context: KnContextInfo, info: KnTrackingInfo): Promise<void> {
-        return Promise.resolve();
-    }
-
     public async doQuest(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
-        return this.processQuest(context.params.query,context.params.mime,context.params.image);
+        return this.processQuest(context,context.params.query,context.params.mime,context.params.image,model);
     }
 
     public async doAsk(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
@@ -61,7 +57,11 @@ export class VisionHandler extends TknOperateHandler {
         return {valid: true};
     }
 
-    public async processQuest(question: string, mime: string, image: string) : Promise<InquiryInfo> {
+    public async processQuest(context: KnContextInfo, question: string, mime: string, image: string, model: KnModel = this.model) : Promise<InquiryInfo> {
+        return await this.processQuestion(question,mime,image);
+    }
+
+    public async processQuestion(question: string, mime: string, image: string) : Promise<InquiryInfo> {
         let info = { error: false, question: question, query: "", answer: "", dataset: [] };
         let valid = this.validateParameter(question,mime,image);
         if(!valid.valid) {
@@ -73,18 +73,18 @@ export class VisionHandler extends TknOperateHandler {
             const aimodel = genAI.getGenerativeModel({ model: API_VISION_MODEL,  generationConfig: { temperature: 0 }});
             let input = question;
             let image_info = this.getImageInfo(mime,image);
-            this.logger.debug(this.constructor.name+".processQuest: input:",input);
+            this.logger.debug(this.constructor.name+".processQuestion: input:",input);
             let result = await aimodel.generateContent([input, image_info]);
             let response = result.response;
             let text = response.text();
-            this.logger.debug(this.constructor.name+".processQuest: response:",text);
+            this.logger.debug(this.constructor.name+".processQuestion: response:",text);
             info.answer = text;
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
             info.answer = this.getDBError(ex).message;
         }
-        this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
+        this.logger.debug(this.constructor.name+".processQuestion: return:",JSON.stringify(info));
         return info;
     }
 
@@ -105,11 +105,11 @@ export class VisionHandler extends TknOperateHandler {
             }
             const aimodel = genAI.getGenerativeModel({ model: API_VISION_MODEL,  generationConfig: { temperature: 0 }});
             let input = question;
-            this.logger.debug(this.constructor.name+".processQuest: input:",input);
+            this.logger.debug(this.constructor.name+".processAsk: input:",input);
             let result = await aimodel.generateContent([input, image_info]);
             let response = result.response;
             let text = response.text();
-            this.logger.debug(this.constructor.name+".processQuest: response:",text);
+            this.logger.debug(this.constructor.name+".processAsk: response:",text);
             info.answer = text;
             this.deleteAttach(image);
         } catch(ex: any) {
@@ -117,16 +117,18 @@ export class VisionHandler extends TknOperateHandler {
             info.error = true;
             info.answer = this.getDBError(ex).message;
         }
-        this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
+        this.logger.debug(this.constructor.name+".processAsk: return:",JSON.stringify(info));
         return info;
     }
 
     public async deleteAttach(attachId: string) : Promise<void> {
-        this.call("attach.remove",{id: attachId}).catch(ex => this.logger.error(this.constructor.name,ex));
+        if(ALWAYS_REMOVE_ATTACH) {
+            this.call("attach.remove",{id: attachId}).catch(ex => this.logger.error(this.constructor.name,ex));
+        }
     }
 
-    public async getAttachImageInfo(attachId: string) : Promise<any> {
-        let rs = await this.getAttachInfo(attachId);
+    public async getAttachImageInfo(attachId: string, db?: KnDBConnector) : Promise<InlineImage | null> {
+        let rs = await this.getAttachInfo(attachId,db);
         if(rs.rows && rs.rows.length > 0) {
             let row = rs.rows[0];
             let mime = row.mimetype;
@@ -136,9 +138,12 @@ export class VisionHandler extends TknOperateHandler {
         return null;
     }
 
-    public async getAttachInfo(attachId: string) : Promise<KnRecordSet> {
+    public async getAttachInfo(attachId: string, db?: KnDBConnector) : Promise<KnRecordSet> {
         try {
             let handler = new TknAttachHandler();
+            if(db) {
+                return await handler.getAttachRecord(attachId,db);
+            }
             return await handler.getAttachInfo(attachId);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
@@ -146,7 +151,7 @@ export class VisionHandler extends TknOperateHandler {
         }
     }
 
-    public getImageInfo(mime: string, images: string) {
+    public getImageInfo(mime: string, images: string) : InlineImage {
         return {
             inlineData : {
                 mimeType: mime,

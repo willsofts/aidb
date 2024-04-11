@@ -34,10 +34,10 @@ export class ForumHandler extends TknOperateHandler {
             forumprompt: { type: "STRING" },
             inactive: { type: "STRING", selected: true, created: false, updated: false, defaultValue: "0" },
             editflag: { type: "STRING", selected: true, created: true, updated: false, defaultValue: "1" },
-            createmillis: { type: "BIGINT", selected: true, created: true, updated: true, defaultValue: Utilities.currentTimeMillis() },
-            createdate: { type: "DATE", selected: true, created: true, updated: true, defaultValue: Utilities.now() },
-            createtime: { type: "TIME", selected: true, created: true, updated: true, defaultValue: Utilities.now() },
-            createuser: { type: "STRING", selected: false, created: true, updated: true, defaultValue: null },
+            createmillis: { type: "BIGINT", selected: true, created: true, updated: false, defaultValue: Utilities.currentTimeMillis() },
+            createdate: { type: "DATE", selected: true, created: true, updated: false, defaultValue: Utilities.now() },
+            createtime: { type: "TIME", selected: true, created: true, updated: false, defaultValue: Utilities.now() },
+            createuser: { type: "STRING", selected: false, created: true, updated: false, defaultValue: null },
             editmillis: { type: "BIGINT", selected: false, created: true, updated: true, defaultValue: Utilities.currentTimeMillis() },
             editdate: { type: "DATE", selected: false, created: true, updated: true, defaultValue: null },
             edittime: { type: "TIME", selected: false, created: true, updated: true, defaultValue: null },
@@ -242,7 +242,7 @@ export class ForumHandler extends TknOperateHandler {
     protected override async doRetrieving(context: KnContextInfo, model: KnModel, action: string = KnOperation.RETRIEVE): Promise<KnDataTable> {
         let db = this.getPrivateConnector(model);
         try {
-            let rs = await this.performRetrieving(context, db, context.params.forumid);
+            let rs = await this.performRetrieving(db, context.params.forumid, context);
             if(rs.rows.length>0) {
                 let row = this.transformData(rs.rows[0]);
                 row.forumport = row.forumport.toString().replaceAll(",","");
@@ -265,7 +265,7 @@ export class ForumHandler extends TknOperateHandler {
         }
     }
 
-    protected async performRetrieving(context: KnContextInfo, db: KnDBConnector, forumid: string): Promise<KnRecordSet> {
+    protected async performRetrieving(db: KnDBConnector, forumid: string, context?: KnContextInfo): Promise<KnRecordSet> {
         let knsql = new KnSQL();
         knsql.append("select tforum.*,tdialect.dialectalias,tdialect.dialecttitle,dialectoptions ");
         knsql.append("from tforum,tdialect ");
@@ -296,7 +296,7 @@ export class ForumHandler extends TknOperateHandler {
     public override async getDataRetrieval(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
         let db = this.getPrivateConnector(model);
         try {
-            let rs =  await this.performRetrieving(context, db, context.params.forumid);
+            let rs =  await this.performRetrieving(db, context.params.forumid, context);
             if(rs.rows.length>0) {
                 let row = this.transformData(rs.rows[0]);
                 row.forumport = row.forumport.toString().replaceAll(",","");
@@ -451,7 +451,7 @@ export class ForumHandler extends TknOperateHandler {
     protected async doConfiguring(context: KnContextInfo, model: KnModel, action: string = KnOperation.GET) : Promise<ForumConfig> {
         let db = this.getPrivateConnector(model);
         try {
-            let result = await this.getForumConfig(context, db, context.params.forumid);
+            let result = await this.getForumConfig(db, context.params.forumid, context);
             if(result) return result;
             return Promise.reject(new VerifyError("Configuration not found",HTTP.NOT_FOUND,-16004));
         } catch(ex: any) {
@@ -461,6 +461,7 @@ export class ForumHandler extends TknOperateHandler {
 			if(db) db.close();
         }        
     }
+
     protected async doDialecting(context: KnContextInfo, model: KnModel, action: string = KnOperation.GET) : Promise<KnRecordSet> {
         let db = this.getPrivateConnector(model);
         try {
@@ -473,10 +474,10 @@ export class ForumHandler extends TknOperateHandler {
         }        
     }
 
-    public async getForumInfo(context: KnContextInfo, forumid: string, model: KnModel = this.model) : Promise<KnRecordSet> {
+    public async getForumContent(forumid: string, context?: KnContextInfo, model: KnModel = this.model) : Promise<KnRecordSet> {
         let db = this.getPrivateConnector(model);
         try {
-            return await this.performRetrieving(context, db, forumid);
+            return await this.performRetrieving(db, forumid, context);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             return Promise.reject(this.getDBError(ex));
@@ -485,18 +486,18 @@ export class ForumHandler extends TknOperateHandler {
         }
     }
     
-    public async getForumRecord(context: KnContextInfo, db: KnDBConnector, forumid: string, model: KnModel = this.model) : Promise<KnRecordSet> {
+    public async getForumRecord(db: KnDBConnector, forumid: string, context?: KnContextInfo, model: KnModel = this.model) : Promise<KnRecordSet> {
         try {
-            return await this.performRetrieving(context, db, forumid);
+            return await this.performRetrieving(db, forumid, context);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             return Promise.reject(this.getDBError(ex));
         }
     }
 
-    public async getForumConfig(context: KnContextInfo, db: KnDBConnector, forumid: string) : Promise<ForumConfig | undefined> {
+    public async getForumConfig(db: KnDBConnector, forumid: string, context?: KnContextInfo) : Promise<ForumConfig | undefined> {
         let result : ForumConfig | undefined = undefined;
-        let rs = await this.getForumRecord(context, db, forumid);
+        let rs = await this.getForumRecord(db, forumid, context);
         if(rs.rows.length>0) {
             let row = rs.rows[0];
             let dialectoptions = {};

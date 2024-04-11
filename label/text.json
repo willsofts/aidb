@@ -1,0 +1,14 @@
+[
+	{
+		"language": "TH",
+		"label": [
+			{"name": "caption", "value": "Text Setting"}
+		]
+	},
+	{
+		"language": "EN",
+		"label": [
+			{"name": "caption", "value": "Text Setting"}
+		]
+	}
+]

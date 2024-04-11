@@ -113,6 +113,27 @@ INSERT INTO `tforumquest` (`forumid`, `questid`, `question`, `seqno`) VALUES
 	('AIDB2', 'f0938e83-e9b8-11ee-867f-04e8b9b1b867', 'Find out registered trainee\'s name in March,2024', 4),
 	('AIDB2', 'f3dcb55a-e9b8-11ee-867f-04e8b9b1b867', 'Find out top most training days from training schedule', 5);
 
+CREATE TABLE IF NOT EXISTS `ttextconfig` (
+  `docid` varchar(50) NOT NULL,
+  `doctitle` varchar(100) NOT NULL,
+  `docfile` varchar(50) DEFAULT NULL,
+  `inactive` varchar(1) DEFAULT '0' COMMENT '1=Inactive',
+  `captions` text,
+  `createdate` date DEFAULT NULL,
+  `createtime` time DEFAULT NULL,
+  `createmillis` bigint DEFAULT NULL,
+  `createuser` varchar(50) DEFAULT NULL,
+  `editdate` date DEFAULT NULL,
+  `edittime` time DEFAULT NULL,
+  `editmillis` bigint DEFAULT NULL,
+  `edituser` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`docid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table text document configuration';
+
+INSERT INTO `ttextconfig` (`docid`, `doctitle`, `docfile`, `inactive`, `captions`, `createdate`, `createtime`, `createmillis`, `createuser`, `editdate`, `edittime`, `editmillis`, `edituser`) VALUES
+	('CARBOOK', 'Car Book', 'good.jpg', '0', '[\r\n		{ "code": "LBL001", "labels": ["รายการจดทะเบียน"], "type": "title" },\r\n		{ "code": "LBL002", "labels": ["วันจดทะเบียน"] },\r\n		{ "code": "LBL003", "labels": ["เลขทะเบียน"] },\r\n		{ "code": "LBL004", "labels": ["จังหวัด"] },\r\n		{ "code": "LBL005", "labels": ["ประเภท"] },\r\n		{ "code": "LBL006", "labels": ["(รย. 12 )"], "type": "suffix" },\r\n		{ "code": "LBL007", "labels": ["ลักษณะ"] },\r\n		{ "code": "LBL008", "labels": ["ยี่ห้อรถ"] },\r\n		{ "code": "LBL009", "labels": ["แบบ"] },\r\n		{ "code": "LBL010", "labels": ["รุ่นปี ค.ศ."] },\r\n		{ "code": "LBL011", "labels": ["สี"] },\r\n		{ "code": "LBL012", "labels": ["เลขตัวรถ"] },\r\n		{ "code": "LBL013", "labels": ["อยู่ที่","อยู่ที"] },\r\n		{ "code": "LBL014", "labels": ["ยี่ห้อเครื่องยนต์/มอเตอร์"] },\r\n		{ "code": "LBL015", "labels": ["เลขเครื่องยนต์/มอเตอร์"] },\r\n		{ "code": "LBL016", "labels": ["อยู่ที่","อยู่ที"] },\r\n		{ "code": "LBL017", "labels": ["เชื้อเพลิง"] },\r\n		{ "code": "LBL018", "labels": ["เลขถังแก๊ส"] },\r\n		{ "code": "LBL019", "labels": ["จํานวน"] },\r\n		{ "code": "LBL020", "labels": ["สูบ","สบ"] },\r\n		{ "code": "LBL021", "labels": ["ซีซี"], "type": "suffix"},\r\n		{ "code": "LBL022", "labels": ["แรงม้า/กิโลวัตต์"] },\r\n		{ "code": "LBL023", "labels": ["น้ำหนักรถ"] },\r\n		{ "code": "LBL024", "labels": ["น้ำหนักบรรทุก/น้ำหนักลงเพลา"] },\r\n		{ "code": "LBL025", "labels": ["น้ำหนักรวม"] },\r\n		{ "code": "LBL026", "labels": ["ที่นั่ง","ทีนั่ง"] },\r\n		{ "code": "LBL027", "labels": ["กก.","nn.","ทท.",".ทท."], "type": "title" },\r\n		{ "code": "LBL028", "labels": ["คน"], "type": "suffix" },\r\n		{ "code": "LBL029", "labels": ["เจ้าของรถ"], "type": "title" },\r\n		{ "code": "LBL030", "labels": ["ลำาดับที่","ลำดับที่","ลาดับที"] },\r\n		{ "code": "LBL031", "labels": ["วันที่ครอบครองรถ"] },\r\n		{ "code": "LBL032", "labels": ["ผู้ถือกรรมสิทธิ์"] },\r\n		{ "code": "LBL033", "labels": ["เลขที่บัตร"] },\r\n		{ "code": "LBL034", "labels": ["วันเกิด"] },\r\n		{ "code": "LBL035", "labels": ["สัญชาติ","สัญชา"] },\r\n		{ "code": "LBL036", "labels": ["ที่อยู่"], "lines": 2 },\r\n		{ "code": "LBL037", "labels": ["โทร."], "type": "suffix" },\r\n		{ "code": "LBL038", "labels": ["ผู้ครอบครอง"] },\r\n		{ "code": "LBL039", "labels": ["เลขที่บัตร"] },\r\n		{ "code": "LBL040", "labels": ["วันเกิด"] },\r\n		{ "code": "LBL041", "labels": ["สัญชาติ","สัญชา"] },\r\n		{ "code": "LBL042", "labels": ["ที่อยู่"], "lines": 2 },\r\n		{ "code": "LBL043", "labels": ["สัญญาเช่าซื้อเลขที่"] },\r\n		{ "code": "LBL044", "labels": ["ลงวันที","ลงวันที่"] }\r\n	]', '2024-04-10', '09:19:58', 20240410091946, 'tso', '2024-04-10', '09:19:58', 20240410091946, 'tso'),
+	('POLICYINFO', 'Policy Info', 'po.jpg', '0', '[\r\n		{ "code": "LBL001", "labels": ["Policy NO.:"] },\r\n		{ "code": "LBL002", "labels": ["Policy Amount:"] },\r\n		{ "code": "LBL003", "labels": ["Policy Date:"] },\r\n		{ "code": "LBL004", "labels": ["Payment Type:"] }\r\n	]', '2024-04-10', '11:54:56', 1712724896579, NULL, '2024-04-10', '11:54:57', 1712724896581, NULL);
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

@@ -18,3 +18,16 @@ What is the most expensive course name from training schedule
 List all course name and cost from training schedule
 Find out registered trainee's name in March,2024
 Find out top most training days from training schedule
+
+Vision:
+curl -X POST http://localhost:8080/api/vision/ask -d "image=3ed56d2c-ff93-4b41-a9ee-548db3a31b70&query=Extract text from image"
+curl -X POST http://localhost:8080/api/vision/quest -d "query=Extract text from image&image=image-data-base64"
+
+Google Vision API:
+1. Create a service account with the roles your application needs, and a key for that service account, 
+by following the instructions in Creating a service account key.
+2. Set the environment variable GOOGLE_APPLICATION_CREDENTIALS to the path of the JSON file that contains your credentials
+set GOOGLE_APPLICATION_CREDENTIALS=KEY_PATH_TO_JSON_FILE
+ex.
+set GOOGLE_APPLICATION_CREDENTIALS=D:\AI\key\service_account_key.json
+

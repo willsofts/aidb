@@ -21,3 +21,12 @@ export interface ImageInfo {
     image: string;
     mime: string;
 }
+
+export interface InlineData {
+    mimeType: string;
+    data: string;
+}
+
+export interface InlineImage {
+    inlineData: InlineData;
+}

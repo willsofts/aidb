@@ -51,10 +51,6 @@ export class QuestionHandler extends TknOperateHandler {
         return this.processQuest(context, context.params.query, context.params.category, model);
     }
 
-    public override track(context: KnContextInfo, info: KnTrackingInfo): Promise<void> {
-        return Promise.resolve();
-    }
-
     public async doQuest(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
         await this.validateInputFields(context, model, "query", "category");
         return this.performQuest(context, model);
@@ -106,7 +102,7 @@ export class QuestionHandler extends TknOperateHandler {
         let input = question;
         let db = this.getPrivateConnector(model);
         try {
-            let forum = await this.getForumConfig(context,db,category);
+            let forum = await this.getForumConfig(db,category,context);
             let table_info = forum.tableinfo;
             this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
             this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
@@ -261,9 +257,9 @@ export class QuestionHandler extends TknOperateHandler {
         return QuestionUtility.getDatabaseSchemaFile(category);
     }
 
-    public async getForumConfig(context: KnContextInfo,db: KnDBConnector, category: string) : Promise<ForumConfig> {
+    public async getForumConfig(db: KnDBConnector, category: string,context?: KnContextInfo) : Promise<ForumConfig> {
         let handler = new ForumHandler();
-        let result = await handler.getForumConfig(context,db,category);
+        let result = await handler.getForumConfig(db,category,context);
         if(!result) {
             return Promise.reject(new VerifyError("Configuration not found",HTTP.NOT_FOUND,-16004));
         }

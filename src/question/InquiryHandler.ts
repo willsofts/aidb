@@ -7,9 +7,9 @@ import { TknOperateHandler } from '@willsofts/will-serv';
 
 export class InquiryHandler extends TknOperateHandler {
 
-    public progid = "Inquiry";
+    public progid = "inquiry";
     public model : KnModel = { 
-        name: "tquestion", 
+        name: "tinquiry", 
         alias: { privateAlias: this.section }, 
     };
     public handlers = [ {name: "inquire"} ];
