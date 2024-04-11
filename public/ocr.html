@@ -1,0 +1,238 @@
+<!doctype html>
+<html>
+  <head>
+    <title>OCR</title>
+	<link href="/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <style nonce="YXNzdXJl">
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 0; font: 13px Helvetica, Arial; font-size: 1rem; }
+	  #docid { margin-right: 10px; margin-bottom: 5px; min-width: 100px; }
+      #formlayer { background: rgb(222, 220, 220); padding: 5px; position: fixed; bottom: 0; width: 100%; }
+      #questform input { width: 100%; border: 0; padding: 10px; margin-right: .5%; }
+      #questform button { width: 100px; padding: 10px; } 
+	  #inputlayer { display: flex; flex-direction: row; margin-top: 2px; }
+      #uploadform input { width: 100%; border: 0; padding: 10px; margin-right: .5%; cursor: pointer; }
+      #uploadform button { width: 100px; padding: 10px; } 
+	  #uploadlayer { display: flex; flex-direction: row; }
+	  #questlayer { margin-right: 25px; }
+	  #questmessages { overflow: auto; margin-bottom: 10%; }
+      #listmessages { margin: 0; list-style-type: none; }
+      #listmessages li { padding: 5px; }
+      .text-quest { background: ghostwhite; color: black !important; font-weight: bold; }
+      .text-query { background: floralwhite; color: black !important; }
+	  .text-answer { background: whitesmoke; color: black !important;}
+	  .text-error { background-color: #f8d7da; color: black !important;}
+	  .text-success { background-color: #c3e6cb; color: black !important; }
+	  .topic { font-weight: bold; min-width: 80px; padding: 4px; }
+	  .text { padding: 4px; padding-left: 6px; width: 100%; white-space: pre-line; }
+	  .topic-quest { color: brown; }
+	  .topic-answer { color: green; }
+	  .fxc { display: flex; flex-direction: row; }
+	  #headlayer { text-align: center; display: flex; flex-direction: row; margin-top: 5px; padding: 5px; font-size: 1.5rem; font-weight: bold; padding-bottom: 0px; }
+	  #headtitle { width: 100%; margin-top: 5px; margin-bottom: 10px; }
+	  input[type=text] { padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
+	  #sendbutton { padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; color: white; background-color: #6c757d; border-radius: .25rem; }
+	  #sendbutton:hover { background-color: #5a6268; }
+	  button[disabled]:hover { pointer-events: none; }
+	  input[disabled] { background-color: #eee; }
+	  .table-data { border-collapse: collapse; }
+	  .table-data th { background-color: #D3D3D3; }
+	  .table-data th, td { padding: 7px; border: 1px solid #ddd; }	
+	  .table-data > tbody tr:nth-child(odd) { background-color: #f1f0f0; }
+	  .table-responsive { overflow: auto; }
+	  #waitlayer { display: none; text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+	  span.q { color: brown; }
+	  span.a { color: green; }
+	  hr { margin: 5px 0; margin-left: 15px; margin-right: 30px; }
+	  .typed-container { display: inline-block; width: 100%; }
+    </style>	
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script nonce="YXNzdXJl">
+		const API_URL = "";
+		$(function() {
+			$("#filename").change(function() { uploadFile(); });
+			$('#questform').submit(function() {
+				if($.trim($('#query').val())=="") { $('#query').focus(); return false; }
+				if($.trim($("#fileid").val())=="") { $("#filename").click(); return false; }
+				sendQuery($('#query').val());
+				$("#fileid").val('');
+				//$('#query').val('');
+				return false;
+			});
+			$('#query').focus();
+			loadCategories();
+		});
+		function sendQuery(quest) {
+			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
+			$('#listmessages').append(li);
+			$(".input-ask").prop('disabled', true);
+			window.scrollTo(0,questmessages.scrollHeight);
+			$("#waitlayer").show();
+			jQuery.ajax({
+				url: API_URL+"/api/ocr/quest",
+				data: {mime: $("#docid").val(), image: $("#fileid").val(), query: quest},
+				type: "POST",
+				dataType: "html",
+				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				error : function(transport,status,errorThrown) {
+					$("#waitlayer").hide();
+					let err = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-error f-left").text("Error")).append($('<span>').addClass("text text-error f-right").text(errorThrown));
+					$('#listmessages').append(err);
+					$(".input-ask").prop('disabled', false);
+				},
+				success: function(data,status,transport) {
+					$("#waitlayer").hide();
+					let json = $.parseJSON(data);
+					if(json) {
+						displayQueryAnswer(json.query, json.answer, json.error);
+						displayDataSet(json.dataset);
+					}
+					$(".input-ask").prop('disabled', false);
+					window.scrollTo(0,questmessages.scrollHeight);
+				}
+			});	
+		}
+		function displayQueryAnswer(query, answer, error) {
+			let span = $('<span>').addClass("typed-out").attr("style","--n:"+answer.length).text(answer);
+			let txt =  $('<div>').addClass(error?"typed-container text text-error f-right":"typed-container text text-success f-right").append(span);
+			let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("Answer")).append(txt);
+			$('#listmessages').append(ans);
+		}
+		function displayDataSet(data) {
+			if(data && data.length>0) {
+				let dsboxchk = true; //$("#datasetbox").is(":checked");
+				let div = $('<div>').addClass("text text-answer table-responsive");
+				let li = $('<li>').addClass("fxc li-dataset").append($('<span>').addClass("topic topic-answer").text("")).append(div);
+				if(!dsboxchk) li.addClass("fa-hidden");
+				$('#listmessages').append(li);
+				let table = $('<table>').addClass("tables table-data table-bordered");
+				let rowhead = $('<tr>');
+				let columns = ["code","labels","value"]; //data[0];
+				columns.forEach(key => {
+					rowhead.append($('<th>').text(key));
+				});
+				table.append($('<thead>').append(rowhead));
+				let tbody = $('<tbody>');
+				$(data).each(function(index, item) {
+					let tr = $('<tr>');
+					columns.forEach(key => {
+						let v = item[key];
+						if(Array.isArray(v)) {
+							v = v.join(", ");
+						}
+						tr.append($('<td>').text(v));
+					});
+					tbody.append(tr);
+				});
+				table.append(tbody);
+				div.append(table);
+			}
+		}
+		function uploadFile(aform) {
+			if(!aform) aform = uploadform;
+			let fileExtension = ['png', 'jpg', 'jpeg'];
+        	if ($.inArray($("#filename").val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+            	alert("Only image file type are allowed : "+fileExtension.join(', '));
+				return false;
+        	}			
+			$("#fileid").val('');
+			$("#waitlayer").show();
+			let fd = new FormData(aform);
+			jQuery.ajax({
+				url: "/upload/file",
+				type: "POST",
+				dataType: "html",
+				data: fd,
+				enctype: "multipart/form-data",
+				processData: false, 
+				contentType: false, 
+				error : function(transport,status,errorThrown) { 
+					$("#waitlayer").hide();
+					try {
+						let json = $.parseJSON($.trim(data));
+						if(json && json["head"]) {
+							alert(json.head["errordesc"]);
+						}
+						return;
+					} catch(ex) { }
+					alert(errorThrown);
+				},
+				success: function(data,status,transport){ 
+					console.log("response : "+transport.responseText);
+					$("#waitlayer").hide();
+					let json = $.parseJSON($.trim(data));
+					if(json && json["body"]) {
+						let rows = json.body["rows"];
+						if(rows && rows["attachid"]) {
+							$("#fileid").val(rows["attachid"]);
+						}
+					}
+				}
+			});	
+		}
+		function loadCategories() {
+			$("#waitlayer").show();
+			jQuery.ajax({
+				url: API_URL+"/api/text/list",
+				type: "POST",
+				dataType: "html",
+				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				error : function(transport,status,errorThrown) {
+					$("#waitlayer").hide();
+				},
+				success: function(data,status,transport) {
+					$("#waitlayer").hide();
+					let json = $.parseJSON(data);
+					if(json) {
+						if(json.body.dataset) {
+							setupCategories(json.body.dataset);
+						}
+					}
+				}
+			});	
+		}
+		function setupCategories(dataset) {
+			let options = $("#docid");
+			options.empty();
+			$(dataset.rows).each(function(index,item) {
+				options.append($("<option />").val(item["docid"]).text(item["doctitle"]));
+			});
+		}		
+    </script>
+  </head>
+  <body>
+	<div id="headlayer">
+		<div id="headtitle"><span class="q">OCR</span> &amp; <span class="a">Vision</span></div>
+	</div>	
+	<div id="examplequest">
+		<hr/>
+	</div>
+	<div id="questlayer">
+		<div id="questmessages">
+    		<ul id="listmessages"></ul>
+		</div>
+		<div id="waitlayer"><img id="waitimg" src="https://cdn.jsdelivr.net/gh/willsofts/will-asset@1.0.0/img/waiting.gif" width="50px" height="50px" alt="" /></div>
+		<div id="formlayer">
+			<div id="uploadlayer">
+				<select id="docid">
+					<option value="CARBOOK">Car Book</option>
+					<option value="POLICYINFO">Policy Info</option>
+				</select>
+				<form id="uploadform" name="uploadform" action="" onsubmit="return false;">
+					<div id="uploadlayer">
+						<input type="hidden" id="fileid" name="id" />
+						<input type="hidden" id="filetype" name="type" value="VISION" />
+						<input type="file" id="filename" name="filename" class="input input-md input-ask" accept=".png,.jpg,.jpeg"/>
+					</div>
+				</form>
+			</div>
+			<form id="questform" name="questform" action="" onsubmit="return false;">
+				<div id="inputlayer">
+					<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" value="Extract text from image"/>
+					<button id="sendbutton" class="input-ask btn">Send</button>
+				</div>
+			</form>
+		</div>
+	</div>
+  </body>
+</html>
