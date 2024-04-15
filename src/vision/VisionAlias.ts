@@ -66,3 +66,9 @@ export interface TrialInfo {
     posttext: string;
     needed: boolean;
 }
+
+export interface RotateInfo {
+    rotated: boolean;
+    degree: number;
+    buffer?: Buffer;
+}
