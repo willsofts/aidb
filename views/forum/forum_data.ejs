@@ -29,16 +29,16 @@
 			if(rows && rows.length>0) { 
 				for(let index=0; index < rows.length; index++) { 
 					let item = rows[index]; %>
-					<tr>
+					<tr data-key="<%=item?.forumid%>">
 						<td class="text-center"><%=page.recordsNumber(index+1)%></td>
-						<td><a href="javascript:void(0)" class="alink-data fa-data-edit" data-key="<%=item?.forumid%>"><%=item?.forumtitle%></a></td>
-						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit" data-key="<%=item?.forumid%>"><%=page.format({value: item?.createdate, field:{type:"DATE"}})%></a></td>
-						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit" data-key="<%=item?.forumid%>"><%=item?.createtime%></a></td>
-						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit" data-key="<%=item?.forumid%>"><%-page.serializeInactive(item?.inactive)%></a></td>
+						<td><a href="javascript:void(0)" class="alink-data fa-data-edit"><%=item?.forumtitle%></a></td>
+						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit"><%=page.format({value: item?.createdate, field:{type:"DATE"}})%></a></td>
+						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit"><%=item?.createtime%></a></td>
+						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit"><%-page.serializeInactive(item?.inactive)%></a></td>
 						<td class="text-center">
-							<button class="btn-edit fa-data-edit" data-key="<%=item?.forumid%>" title="<%=label.get('btnedit_tooltip')%>"></button>
+							<button class="btn-edit fa-data-edit" title="<%=label.get('btnedit_tooltip')%>"></button>
 							<% if(item?.editflag=="1") {%>
-							<button class="btn-delete fa-data-delete" data-key="<%=item?.forumid%>" data-name="<%=item?.forumtitle%>" title="<%=label.get('btndelete_tooltip')%>" ></button>
+							<button class="btn-delete fa-data-delete" data-name="<%=item?.forumtitle%>" title="<%=label.get('btndelete_tooltip')%>" ></button>
 							<% } %>
 						</td>
 					</tr>

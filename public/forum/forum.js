@@ -456,13 +456,13 @@ function setupDataTable() {
 	$("#datatablebody").find(".fa-data-edit").each(function(index,element) {
 		$(element).click(function() {
 			if($(this).is(":disabled")) return;
-			submitRetrieve(element,$(this).attr("data-key"));
+			submitRetrieve(element,$(this).parent().parent().attr("data-key"));
 		});
 	});
 	$("#datatablebody").find(".fa-data-delete").each(function(index,element) {
 		$(element).click(function() {
 			if($(this).is(":disabled")) return;
-			submitDelete(element,[$(this).attr("data-key"),$(this).attr("data-name")]);
+			submitDelete(element,[$(this).parent().parent().attr("data-key"),$(this).attr("data-name")]);
 		});
 	});
 }
