@@ -45,23 +45,29 @@
 	  span.a { color: green; }
 	  hr { margin: 5px 0; margin-left: 15px; margin-right: 30px; }
 	  .typed-container { display: inline-block; width: 100%; }
+	  #uploadform { flex-grow: 1; margin-right: 5px; }
+	  #uploadinputlayer { display: flex; flex-direction: row; }
+	  #sendbutton { margin-left: auto; min-width: 100px; }
+	  #questformlayer { display: none; }
     </style>	
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script nonce="YXNzdXJl">
 		const API_URL = "";
 		$(function() {
 			$("#filename").change(function() { uploadFile(); });
-			$('#questform').submit(function() {
-				if($.trim($('#query').val())=="") { $('#query').focus(); return false; }
-				if($.trim($("#fileid").val())=="") { $("#filename").click(); return false; }
-				sendQuery($('#query').val());
-				$("#fileid").val('');
-				//$('#query').val('');
-				return false;
-			});
-			$('#query').focus();
+			$('#questform').submit(function() { return submitQuest(); });
+			$('#sendbutton').click(function() { return submitQuest(); });
+			//$('#query').focus();
+			$('#filename').focus();
 			loadCategories();
 		});
+		function submitQuest() {
+			if($.trim($('#query').val())=="") { $('#query').focus(); return false; }
+			if($.trim($("#fileid").val())=="") { $("#filename").click(); return false; }
+			sendQuery($('#query').val());
+			$("#fileid").val('');
+			return false;
+		}
 		function sendQuery(quest) {
 			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
 			$('#listmessages').append(li);
@@ -219,19 +225,21 @@
 					<option value="POLICYINFO">Policy Info</option>
 				</select>
 				<form id="uploadform" name="uploadform" action="" onsubmit="return false;">
-					<div id="uploadlayer">
+					<div id="uploadinputlayer">
 						<input type="hidden" id="fileid" name="id" />
 						<input type="hidden" id="filetype" name="type" value="VISION" />
 						<input type="file" id="filename" name="filename" class="input input-md input-ask" accept=".png,.jpg,.jpeg"/>
 					</div>
 				</form>
+				<button id="sendbutton" class="input-ask btn">Send</button>
 			</div>
-			<form id="questform" name="questform" action="" onsubmit="return false;">
-				<div id="inputlayer">
-					<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" value="Extract text from image"/>
-					<button id="sendbutton" class="input-ask btn">Send</button>
-				</div>
-			</form>
+			<div id="questformlayer">
+				<form id="questform" name="questform" action="" onsubmit="return false;">
+					<div id="inputlayer">
+						<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" value="Extract text from image"/>
+					</div>
+				</form>
+			</div>
 		</div>
 	</div>
   </body>
