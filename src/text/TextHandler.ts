@@ -157,6 +157,15 @@ export class TextHandler extends TknOperateHandler {
             let rs =  await this.performRetrieving(db, context.params.docid, context);
             if(rs.rows.length>0) {
                 let row = this.transformData(rs.rows[0]);
+                row.captionlist = [];
+                let captions = row.captions;
+                if(captions && captions!="") {
+                    try {
+                        row.captionlist = JSON.parse(captions);
+                    } catch(ex: any) {
+                        this.logger.error(this.constructor.name,ex);
+                    }
+                }
                 return this.createDataTable(KnOperation.RETRIEVAL, row, {}, "text/text_dialog");
             }
             return this.recordNotFound();

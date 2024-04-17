@@ -1,0 +1,58 @@
+
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-6">
+<label for="code" id="code_label" class="control-label"><%=label.get('code_label','Code')%></label>
+<div class="input-group"><input type="text" id="code" name="code" class="form-control input-md irequired alert-input"/><div class="input-group-required"><label class="required">*</label></div></div><div id="code_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('code_alert','You can not leave this empty')%></div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-4">
+<label for="type" id="type_label" class="control-label"><%=label.get('type_label','Type')%></label>
+<select id="type" name="type" class="form-control input-md">
+	<option value=""></option>
+	<option value="title">title</option>
+	<option value="prefix">prefix</option>
+	<option value="suffix">suffix</option>
+	<option value="separator">separator</option>
+</select>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-4">
+<label for="lines" id="lines_label" class="control-label"><%=label.get('lines_label','Lines')%></label>
+<input type="number" id="lines" name="lines" class="form-control input-md"/>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-12">
+<label for="labels" id="labels_label" class="control-label"><%=label.get('labels_label','Labels')%></label>
+<a href="#0" id="addlabellinker" class="btn btn-primary btn-md text-right pull-right" title="Add Label" tabindex="-1"><i class="fa fa-plus fa-btn-icon" aria-hidden="true"></i></a>
+<div id="labelslayer">
+</div>						
+<div id="label_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('label_alert','You can not leave this empty')%></div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>

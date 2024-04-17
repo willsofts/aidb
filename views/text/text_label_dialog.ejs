@@ -1,0 +1,24 @@
+<div id="fslabelmodaldialog_layer" class="modal fade pt-page pt-page-item" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-xm">
+		<div class="modal-content portal-area fa-portal-area">
+			<div class="modal-header">
+				<h4 class="modal-title" id="modalheadertitle_new">
+					<%=label.get('modalheadertitle_label_new','New Label')%>
+				</h4>
+				<h4 class="modal-title" id="modalheadertitle_edit">
+					<%=label.get('modalheadertitle_label_edit','Edit Label')%>
+				</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<div id="labelentrydialoglayer" class="entry-dialog-layer">
+			<form id="fsentryformlabel" role="form" data-toggle="validator" name="fsentryformlabel" method="post">
+				<%- include('./text_label_kit') %>
+			</form>	
+			</div>
+			<div class="row-heighter modal-footer" >
+				<input type="button" id="labelokbutton" class="btn btn-dark btn-sm" value="<%=label.get('okbutton','OK')%>"/>
+				<input type="button" id="labelcanceldialogbutton" class="btn btn-dark btn-sm" data-dismiss="modal" value="<%=label.get('canceldialogbutton','Cancel')%>"/>
+			</div>
+		</div>
+	</div>
+</div>

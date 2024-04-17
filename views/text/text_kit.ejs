@@ -1,11 +1,62 @@
 
-<div class="row row-height">
+<div class="row row-height" id="captions_inputlayer">
 	<div class="col-md-12 col-height">
 			<div class="table-layer-class">
 				<div class="row row-height">
 					<div class="col-height col-md-12">
 <label for="captions" id="captions_label" class="control-label"><%=label.get('captions_label','Captions')%></label>
 <div class="input-group"><textarea id="captions" name="captions" class="form-control input-md irequired alert-input" rows="15"><%=data.dataset?.captions%></textarea><div class="input-group-required"><label class="required">*</label></div></div><div id="captions_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('captions_alert','You can not leave this empty or invalid settings')%></div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-12">
+<label id="caption_label" class="control-label"><%=label.get('caption_label','Captions')%></label>
+<a href="#0" id="addcaptionlinker" class="btn btn-primary btn-md text-right pull-right" title="Add Caption" tabindex="-1"><i class="fa fa-plus fa-btn-icon" aria-hidden="true"></i></a>
+<div id="captionslayer">
+	<table id="captiontable" class="table table-bordered table-hover table-striped tablesorter">
+		<thead>
+			<tr>
+				<th class="text-center th-sequence"><label id="seqno_headerlabel"><%=label.get('seqno_headerlabel','No.')%></label></th>
+				<th class="text-center th-data"><label><%=label.get('code_headerlabel','Code')%></label></th>
+				<th class="text-center th-data"><label><%=label.get('labels_headerlabel','Labels')%></label></th>
+				<th class="text-center th-data"><label><%=label.get('type_headerlabel','Type')%></label></th>
+				<th class="text-center th-data"><label><%=label.get('lines_headerlabel','Lines')%></label></th>
+				<th class="text-center th-action"><em class="fa fa-bolt" aria-hidden="true"></em></th>
+			</tr>
+		</thead>
+		<tbody id="captiontablebody">	
+		<%	let captionlist = data.dataset?.captionlist;
+	if(captionlist && captionlist.length>0) { 
+		for(let index=0; index < captionlist.length; index++) { 
+			let item = captionlist[index]; %>
+			<tr data-key="<%=item?.code%>">
+				<td class="text-center"><%=index+1%></td>
+				<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit col-code"><%=item?.code%></a></td>
+				<td><a href="javascript:void(0)" class="alink-data fa-data-edit col-labels"><%=item?.labels.join(' , ')%></a></td>
+				<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit col-type"><%=item?.type%></a></td>
+				<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit col-lines"><%=item?.lines%></a></td>
+				<td class="text-center">
+					<button class="btn-edit fa-data-edit"></button>
+					<button class="btn-delete fa-data-delete"></button>
+				</td>
+				<input type="hidden" class="label-code" value='<%=item?.code%>'/>
+				<input type="hidden" class="label-type" value='<%=item?.type%>'/>
+				<input type="hidden" class="label-lines" value='<%=item?.lines%>'/>
+				<input type="hidden" class="label-labels" value='<%-JSON.stringify(item?.labels)%>'/>
+			</tr>
+		<%}
+	}%>
+		</tbody>
+	</table>
+</div>						
+<div id="caption_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('caption_alert','You can not leave this empty')%></div>
 					</div>
 				</div>
 			</div>

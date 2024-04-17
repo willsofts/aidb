@@ -29,15 +29,15 @@
 			if(rows && rows.length>0) { 
 				for(let index=0; index < rows.length; index++) { 
 					let item = rows[index]; %>
-					<tr>
+					<tr data-key="<%=item?.docid%>">
 						<td class="text-center"><%=page.recordsNumber(index+1)%></td>
-						<td><a href="javascript:void(0)" class="alink-data fa-data-edit" data-key="<%=item?.docid%>"><%=item?.doctitle%></a></td>
-						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit" data-key="<%=item?.docid%>"><%=page.format({value: item?.createdate, field:{type:"DATE"}})%></a></td>
-						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit" data-key="<%=item?.docid%>"><%=item?.createtime%></a></td>
-						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit" data-key="<%=item?.docid%>"><%-page.serializeInactive(item?.inactive)%></a></td>
+						<td><a href="javascript:void(0)" class="alink-data fa-data-edit"><%=item?.doctitle%></a></td>
+						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit"><%=page.format({value: item?.createdate, field:{type:"DATE"}})%></a></td>
+						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit"><%=item?.createtime%></a></td>
+						<td class="text-center"><a href="javascript:void(0)" class="alink-data fa-data-edit"><%-page.serializeInactive(item?.inactive)%></a></td>
 						<td class="text-center">
-							<button class="btn-edit fa-data-edit" data-key="<%=item?.docid%>" title="<%=label.get('btnedit_tooltip')%>"></button>
-							<button class="btn-delete fa-data-delete" data-key="<%=item?.docid%>" data-name="<%=item?.doctitle%>" title="<%=label.get('btndelete_tooltip')%>" ></button>
+							<button class="btn-edit fa-data-edit" title="<%=label.get('btnedit_tooltip')%>"></button>
+							<button class="btn-delete fa-data-delete" data-name="<%=item?.doctitle%>" title="<%=label.get('btndelete_tooltip')%>" ></button>
 						</td>
 					</tr>
 		<%		}

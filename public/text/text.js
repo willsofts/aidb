@@ -15,7 +15,9 @@ function initialApplication() {
 	setupComponents();
 	setupAlertComponents();
 	//#(40000) programmer code begin;
-	setupInputs();
+	$("#addcaptionlinker").click(function() { addNewCaption(); });
+	$("#addlabellinker").click(function() { addNewLabel(); });
+	$("#labeldialogpanel").find(".modal-dialog").draggable();
 	//#(40000) programmer code end;
 }
 function setupComponents() {
@@ -158,7 +160,13 @@ function validSaveForm(callback) {
 }
 function save(aform) {
 	//#(190000) programmer code begin;
-	console.log("fs_requiredfields",fs_requiredfields);
+	fs_requiredfields = {
+		"doctitle":{msg:""},
+		"captions":{msg:""},
+	};
+	$("#caption_alert").hide();
+	let captions = scrapeCaptions();
+	$("#captions").val(JSON.stringify(captions,null,2));
 	//#(190000) programmer code end;
 	if(!aform) aform = fsentryform;
 	if(!validNumericFields(aform)) return false;
@@ -168,6 +176,10 @@ function save(aform) {
 			$("#captions").focus();	
 			$("#captions").parent().addClass("has-error");
 			$("#captions_alert").show();
+			return;
+		}
+		if(captions.length==0) {
+			$("#caption_alert").show();
 			return;
 		}
 		//#(195000) programmer code end;
@@ -205,6 +217,13 @@ function save(aform) {
 }
 function update(aform) {
 	//#(230000) programmer code begin;
+	fs_requiredfields = {
+		"doctitle":{msg:""},
+		"captions":{msg:""},
+	};
+	$("#caption_alert").hide();
+	let captions = scrapeCaptions();
+	$("#captions").val(JSON.stringify(captions,null,2));
 	//#(230000) programmer code end;
 	if(!aform) aform = fsentryform;
 	if(!validNumericFields(aform)) return false;
@@ -214,6 +233,10 @@ function update(aform) {
 			$("#captions").focus();	
 			$("#captions").parent().addClass("has-error");
 			$("#captions_alert").show();
+			return;
+		}
+		if(captions.length==0) {
+			$("#caption_alert").show();
 			return;
 		}
 		//#(235000) programmer code end;
@@ -427,6 +450,21 @@ function setupDialogComponents() {
 	initialApplicationControls($("#dialogpanel"));
 	$("#dialogpanel").find(".modal-dialog").draggable();
 	//#(385000) programmer code begin;
+	$("#captiontablebody").find(".fa-data-edit").each(function(index,element) {
+		$(element).click(function() {
+			if($(this).is(":disabled")) return;
+			editLabel(element,$(this).parent().parent().attr("data-key"));
+			return false;
+		});
+	});
+	$("#captiontablebody").find(".fa-data-delete").each(function(index,element) {
+		$(element).click(function() {
+			if($(this).is(":disabled")) return;
+			deleteLabel(element,$(this).parent().parent().attr("data-key"));
+			return false;
+		});
+	});
+	$("#addcaptionlinker").click(function() { addNewCaption(); });
 	//#(385000) programmer code end;
 }
 var fs_requiredfields = {
@@ -440,13 +478,13 @@ function setupDataTable() {
 	$("#datatablebody").find(".fa-data-edit").each(function(index,element) {
 		$(element).click(function() {
 			if($(this).is(":disabled")) return;
-			submitRetrieve(element,$(this).attr("data-key"));
+			submitRetrieve(element,$(this).parent().parent().attr("data-key"));
 		});
 	});
 	$("#datatablebody").find(".fa-data-delete").each(function(index,element) {
 		$(element).click(function() {
 			if($(this).is(":disabled")) return;
-			submitDelete(element,[$(this).attr("data-key"),$(this).attr("data-name")]);
+			submitDelete(element,[$(this).parent().parent().attr("data-key"),$(this).attr("data-name")]);
 		});
 	});
 }
@@ -459,5 +497,188 @@ function validateCaptions() {
 		}
 	}
 	return true;
+}
+function addNewCaption() {
+	$("#modalheadertitle_new").show();
+	$("#modalheadertitle_edit").hide();
+	$("#code").removeAttr("disabled").val("");
+	$("#type").val("");
+	$("#lines").val("");
+	$("#labelslayer").empty();
+	addNewLabel("");
+	$("#labelokbutton").unbind("click").bind("click",function() { saveNewCaption(); });
+	$("#fslabelmodaldialog_layer").modal("show");
+}
+function editLabel(src,lbcode) {
+	//alert(code);
+	$("#modalheadertitle_new").hide();
+	$("#modalheadertitle_edit").show();
+	let tr = $(src).parent().parent();
+	let code = $("input.label-code",tr).eq(0).val();
+	let type = $("input.label-type",tr).eq(0).val();
+	let lines = $("input.label-lines",tr).eq(0).val();
+	let labels = $("input.label-labels",tr).eq(0).val();
+	$("#code").prop("disabled",true).val(code);
+	$("#type").val(type);
+	$("#lines").val(lines);
+	$("#labelslayer").empty();
+	let labellist = [];
+	try {
+		labellist = JSON.parse(labels);
+	} catch(ex) { }
+	$(labellist).each(function(index,element) {
+		addNewLabel(element);
+	});
+	$("#labelokbutton").unbind("click").bind("click",function() { updateEditCaption(src); });
+	$("#fslabelmodaldialog_layer").modal("show");
+}
+function deleteLabel(src,code) {
+	confirmDelete([code],function() {
+		$(src).parent().parent().remove();
+		setupSequence($("#captiontablebody"));
+	});
+}
+function setupSequence(table) {
+	let index = 1;
+	$(table).find("tr").each(function() {
+		$(this).find("td:first").html(index);
+		index++;
+	});
+}
+function addNewLabel(str) {
+	if(!str) str = "";
+	let div = $('<div class="label-input"></div>');
+	let input = $('<input type="text" name="label" class="form-control input-md input-label"></input>');
+	input.val(str);
+	div.append(input);
+	$("#labelslayer").append(div);
+}
+function scrapeLabels() {
+	let labels = [];
+	$("#labelslayer").find(".input-label").each(function(index,element) {
+		let lbval = $(element).val();
+		if($.trim(lbval)!="") {
+			labels.push(lbval);
+		}
+	});
+	return labels;
+}
+function saveNewCaption() {
+	$("#label_alert").hide();
+	fs_requiredfields = {
+		"code":{msg:""},
+	};
+	validSaveForm(function() {
+		let labellist = scrapeLabels();
+		if(labellist.length==0) {
+			$("#label_alert").show();
+			$("#labelslayer").find(".input-label").eq(0).focus();
+			return false;
+		}
+		let code = $("#code").val();
+		let found = false;
+		$("#captiontablebody").find("input.label-code").each(function(index,element) {
+			if(code==$(element).val()) {
+				found = true;
+				return false;
+			}
+		});
+		if(found) {
+			alertDialog("Code already exists.");
+			return false;
+		}
+		let type = $("#type").val();
+		let lines = $("#lines").val();
+		displayCaption(code,labellist,type,lines);
+		setupSequence($("#captiontablebody"));
+		$("#fslabelmodaldialog_layer").modal("hide");
+		$("#caption_alert").hide();
+	});
+}
+function displayCaption(code,labels,type,lines) {
+	let tr = $("<tr></tr>").attr("data-key",code);
+	let link1 = $('<a href="javascript:void(0)" class="alink-data fa-data-edit col-code"></a>').html(code);
+	let link2 = $('<a href="javascript:void(0)" class="alink-data fa-data-edit col-labels"></a>').html(labels.join(" , "));
+	let link3 = $('<a href="javascript:void(0)" class="alink-data fa-data-edit col-type"></a>').html(type);
+	let link4 = $('<a href="javascript:void(0)" class="alink-data fa-data-edit col-lines"></a>').html(lines);
+	link1.click(function() { editLabel(link1,$(this).parent().attr("data-key")); });
+	link2.click(function() { editLabel(link2,$(this).parent().attr("data-key")); });
+	link3.click(function() { editLabel(link3,$(this).parent().attr("data-key")); });
+	link4.click(function() { editLabel(link4,$(this).parent().attr("data-key")); });
+	let td1 = $("<td></td>").addClass("text-center");
+	let td2 = $("<td></td>").addClass("text-center").append(link1);
+	let td3 = $("<td></td>").append(link2);
+	let td4 = $("<td></td>").addClass("text-center").append(link3);
+	let td5 = $("<td></td>").addClass("text-center").append(link4);
+	let td6 = $("<td></td>").addClass("text-center");
+	let editbtn = $('<button class="btn-edit fa-data-edit"></button>');
+	let delbtn = $('<button class="btn-delete fa-data-delete"></button>');
+	editbtn.click(function() { 
+		editLabel(editbtn,$(this).parent().parent().attr("data-key"));
+		return false;
+	});
+	delbtn.click(function() { 
+		deleteLabel(delbtn,$(this).parent().parent().attr("data-key"));
+		return false;
+	});
+	td6.append(editbtn).append(delbtn);
+	tr.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6);
+	let input1 = $('<input type="hidden" class="label-code"></input>').val(code);
+	let input2 = $('<input type="hidden" class="label-type"></input>').val(type);
+	let input3 = $('<input type="hidden" class="label-lines"></input>').val(lines);
+	let input4 = $('<input type="hidden" class="label-labels"></input>').val(JSON.stringify(labels));
+	tr.append(input1).append(input2).append(input3).append(input4);
+	$("#captiontablebody").append(tr);
+}
+function updateEditCaption(src) {
+	fs_requiredfields = {
+		"code":{msg:""},
+	};
+	validSaveForm(function() {
+		let labellist = scrapeLabels();
+		if(labellist.length==0) {
+			$("#label_alert").show();
+			$("#labelslayer").find(".input-label").eq(0).focus();
+			return false;
+		}
+		let tr = $(src).parent().parent();
+		let code = $("input.label-code",tr).eq(0);
+		let type = $("input.label-type",tr).eq(0);
+		let lines = $("input.label-lines",tr).eq(0);
+		let labels = $("input.label-labels",tr).eq(0);
+		code.val($("#code").val());
+		type.val($("#type").val());
+		lines.val($("#lines").val());
+		labels.val(JSON.stringify(labellist));
+		let link1 = $("a.col-code",tr).eq(0);
+		let link2 = $("a.col-labels",tr).eq(0);
+		let link3 = $("a.col-type",tr).eq(0);
+		let link4 = $("a.col-lines",tr).eq(0);
+		link1.html(code.val());
+		link2.html(labellist.join(" , "));
+		link3.html(type.val());
+		link4.html(lines.val());
+		$("#fslabelmodaldialog_layer").modal("hide");
+	});
+}
+function scrapeCaptions() {
+	let captions = [];
+	$("#captiontablebody").find("tr").each(function(index,element) {
+		let tr = $(element);
+		let code = $("input.label-code",tr).eq(0);
+		let type = $("input.label-type",tr).eq(0);
+		let lines = $("input.label-lines",tr).eq(0);
+		let labels = $("input.label-labels",tr).eq(0);
+		console.log("code=",code.val(),"type=",type.val(),"lines=",lines.val(),"labels=",labels.val());
+		let labellist = [];
+		try {
+			labellist = JSON.parse(labels.val());
+		} catch(ex) { }
+		let item = { code: code.val(), labels: labellist };
+		if($.trim(type.val())!="") item.type = type.val();
+		if($.trim(lines.val())!="" && !isNaN(lines.val())) item.lines = Number(lines.val());
+		captions.push(item);
+	});
+	return captions;
 }
 //#(390000) programmer code end;
