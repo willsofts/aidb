@@ -20,6 +20,7 @@ services:
     environment:
       - NODE_ENV=development
       - NPM_TOKEN=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
+      - GOOGLE_APPLICATION_CREDENTIALS=/usr/node/app/key/service_account_key.json
     restart: always
     volumes:
       - ./:/usr/node/app

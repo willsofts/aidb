@@ -22,6 +22,7 @@ services:
       - EXPRESS_HTTPS=true
       - EXPRESS_KEY=./cert/key.pem
       - EXPRESS_CERT=./cert/cert.pem
+      - GOOGLE_APPLICATION_CREDENTIALS=/usr/node/app/key/service_account_key.json
     restart: always
     volumes:
       - ./:/usr/node/app
