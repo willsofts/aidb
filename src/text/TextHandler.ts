@@ -247,7 +247,7 @@ export class TextHandler extends TknOperateHandler {
         let rs = await this.getTextRecord(db, docid, context);
         if(rs.rows.length>0) {
             let row = rs.rows[0];
-            let captions = {};
+            let captions = [];
             if(row.captions && row.captions!="") {
                 try {
                     captions = JSON.parse(row.captions);
