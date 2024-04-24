@@ -69,4 +69,19 @@ export class PromptUtility {
         Question: ${input}`;
     }
 
+    public createCorrectPrompt(input: string, prompt_info: string|null|undefined = "") : string {
+        if(!prompt_info || prompt_info==null) prompt_info = "";
+        input = input.replace(/\r?\n|\r/g, " ");
+        return `Please correct the following message below and answer in plain text with in format:
+        
+        Message: "Information here"
+        Answer: "An answer in double quotes"
+        
+        In case of Thai message, please answer in Thai message too.
+
+        ${prompt_info}
+
+        Message: ${input}`;
+    }
+
 }

@@ -18,6 +18,14 @@ function initialApplication() {
 	$("#addcaptionlinker").click(function() { addNewCaption(); });
 	$("#addlabellinker").click(function() { addNewLabel(); });
 	$("#labeldialogpanel").find(".modal-dialog").draggable();
+	initialApplicationControls($("#labeldialogpanel"));
+	$("#correct").change(function() {
+		if($(this).is(":checked")) {
+			$("#correctprompt").removeAttr("disabled");
+		} else {
+			$("#correctprompt").attr("disabled","disabled");
+		}
+	});
 	//#(40000) programmer code end;
 }
 function setupComponents() {
@@ -167,6 +175,7 @@ function save(aform) {
 	$("#caption_alert").hide();
 	let captions = scrapeCaptions();
 	$("#captions").val(JSON.stringify(captions,null,2));
+	console.log("captions=",captions);
 	//#(190000) programmer code end;
 	if(!aform) aform = fsentryform;
 	if(!validNumericFields(aform)) return false;
@@ -224,6 +233,7 @@ function update(aform) {
 	$("#caption_alert").hide();
 	let captions = scrapeCaptions();
 	$("#captions").val(JSON.stringify(captions,null,2));
+	console.log("captions=",captions);
 	//#(230000) programmer code end;
 	if(!aform) aform = fsentryform;
 	if(!validNumericFields(aform)) return false;
@@ -504,6 +514,8 @@ function addNewCaption() {
 	$("#code").removeAttr("disabled").val("");
 	$("#type").val("");
 	$("#lines").val("");
+	$("#correct").prop("checked",false);
+	$("#correctprompt").val("");
 	$("#labelslayer").empty();
 	addNewLabel("");
 	$("#labelokbutton").unbind("click").bind("click",function() { saveNewCaption(); });
@@ -517,10 +529,14 @@ function editLabel(src,lbcode) {
 	let code = $("input.label-code",tr).eq(0).val();
 	let type = $("input.label-type",tr).eq(0).val();
 	let lines = $("input.label-lines",tr).eq(0).val();
+	let correct = $("input.label-correct",tr).eq(0).val();
+	let correctprompt = $("input.label-correctprompt",tr).eq(0).val();
 	let labels = $("input.label-labels",tr).eq(0).val();
 	$("#code").prop("disabled",true).val(code);
 	$("#type").val(type);
 	$("#lines").val(lines);
+	$("#correct").prop("checked",correct=="true");
+	$("#correctprompt").val(correctprompt);
 	$("#labelslayer").empty();
 	let labellist = [];
 	try {
@@ -531,6 +547,7 @@ function editLabel(src,lbcode) {
 	});
 	$("#labelokbutton").unbind("click").bind("click",function() { updateEditCaption(src); });
 	$("#fslabelmodaldialog_layer").modal("show");
+	$("#correct").trigger("change");
 }
 function deleteLabel(src,code) {
 	confirmDelete([code],function() {
@@ -589,13 +606,15 @@ function saveNewCaption() {
 		}
 		let type = $("#type").val();
 		let lines = $("#lines").val();
-		displayCaption(code,labellist,type,lines);
+		let correct = $("#correct").is(":checked");
+		let correctprompt = $("#correctprompt").val();
+		displayCaption(code,labellist,type,lines,correct,correctprompt);
 		setupSequence($("#captiontablebody"));
 		$("#fslabelmodaldialog_layer").modal("hide");
 		$("#caption_alert").hide();
 	});
 }
-function displayCaption(code,labels,type,lines) {
+function displayCaption(code,labels,type,lines,correct,correctprompt) {
 	let tr = $("<tr></tr>").attr("data-key",code);
 	let link1 = $('<a href="javascript:void(0)" class="alink-data fa-data-edit col-code"></a>').html(code);
 	let link2 = $('<a href="javascript:void(0)" class="alink-data fa-data-edit col-labels"></a>').html(labels.join(" , "));
@@ -627,7 +646,9 @@ function displayCaption(code,labels,type,lines) {
 	let input2 = $('<input type="hidden" class="label-type"></input>').val(type);
 	let input3 = $('<input type="hidden" class="label-lines"></input>').val(lines);
 	let input4 = $('<input type="hidden" class="label-labels"></input>').val(JSON.stringify(labels));
-	tr.append(input1).append(input2).append(input3).append(input4);
+	let input5 = $('<input type="hidden" class="label-correct"></input>').val(correct);
+	let input6 = $('<input type="hidden" class="label-correctprompt"></input>').val(correctprompt);
+	tr.append(input1).append(input2).append(input3).append(input4).append(input5).append(input6);
 	$("#captiontablebody").append(tr);
 }
 function updateEditCaption(src) {
@@ -646,10 +667,14 @@ function updateEditCaption(src) {
 		let type = $("input.label-type",tr).eq(0);
 		let lines = $("input.label-lines",tr).eq(0);
 		let labels = $("input.label-labels",tr).eq(0);
+		let correct = $("input.label-correct",tr).eq(0);
+		let correctprompt = $("input.label-correctprompt",tr).eq(0);
 		code.val($("#code").val());
 		type.val($("#type").val());
 		lines.val($("#lines").val());
 		labels.val(JSON.stringify(labellist));
+		correct.val($("#correct").is(":checked"));
+		correctprompt.val($("#correctprompt").val());
 		let link1 = $("a.col-code",tr).eq(0);
 		let link2 = $("a.col-labels",tr).eq(0);
 		let link3 = $("a.col-type",tr).eq(0);
@@ -669,12 +694,14 @@ function scrapeCaptions() {
 		let type = $("input.label-type",tr).eq(0);
 		let lines = $("input.label-lines",tr).eq(0);
 		let labels = $("input.label-labels",tr).eq(0);
-		console.log("code=",code.val(),"type=",type.val(),"lines=",lines.val(),"labels=",labels.val());
+		let correct = $("input.label-correct",tr).eq(0);
+		let correctprompt = $("input.label-correctprompt",tr).eq(0);
+		console.log("code=",code.val(),"type=",type.val(),"lines=",lines.val(),"labels=",labels.val()+", correct=",correct.val()+", correctprompt=",correctprompt.val());
 		let labellist = [];
 		try {
 			labellist = JSON.parse(labels.val());
 		} catch(ex) { }
-		let item = { code: code.val(), labels: labellist };
+		let item = { code: code.val(), labels: labellist, correct: "true"==correct.val(), correctPrompt: correctprompt.val()};
 		if($.trim(type.val())!="") item.type = type.val();
 		if($.trim(lines.val())!="" && !isNaN(lines.val())) item.lines = Number(lines.val());
 		captions.push(item);

@@ -48,6 +48,9 @@ export interface LabelInfo {
     type?: string;
     lines?: number;
     value?: string|null;
+    correct?: boolean;
+    correctValue?: string|null;
+    correctPrompt?: string|null;
 }
 
 export interface TextInfo {

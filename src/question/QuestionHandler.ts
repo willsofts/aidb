@@ -1,4 +1,4 @@
-import { KnModel, KnTrackingInfo } from "@willsofts/will-db";
+import { KnModel } from "@willsofts/will-db";
 import { HTTP } from "@willsofts/will-api";
 import { KnContextInfo, KnValidateInfo, VerifyError } from "@willsofts/will-core";
 import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";

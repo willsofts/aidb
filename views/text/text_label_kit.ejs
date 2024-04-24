@@ -35,7 +35,33 @@
 				<div class="row row-height">
 					<div class="col-height col-md-4">
 <label for="lines" id="lines_label" class="control-label"><%=label.get('lines_label','Lines')%></label>
-<input type="number" id="lines" name="lines" class="form-control input-md"/>
+<input type="number" id="lines" name="lines" class="form-control input-md iint"/>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-6">
+<div class="checkbox form-check">
+	<input type="checkbox" id="correct" name="correct" class="form-control input-md form-check-input" value="1" />
+	<label for="correct" id="correct_label" class="control-label form-check-label"><%=label.get('correct_label','Correct Captured Value')%></label>
+</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-12">
+<label for="correctprompt" id="correctprompt_label" class="control-label"><%=label.get('correctprompt_label','Correct Prompt Info')%></label>
+<div class="input-group"><textarea id="correctprompt" name="correctprompt" class="form-control input-md" rows="2"></textarea><div class="input-group-required"><label class="required">&#160;</label></div></div><div id="correctprompt_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('correctprompt_alert','You can not leave this empty')%></div>
 					</div>
 				</div>
 			</div>

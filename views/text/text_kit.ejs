@@ -50,6 +50,8 @@
 				<input type="hidden" class="label-type" value='<%=item?.type%>'/>
 				<input type="hidden" class="label-lines" value='<%=item?.lines%>'/>
 				<input type="hidden" class="label-labels" value='<%-JSON.stringify(item?.labels)%>'/>
+				<input type="hidden" class="label-correct" value='<%=item?.correct%>'/>
+				<input type="hidden" class="label-correctprompt" value='<%=item?.correctPrompt%>'/>
 			</tr>
 		<%}
 	}%>

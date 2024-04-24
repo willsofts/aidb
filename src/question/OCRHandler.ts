@@ -7,8 +7,14 @@ import { VisionHandler } from "./VisionHandler";
 import { TextHandler } from "../text/TextHandler";
 import { GoogleVision } from "../vision/GoogleVision";
 import { VisionLabel } from "../vision/VisionLabel";
-import { TextInfo } from "../vision/VisionAlias";
+import { TextInfo, LabelInfo } from "../vision/VisionAlias";
 import { VisionRotate } from "../vision/VisionRotate";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
+import { PromptUtility } from "./PromptUtility";
+import { QuestionUtility } from "./QuestionUtility";
+
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 export class OCRHandler extends VisionHandler {
 
@@ -61,6 +67,8 @@ export class OCRHandler extends VisionHandler {
                     let labeler = new VisionLabel();
                     let labelInfo = labeler.labelInlines(inlines, setting.captions);
                     console.log("label info:",labelInfo);
+                    await this.processCorrect(labelInfo);
+                    console.log("correct info:",labelInfo);
                     info.dataset = labelInfo;
                 }
             }
@@ -103,6 +111,8 @@ export class OCRHandler extends VisionHandler {
                 let labeler = new VisionLabel();
                 let labelInfo = labeler.labelInlines(inlines, setting.captions);
                 console.log("label info:",labelInfo);
+                await this.processCorrect(labelInfo);
+                console.log("correct info:",labelInfo);
                 info.dataset = labelInfo;
             }
         } catch(ex: any) {
@@ -123,6 +133,27 @@ export class OCRHandler extends VisionHandler {
             return Promise.reject(new VerifyError("Configuration not found",HTTP.NOT_FOUND,-16004));
         }
         return result;
+    }
+
+    public async processCorrect(labelInfo: LabelInfo[]) : Promise<LabelInfo[]> {
+        const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+        let prmutil = new PromptUtility();
+        for(let label of labelInfo) {
+            if(label.correct && label.value) {
+                let prompt = prmutil.createCorrectPrompt(label.value, label.correctPrompt);
+                this.logger.debug(this.constructor.name+".processCorrect: prompt:",prompt);
+                let result = await aimodel.generateContent(prompt);
+                let response = result.response;
+                let text = response.text();
+                this.logger.debug(this.constructor.name+".processCorrect: response:",text);
+                label.correctValue = this.parseAnswer(text);                
+            }
+        }
+        return Promise.resolve(labelInfo);
+    }
+
+    public parseAnswer(answer: string, defaultAnswer: boolean = true) : string {
+        return QuestionUtility.parseAnswer(answer, defaultAnswer);
     }
 
 }

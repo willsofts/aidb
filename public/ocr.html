@@ -124,11 +124,12 @@
 				$('#listmessages').append(li);
 				let table = $('<table>').addClass("tables table-data table-bordered");
 				let rowhead = $('<tr>');
-				let columns = ["code","labels","value"]; //data[0];
+				let columns = ["Code","Labels","Value","Correct Value"]; //data[0];
 				columns.forEach(key => {
 					rowhead.append($('<th>').text(key));
 				});
 				table.append($('<thead>').append(rowhead));
+				columns = ["code","labels","value","correctValue"];
 				let tbody = $('<tbody>');
 				$(data).each(function(index, item) {
 					let tr = $('<tr>');
