@@ -33,6 +33,8 @@ export class OCRHandler extends VisionHandler {
             info.answer = "No "+valid.info+" found.";
             return Promise.resolve(info);
         }
+        let isRotate = context.params.rotate=="true";
+        console.log("isRotate:",isRotate);
         let db = this.getPrivateConnector(model);
         try {
             let image_info = await this.getAttachImageInfo(image,db);
@@ -50,10 +52,12 @@ export class OCRHandler extends VisionHandler {
                 let degree = vision.getAngleDegree(linears);
                 console.log("linears:",linears.length);
                 console.log("degree:",degree);
-                let rotate = new VisionRotate();
-                let rotateInfo = await rotate.rotate(buffer,degree);
-                if(rotateInfo.rotated && rotateInfo.buffer) {
-                    pageInfo = await vision.getPages(rotateInfo.buffer);
+                if(isRotate) {
+                    let rotate = new VisionRotate();
+                    let rotateInfo = await rotate.rotate(buffer,degree);
+                    if(rotateInfo.rotated && rotateInfo.buffer) {
+                        pageInfo = await vision.getPages(rotateInfo.buffer);
+                    }
                 }
                 if(pageInfo) {
                     console.log("texts:",pageInfo.text);

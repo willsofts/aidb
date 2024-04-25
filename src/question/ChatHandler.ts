@@ -180,4 +180,16 @@ export class ChatHandler extends QuestionHandler {
         return this.createDataTable(KnOperation.VIEW, {title: title, history: history}, {}, "question/history");        
     }    
 
+    public override async processReset(category: string) : Promise<InquiryInfo> {
+        this.logger.debug(this.constructor.name+".processReset: category:",category);
+        const chatmap = ChatRepository.getInstance();
+        let chat = chatmap.get(category);
+        if(!chat) {
+            return Promise.resolve({ error: false, question: category, query: "reset", answer: "Not found", dataset: [] });
+        }
+        chatmap.remove(category);
+        this.logger.debug(this.constructor.name+".processReset: remove category:",category);
+        return Promise.resolve({ error: false, question: category, query: "reset", answer: "OK", dataset: [] });
+    }
+
 }

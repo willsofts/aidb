@@ -19,6 +19,9 @@ export class ChatRepository {
     public set(category: string, chat: ChatSession) {
         this.chatmap.set(category, chat);
     }
+    public remove(category: string) {
+        this.chatmap.delete(category);
+    }
     public size() : number {
         return this.chatmap.size;
     }

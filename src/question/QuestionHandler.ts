@@ -21,7 +21,7 @@ export class QuestionHandler extends TknOperateHandler {
         alias: { privateAlias: this.section }, 
     };
 
-    public handlers = [ {name: "quest"}, {name: "ask"}, {name: "history"}, {name: "view"}];
+    public handlers = [ {name: "quest"}, {name: "ask"}, {name: "history"}, {name: "view"}, {name: "reset"}];
 
     public async history(context: KnContextInfo) : Promise<InquiryInfo> {
         return this.callFunctional(context, {operate: "history", raw: false}, this.doHistory);
@@ -33,6 +33,10 @@ export class QuestionHandler extends TknOperateHandler {
 
     public async ask(context: KnContextInfo) : Promise<InquiryInfo> {
         return this.callFunctional(context, {operate: "ask", raw: true}, this.doAsk);
+    }
+
+    public async reset(context: KnContextInfo) : Promise<InquiryInfo> {
+        return this.callFunctional(context, {operate: "reset", raw: true}, this.doReset);
     }
 
     protected override validateRequireFields(context: KnContextInfo, model: KnModel, action: string) : Promise<KnValidateInfo> {
@@ -59,6 +63,11 @@ export class QuestionHandler extends TknOperateHandler {
     public async doAsk(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
         await this.validateInputFields(context, model, "query");
         return this.processAsk(context.params.query);
+    }
+
+    public async doReset(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
+        await this.validateInputFields(context, model, "category");
+        return this.processReset(context.params.category);
     }
 
     public async doInquiry(sql: string, section: string = this.section) : Promise<KnRecordSet> {
@@ -229,6 +238,10 @@ export class QuestionHandler extends TknOperateHandler {
         }
         this.logger.debug(this.constructor.name+".processAsk: return:",JSON.stringify(info));
         return info;
+    }
+
+    public async processReset(category: string) : Promise<InquiryInfo> {
+        return Promise.resolve({ error: false, question: "reset", query: category, answer: "OK", dataset: [] });
     }
 
     public isValidQuery(sql: string, info: InquiryInfo) : boolean {

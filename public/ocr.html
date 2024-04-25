@@ -55,7 +55,7 @@
 	  .menu { float: right; }
 	  .dropbtn { padding: 5px 10px; border: none; border-radius: 5px; }
 	  .dropdown { position: relative; display: inline-block; font-size: 1rem; }
-	  .dropdown-content { display: none; position: absolute; right: 0; top: 25px; background-color: #f1f1f1; min-width: 120px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
+	  .dropdown-content { display: none; position: absolute; right: 0; top: 25px; background-color: #f1f1f1; min-width: 155px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
 	  .dropdown-content a { color: black; padding: 12px 16px; text-decoration: none; display: block; text-align: left; }
 	  .dropdown-content a:hover { background-color: #ddd; }
 	  .dropdown:hover .dropdown-content { display: block; }
@@ -87,7 +87,7 @@
 			$("#waitlayer").show();
 			jQuery.ajax({
 				url: API_URL+"/api/ocr/quest",
-				data: {mime: $("#docid").val(), image: $("#fileid").val(), query: quest},
+				data: {rotate: $("#rotateverify").is(":checked"), mime: $("#docid").val(), image: $("#fileid").val(), query: quest},
 				type: "POST",
 				dataType: "html",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -225,6 +225,7 @@
 			<span class="m dropbtn">&#9776;</span>
 			<div class="dropdown-content">
 			  <a href="/gui/text" target="text_settings_window" tabindex="-1">Settings</a>
+			  <a href="javascript:void(0)" id="rotatelinker" tabindex="-1"><label><input type="checkbox" id="rotateverify" checked>Rotate Verify</label></a>
 			</div>
 		</div>
 	</div>	

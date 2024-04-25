@@ -147,6 +147,7 @@ function buildCategories(categories) {
 		let link1 = $('<a>').attr("href","#0").addClass("info-linker").attr("data-cat",cat).text("Setting");
 		let link2 = $('<a>').attr("href","#0").addClass("info-downloader").attr("data-cat",cat).attr("target","table_info_window").attr("download",catname+"_schema.sql").text("Download");
 		let link3 = $('<a>').attr("href","#0").addClass("info-history").attr("data-cat",cat).attr("data-title",info.title).text("History");
+		let link4 = $('<a>').attr("href","#0").addClass("info-reset").attr("data-cat",cat).attr("data-title",info.title).text("Reset");
 		link1.click(function() {
 			let cat = $(this).attr("data-cat");
 			$("#infocategory").val(cat);
@@ -165,7 +166,12 @@ function buildCategories(categories) {
 			$("#historyform").submit();
 			return false;
 		});
-		content.append(link1).append(link2).append(link3);
+		link4.click(function() {
+			let cat = $(this).attr("data-cat");
+			confirmResetCategory(cat,$(this).attr("data-title"));
+			return false;
+		});
+		content.append(link1).append(link2).append(link3).append(link4);
 		menu.append(m).append(content);
 		li.append(div).append(menu);
 		ul.append(li);
@@ -267,4 +273,29 @@ const recognition = createRecognition('th');
 function changeRecognitionLanguage(newLang) {
     try { console.log("change recognition language : "+newLang); recognition.stop(); } catch(ex) { }
     recognition.lang = newLang;
+}
+function confirmResetCategory(cat,title) {
+	if(!confirm("Do you want to reset "+title+" ?")) return false;
+	jQuery.ajax({
+		url: API_URL+"/api/chat/reset",
+		data: {category: cat},
+		type: "POST",
+		dataType: "html",
+		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+		error : function(transport,status,errorThrown) {
+			$("#waitlayer").hide();
+			let err = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-error").text("Error")).append($('<span>').addClass("text text-error").text(errorThrown));
+			$('#listmessages').append(err);
+			$(".input-ask").prop('disabled', false);
+			$('#query').focus();
+		},
+		success: function(data,status,transport) {
+			$("#waitlayer").hide();
+			let json = $.parseJSON(data);
+			if(json) {
+				displayQueryAnswer(json.query+" "+title, json.answer, json.error);
+			}
+			questmessages.scrollTo(0,questmessages.scrollHeight);
+		}
+	});	
 }

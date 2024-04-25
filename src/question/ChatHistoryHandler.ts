@@ -26,7 +26,6 @@ export class ChatHistoryHandler extends ChatHandler {
                 this.logger.error(this.constructor.name,ex);
             }
         }
-        console.log(">>> ChatHistoryHandler.getDataView: history=", history);
         let title = context.params.title || "";
         return this.createDataTable(KnOperation.VIEW, {title: title, history: history}, {}, "question/history");        
     }    
