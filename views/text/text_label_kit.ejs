@@ -45,6 +45,21 @@
 	<div class="col-md-12 col-height">
 			<div class="table-layer-class">
 				<div class="row row-height">
+					<div class="col-height col-md-12">
+<label for="labels" id="labels_label" class="control-label"><%=label.get('labels_label','Labels')%></label>
+<a href="#0" id="addlabellinker" class="btn btn-primary btn-md text-right pull-right" title="Add Label" tabindex="-1"><i class="fa fa-plus fa-btn-icon" aria-hidden="true"></i></a>
+<div id="labelslayer">
+</div>						
+<div id="label_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('label_alert','You can not leave this empty')%></div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
 					<div class="col-height col-md-6">
 <div class="checkbox form-check">
 	<input type="checkbox" id="correct" name="correct" class="form-control input-md form-check-input" value="1" />
@@ -62,21 +77,6 @@
 					<div class="col-height col-md-12">
 <label for="correctprompt" id="correctprompt_label" class="control-label"><%=label.get('correctprompt_label','Correct Prompt Info')%></label>
 <div class="input-group"><textarea id="correctprompt" name="correctprompt" class="form-control input-md" rows="2"></textarea><div class="input-group-required"><label class="required">&#160;</label></div></div><div id="correctprompt_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('correctprompt_alert','You can not leave this empty')%></div>
-					</div>
-				</div>
-			</div>
-	</div>
-</div>
-<div class="row row-height">
-	<div class="col-md-12 col-height">
-			<div class="table-layer-class">
-				<div class="row row-height">
-					<div class="col-height col-md-12">
-<label for="labels" id="labels_label" class="control-label"><%=label.get('labels_label','Labels')%></label>
-<a href="#0" id="addlabellinker" class="btn btn-primary btn-md text-right pull-right" title="Add Label" tabindex="-1"><i class="fa fa-plus fa-btn-icon" aria-hidden="true"></i></a>
-<div id="labelslayer">
-</div>						
-<div id="label_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('label_alert','You can not leave this empty')%></div>
 					</div>
 				</div>
 			</div>
