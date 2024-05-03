@@ -164,4 +164,8 @@ export class VisionHandler extends TknOperateHandler {
         return QuestionUtility.getImageData(imagefile);
     }
 
+    public parseAnswer(answer: string, defaultAnswer: boolean = true) : string {
+        return QuestionUtility.parseAnswer(answer, defaultAnswer);
+    }
+
 }

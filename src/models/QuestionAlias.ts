@@ -30,3 +30,7 @@ export interface InlineData {
 export interface InlineImage {
     inlineData: InlineData;
 }
+
+export interface FileImageInfo extends ImageInfo {
+    file: string;
+}

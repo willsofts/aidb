@@ -12,7 +12,6 @@ import { VisionRotate } from "../vision/VisionRotate";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
-import { QuestionUtility } from "./QuestionUtility";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -154,10 +153,6 @@ export class OCRHandler extends VisionHandler {
             }
         }
         return Promise.resolve(labelInfo);
-    }
-
-    public parseAnswer(answer: string, defaultAnswer: boolean = true) : string {
-        return QuestionUtility.parseAnswer(answer, defaultAnswer);
     }
 
 }
