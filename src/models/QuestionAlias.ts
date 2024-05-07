@@ -1,5 +1,13 @@
 import { KnDBConfig } from "@willsofts/will-sql";
 
+export interface QuestInfo {
+    question: string;
+    mime: string;
+    image: string;
+    category?: string;
+    agent?: string;
+}
+
 export interface InquiryInfo {
     error: boolean;
     question: string;

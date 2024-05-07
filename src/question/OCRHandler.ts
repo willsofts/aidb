@@ -1,7 +1,7 @@
 import { KnModel } from "@willsofts/will-db";
 import { HTTP } from "@willsofts/will-api";
 import { KnContextInfo, VerifyError } from "@willsofts/will-core";
-import { InquiryInfo } from "../models/QuestionAlias";
+import { QuestInfo, InquiryInfo } from "../models/QuestionAlias";
 import { KnDBConnector } from "@willsofts/will-sql";
 import { VisionHandler } from "./VisionHandler";
 import { TextHandler } from "../text/TextHandler";
@@ -24,9 +24,9 @@ export class OCRHandler extends VisionHandler {
     };
     public handlers = [ {name: "quest"}, {name: "ask"} ];
 
-    public override async processQuest(context: KnContextInfo, question: string, mime: string, image: string, model: KnModel = this.model) : Promise<InquiryInfo> {
-        let info : InquiryInfo = { error: false, question: question, query: "", answer: "", dataset: [] };
-        let valid = this.validateParameter(question,mime,image);
+    public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        let valid = this.validateParameter(quest.question,quest.mime,quest.image);
         if(!valid.valid) {
             info.error = true;
             info.answer = "No "+valid.info+" found.";
@@ -36,13 +36,13 @@ export class OCRHandler extends VisionHandler {
         console.log("isRotate:",isRotate);
         let db = this.getPrivateConnector(model);
         try {
-            let image_info = await this.getAttachImageInfo(image,db);
+            let image_info = await this.getAttachImageInfo(quest.image,db);
             if(image_info == null) {    
                 info.error = true;
                 info.answer = "No image info found.";
                 return Promise.resolve(info);
             }
-            let setting = await this.getTextConfig(db,mime,context);            
+            let setting = await this.getTextConfig(db,quest.mime,context);            
             let vision = new GoogleVision();
             let buffer = Buffer.from(image_info.inlineData.data, 'base64');
             let pageInfo = await vision.getPages(buffer);
@@ -75,7 +75,7 @@ export class OCRHandler extends VisionHandler {
                     info.dataset = labelInfo;
                 }
             }
-            this.deleteAttach(image);
+            this.deleteAttach(quest.image);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
@@ -87,9 +87,9 @@ export class OCRHandler extends VisionHandler {
         return info;
     }
 
-    public async processQuestion(question: string, mime: string, image: string, model: KnModel = this.model) : Promise<InquiryInfo> {
-        let info : InquiryInfo = { error: false, question: question, query: "", answer: "", dataset: [] };
-        let valid = this.validateParameter(question,mime,image);
+    public override async processQuestion(quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        let valid = this.validateParameter(quest.question,quest.mime,quest.image);
         if(!valid.valid) {
             info.error = true;
             info.answer = "No "+valid.info+" found.";
@@ -97,9 +97,9 @@ export class OCRHandler extends VisionHandler {
         }
         let db = this.getPrivateConnector(model);
         try {
-            let setting = await this.getTextConfig(db,mime);            
+            let setting = await this.getTextConfig(db,quest.mime);            
             let vision = new GoogleVision();
-            let buffer = Buffer.from(image, 'base64');
+            let buffer = Buffer.from(quest.image, 'base64');
             let pageInfo = await vision.getPages(buffer);
             if(pageInfo) {
                 info.answer = pageInfo.text;

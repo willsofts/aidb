@@ -5,7 +5,7 @@ import { TknOperateHandler } from '@willsofts/will-serv';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_VISION_MODEL, ALWAYS_REMOVE_ATTACH } from "../utils/EnvironmentVariable";
 import { QuestionUtility } from "./QuestionUtility";
-import { InquiryInfo, InlineImage } from "../models/QuestionAlias";
+import { QuestInfo, InquiryInfo, InlineImage } from "../models/QuestionAlias";
 import { TknAttachHandler } from "@willsofts/will-core";
 import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 
@@ -37,11 +37,11 @@ export class VisionHandler extends TknOperateHandler {
     }
 
     public async doQuest(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
-        return this.processQuest(context,context.params.query,context.params.mime,context.params.image,model);
+        return this.processQuest(context,{category: context.params.category, question: context.params.query, mime: context.params.mime, image: context.params.image, agent: context.params.agent},model);
     }
 
     public async doAsk(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
-        return this.processAsk(context.params.query,context.params.image);
+        return this.processAsk({category: context.params.category, question: context.params.query, mime: context.params.mime, image: context.params.image,agent: context.params.agent});
     }
 
     public validateParameter(question: string, mime: string, image: string) : KnValidateInfo {
@@ -57,13 +57,13 @@ export class VisionHandler extends TknOperateHandler {
         return {valid: true};
     }
 
-    public async processQuest(context: KnContextInfo, question: string, mime: string, image: string, model: KnModel = this.model) : Promise<InquiryInfo> {
-        return await this.processQuestion(question,mime,image);
+    public async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        return await this.processQuestion(quest);
     }
 
-    public async processQuestion(question: string, mime: string, image: string) : Promise<InquiryInfo> {
-        let info = { error: false, question: question, query: "", answer: "", dataset: [] };
-        let valid = this.validateParameter(question,mime,image);
+    public async processQuestion(quest: QuestInfo) : Promise<InquiryInfo> {
+        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        let valid = this.validateParameter(quest.question,quest.mime,quest.image);
         if(!valid.valid) {
             info.error = true;
             info.answer = "No "+valid.info+" found.";
@@ -71,8 +71,8 @@ export class VisionHandler extends TknOperateHandler {
         }
         try {
             const aimodel = genAI.getGenerativeModel({ model: API_VISION_MODEL,  generationConfig: { temperature: 0 }});
-            let input = question;
-            let image_info = this.getImageInfo(mime,image);
+            let input = quest.question;
+            let image_info = this.getImageInfo(quest.mime,quest.image);
             this.logger.debug(this.constructor.name+".processQuestion: input:",input);
             let result = await aimodel.generateContent([input, image_info]);
             let response = result.response;
@@ -88,30 +88,30 @@ export class VisionHandler extends TknOperateHandler {
         return info;
     }
 
-    public async processAsk(question: string, image: string) : Promise<InquiryInfo> {
-        let info = { error: false, question: question, query: "", answer: "", dataset: [] };
-        let valid = this.validateParameter(question,"img",image);
+    public async processAsk(quest: QuestInfo) : Promise<InquiryInfo> {
+        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        let valid = this.validateParameter(quest.question,"img",quest.image);
         if(!valid.valid) {
             info.error = true;
             info.answer = "No "+valid.info+" found.";
             return Promise.resolve(info);
         }
         try {
-            let image_info = await this.getAttachImageInfo(image);
+            let image_info = await this.getAttachImageInfo(quest.image);
             if(image_info == null) {    
                 info.error = true;
                 info.answer = "No image info found.";
                 return Promise.resolve(info);
             }
             const aimodel = genAI.getGenerativeModel({ model: API_VISION_MODEL,  generationConfig: { temperature: 0 }});
-            let input = question;
+            let input = quest.question;
             this.logger.debug(this.constructor.name+".processAsk: input:",input);
             let result = await aimodel.generateContent([input, image_info]);
             let response = result.response;
             let text = response.text();
             this.logger.debug(this.constructor.name+".processAsk: response:",text);
             info.answer = text;
-            this.deleteAttach(image);
+            this.deleteAttach(quest.image);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;

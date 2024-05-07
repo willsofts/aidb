@@ -84,4 +84,21 @@ export class PromptUtility {
         Message: ${input}`;
     }
 
+    public createDocumentPrompt(input: string, document_info: string, prompt_info: string|null|undefined = "") : string {
+        if(!prompt_info || prompt_info==null) prompt_info = "";
+        return `Given an input question then return the answer.
+        Use the following format:
+        
+        Question: "Question here"
+        Answer: "An answer in double quotes"
+        
+        Using only the following information to answer.
+
+        ${document_info}
+
+        ${prompt_info}
+
+        Question: ${input}`;
+    }
+
 }

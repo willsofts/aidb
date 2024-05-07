@@ -5,7 +5,7 @@ import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionHandler } from "./QuestionHandler";
-import { InquiryInfo } from "../models/QuestionAlias";
+import { QuestInfo, InquiryInfo } from "../models/QuestionAlias";
 import { ChatRepository } from "./ChatRepository";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -36,15 +36,17 @@ export class ChatHandler extends QuestionHandler {
         ];
     }
 
-    public async processQuest(context: KnContextInfo, question: string, category: string = "AIDB", model: KnModel = this.model) : Promise<InquiryInfo> {
-        let info = { error: false, question: question, query: "", answer: "", dataset: [] };
-        if(!question || question.length == 0) {
+    public async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        if(!quest.question || quest.question.trim().length == 0) {
             info.error = true;
             info.answer = "No question found.";
             return Promise.resolve(info);
         }
+        let category = quest.category;
+        if(!category || category.trim().length==0) category = "AIDB";
         const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
-        let input = question;
+        let input = quest.question;
         let db = this.getPrivateConnector(model);
         try {
             const chatmap = ChatRepository.getInstance();

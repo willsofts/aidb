@@ -8,7 +8,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { API_KEY, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
-import { InquiryInfo, ForumConfig } from "../models/QuestionAlias";
+import { QuestInfo, InquiryInfo, ForumConfig } from "../models/QuestionAlias";
 import { ForumHandler } from "../forum/ForumHandler";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -52,7 +52,7 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public async performQuest(context: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
-        return this.processQuest(context, context.params.query, context.params.category, model);
+        return this.processQuest(context, {question: context.params.query, category: context.params.category || "AIDB", mime: context.params.mime, image: context.params.image, agent: context.params.agent}, model);
     }
 
     public async doQuest(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
@@ -62,7 +62,7 @@ export class QuestionHandler extends TknOperateHandler {
 
     public async doAsk(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
         await this.validateInputFields(context, model, "query");
-        return this.processAsk(context.params.query);
+        return this.processAsk({question: context.params.query, category: context.params.category || "AIDB", mime: context.params.mime, image: context.params.image, agent: context.params.agent});
     }
 
     public async doReset(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
@@ -100,15 +100,17 @@ export class QuestionHandler extends TknOperateHandler {
         }
     }
 
-    public async processQuest(context: KnContextInfo, question: string, category: string, model: KnModel = this.model) : Promise<InquiryInfo> {
-        let info = { error: false, question: question, query: "", answer: "", dataset: [] };
-        if(!question || question.length == 0) {
+    public async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        if(!quest.question || quest.question.trim().length == 0) {
             info.error = true;
             info.answer = "No question found.";
             return Promise.resolve(info);
         }
+        let category = quest.category;
+        if(!category || category.trim().length==0) category = "AIDB";
         const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
-        let input = question;
+        let input = quest.question;
         let db = this.getPrivateConnector(model);
         try {
             let forum = await this.getForumConfig(db,category,context);
@@ -159,17 +161,19 @@ export class QuestionHandler extends TknOperateHandler {
         return info;
     }
 
-    public async processQuestion(question: string, category: string = "AIDB", model: KnModel = this.model) : Promise<InquiryInfo> {
+    public async processQuestion(quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         //old fashion by file system handler
-        let info = { error: false, question: question, query: "", answer: "", dataset: [] };
-        if(!question || question.length == 0) {
+        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        if(!quest.question || quest.question.length == 0) {
             info.error = true;
             info.answer = "No question found.";
             return Promise.resolve(info);
         }
+        let category = quest.category;
+        if(!category || category.trim().length==0) category = "AIDB";
         try {
             const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
-            let input = question;
+            let input = quest.question;
             let table_info = this.getDatabaseTableInfo(category);
             this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
             //create question prompt with table info
@@ -214,16 +218,17 @@ export class QuestionHandler extends TknOperateHandler {
         return info;
     }
 
-    public async processAsk(question: string) : Promise<InquiryInfo> {
-        let info = { error: false, question: question, query: "", answer: "", dataset: [] };
-        if(!question || question.length == 0) {
+    public async processAsk(quest: QuestInfo | string) : Promise<InquiryInfo> {
+        if(typeof quest == "string") quest = { question: quest, category: "AIDB", mime: "", image: "", agent: ""};
+        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        if(!quest.question || quest.question.length == 0) {
             info.error = true;
             info.answer = "No question found.";
             return Promise.resolve(info);
         }
         try {
             const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
-            let input = question;
+            let input = quest.question;
             let prmutil = new PromptUtility();
             let prompt = prmutil.createAskPrompt(input);
             let result = await aimodel.generateContent(prompt);

@@ -5,12 +5,12 @@ import { KnDBConnector } from "@willsofts/will-sql";
 import { VisionHandler } from "./VisionHandler";
 import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
-import { PDFReader } from "../detect/PDFReader";
+import { PDFDetector } from "../detect/PDFDetector";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-export class DetectHandler extends VisionHandler {
+export class GoogleDetectHandler extends VisionHandler {
 
     public progid = "detect";
     public model : KnModel = { 
@@ -27,7 +27,6 @@ export class DetectHandler extends VisionHandler {
             info.answer = "No "+valid.info+" found.";
             return Promise.resolve(info);
         }
-        this.logger.debug(this.constructor.name+".processQuest: quest:",quest);
         let db = this.getPrivateConnector(model);
         try {
             let image_info = await this.getFileImageInfo(quest.image,db);
@@ -38,10 +37,9 @@ export class DetectHandler extends VisionHandler {
             }
             if(image_info.file.length > 0) {
                 info.answer = "";
-                let detector = new PDFReader();
-                let data = await detector.detectText(image_info.file);
-                this.logger.debug(this.constructor.name+".processQuestion: data:",data);
-                info = await this.processAsk(quest,data.text);
+                let detector = new PDFDetector();
+                let text = await detector.detectText(image_info.file);
+                info = await this.processAsk(quest,text);
             } else {
                 info.error = true;
                 info.answer = "No image file found.";
@@ -66,14 +64,12 @@ export class DetectHandler extends VisionHandler {
             info.answer = "No "+valid.info+" found.";
             return Promise.resolve(info);
         }
-        this.logger.debug(this.constructor.name+".processQuestion: quest:",quest);
         let db = this.getPrivateConnector(model);
         try {
             info.answer = "";
-            let detector = new PDFReader();
-            let data = await detector.detectText(quest.image);
-            this.logger.debug(this.constructor.name+".processQuestion: data:",data);
-            info = await this.processAsk(quest,data.text);
+            let detector = new PDFDetector();
+            let text = await detector.detectText(quest.image);
+            info = await this.processAsk(quest,text);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
@@ -96,7 +92,7 @@ export class DetectHandler extends VisionHandler {
         return null;
     }
 
-    public override async processAsk(quest: QuestInfo, document?: string) : Promise<InquiryInfo> {
+    public override async processAsk(quest: QuestInfo, document?: string | null | undefined) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: document };
         if(!quest.question || quest.question.trim().length == 0) {
             info.error = true;

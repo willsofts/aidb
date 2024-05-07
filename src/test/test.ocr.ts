@@ -7,7 +7,7 @@ const mime = Arguments.getString(args,"CARBOOK","-mime") as string;
 const imgfile = Arguments.getString(args,"good.jpg","-img") as string;
 const handler = new OCRHandler();
 const image = handler.getImageData(imgfile);
-handler.processQuestion(input,mime,image).then((result) => {
+handler.processQuestion({question: input, mime: mime, image: image}).then((result) => {
     console.log("Result:",result);
 }).catch((err) => {
     console.error("Error:",err);

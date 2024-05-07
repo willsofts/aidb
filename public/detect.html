@@ -115,34 +115,38 @@
 			$('#listmessages').append(ans);
 		}
 		function displayDataSet(data) {
-			if(data && data.length>0) {
+			if(data) {
 				let dsboxchk = true; //$("#datasetbox").is(":checked");
 				let div = $('<div>').addClass("text text-answer table-responsive");
 				let li = $('<li>').addClass("fxc li-dataset").append($('<span>').addClass("topic topic-answer").text("")).append(div);
 				if(!dsboxchk) li.addClass("fa-hidden");
 				$('#listmessages').append(li);
-				let table = $('<table>').addClass("tables table-data table-bordered");
-				let rowhead = $('<tr>');
-				let columns = ["Code","Labels","Value","Correct Value"]; //data[0];
-				columns.forEach(key => {
-					rowhead.append($('<th>').text(key));
-				});
-				table.append($('<thead>').append(rowhead));
-				columns = ["code","labels","value","correctValue"];
-				let tbody = $('<tbody>');
-				$(data).each(function(index, item) {
-					let tr = $('<tr>');
+				if(Array.isArray(data) && data.length>0) {
+					let table = $('<table>').addClass("tables table-data table-bordered");
+					let rowhead = $('<tr>');
+					let columns = ["Code","Labels","Value","Correct Value"]; //data[0];
 					columns.forEach(key => {
-						let v = item[key];
-						if(Array.isArray(v)) {
-							v = v.join(", ");
-						}
-						tr.append($('<td>').text(v));
+						rowhead.append($('<th>').text(key));
 					});
-					tbody.append(tr);
-				});
-				table.append(tbody);
-				div.append(table);
+					table.append($('<thead>').append(rowhead));
+					columns = ["code","labels","value","correctValue"];
+					let tbody = $('<tbody>');
+					$(data).each(function(index, item) {
+						let tr = $('<tr>');
+						columns.forEach(key => {
+							let v = item[key];
+							if(Array.isArray(v)) {
+								v = v.join(", ");
+							}
+							tr.append($('<td>').text(v));
+						});
+						tbody.append(tr);
+					});
+					table.append(tbody);
+					div.append(table);
+				} else {
+					div.text(data);
+				}
 			}
 		}
 		function uploadFile(aform) {
@@ -191,7 +195,7 @@
   </head>
   <body>
 	<div id="headlayer">
-		<div id="headtitle"><span class="q">Detector</span> &amp; <span class="a">Vision</span></div>
+		<div id="headtitle"><span class="q">Question</span> &amp; <span class="a">Detection</span></div>
 	</div>	
 	<div id="examplequest">
 	</div>
@@ -213,7 +217,7 @@
 			<div id="questformlayer">
 				<form id="questform" name="questform" action="" onsubmit="return false;">
 					<div id="inputlayer">
-						<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" value="Extract text from pdf"/>
+						<input type="text" id="query" name="query" class="input input-md input-ask" autocomplete="off" value="Summarize text from info" placeholder="Question here"/>
 						<button id="sendbutton" class="input-ask btn">Send</button>
 					</div>
 				</form>
