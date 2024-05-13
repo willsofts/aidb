@@ -122,7 +122,7 @@ export class VisionHandler extends TknOperateHandler {
     }
 
     public async deleteAttach(attachId: string) : Promise<void> {
-        if(ALWAYS_REMOVE_ATTACH) {
+        if(ALWAYS_REMOVE_ATTACH && (attachId && attachId.length > 0)) {
             this.call("attach.remove",{id: attachId}).catch(ex => this.logger.error(this.constructor.name,ex));
         }
     }

@@ -12,9 +12,9 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 
 export class DetectHandler extends VisionHandler {
 
-    public progid = "detect";
+    public progid = "detector";
     public model : KnModel = { 
-        name: "tdetect", 
+        name: "tdetector", 
         alias: { privateAlias: this.section }, 
     };
     public handlers = [ {name: "quest"}, {name: "ask"} ];
@@ -33,7 +33,7 @@ export class DetectHandler extends VisionHandler {
             let image_info = await this.getFileImageInfo(quest.image,db);
             if(image_info == null) {    
                 info.error = true;
-                info.answer = "No image info found.";
+                info.answer = "No document info found.";
                 return Promise.resolve(info);
             }
             if(image_info.file.length > 0) {
@@ -44,7 +44,7 @@ export class DetectHandler extends VisionHandler {
                 info = await this.processAsk(quest,data.text);
             } else {
                 info.error = true;
-                info.answer = "No image file found.";
+                info.answer = "No document file found.";
             }
             this.deleteAttach(quest.image);
         } catch(ex: any) {
