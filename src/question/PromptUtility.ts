@@ -109,7 +109,7 @@ export class PromptUtility {
         Question: "Question here"
         Answer: "An answer in double quotes"
         
-        Using only the following information to answer.
+        Using only the following information to answer the question and reply in Answer format above.
 
         ${document_info}
 
