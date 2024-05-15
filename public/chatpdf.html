@@ -157,9 +157,9 @@
 		}
 		function uploadFile(aform) {
 			if(!aform) aform = uploadform;
-			let fileExtension = ['pdf'];
+			let fileExtension = ['pdf','txt'];
         	if ($.inArray($("#filename").val().split('.').pop().toLowerCase(), fileExtension) == -1) {
-            	alert("Only pdf file type are allowed : "+fileExtension.join(', '));
+            	alert("Only pdf or text file type are allowed : "+fileExtension.join(', '));
 				return false;
         	}			
 			$("#fileid").val('');
@@ -222,7 +222,7 @@
 					<div id="uploadinputlayer">
 						<input type="hidden" id="fileid" name="id" />
 						<input type="hidden" id="filetype" name="type" value="PDF" />
-						<input type="file" id="filename" name="filename" class="input input-md input-ask" accept=".pdf"/>
+						<input type="file" id="filename" name="filename" class="input input-md input-ask" accept=".pdf,.txt"/>
 					</div>
 				</form>
 			</div>

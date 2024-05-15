@@ -71,7 +71,7 @@ export class DetectHandler extends VisionHandler {
         try {
             info.answer = "";
             let detector = new PDFReader();
-            let data = await detector.detectText(quest.image);
+            let data = await detector.detectText(quest.image); //quest.image is file path
             this.logger.debug(this.constructor.name+".processQuestion: data:",data);
             info = await this.processAsk(quest,data.text);
         } catch(ex: any) {

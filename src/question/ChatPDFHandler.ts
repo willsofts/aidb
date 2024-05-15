@@ -8,6 +8,7 @@ import { PromptUtility } from "./PromptUtility";
 import { PDFReader } from "../detect/PDFReader";
 import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
 import { ChatRepository } from "./ChatRepository";
+import fs from 'fs';
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -57,6 +58,19 @@ export class ChatPDFHandler extends VisionHandler {
         return {valid: true};
     }
 
+    public readDucumentFile(filePath: string) : Promise<any> {
+        let filename = filePath.toLowerCase();
+        if(filename.endsWith(".txt") || filename.endsWith(".text") || filename.endsWith(".csv")) {
+            const data = fs.readFileSync(filePath, 'utf8');
+            return Promise.resolve({ text: data });
+        }
+        if(filename.endsWith(".pdf")) {
+            let detector = new PDFReader();
+            return detector.detectText(filePath);
+        }
+        return Promise.resolve({ text: "" });
+    }
+
     public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: "" };
         let valid = this.validateParameter(quest.question,quest.mime,quest.image);
@@ -80,8 +94,7 @@ export class ChatPDFHandler extends VisionHandler {
             }
             if(image_info && image_info.file.length > 0) {
                 info.answer = "";
-                let detector = new PDFReader();
-                let data = await detector.detectText(image_info.file);
+                let data = await this.readDucumentFile(image_info.file);
                 this.logger.debug(this.constructor.name+".processQuestion: data:",data);
                 if(data.text.trim().length == 0) {
                     info.error = true;
@@ -143,8 +156,7 @@ export class ChatPDFHandler extends VisionHandler {
         let db = this.getPrivateConnector(model);
         try {
             info.answer = "";
-            let detector = new PDFReader();
-            let data = await detector.detectText(quest.image);
+            let data = await this.readDucumentFile(quest.image); //quest.image is file path
             this.logger.debug(this.constructor.name+".processQuestion: data:",data);
             info = await this.processAsk(quest,data.text);
         } catch(ex: any) {

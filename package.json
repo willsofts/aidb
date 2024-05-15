@@ -28,7 +28,7 @@
     "@google-cloud/vision": "^4.2.0",
     "@google/generative-ai": "^0.2.1",
     "@willsofts/will-api": "^1.0.13",
-    "@willsofts/will-core": "^1.0.94",
+    "@willsofts/will-core": "^1.0.96",
     "@willsofts/will-db": "^1.0.48",
     "@willsofts/will-lib": "^1.0.23",
     "@willsofts/will-run": "^1.0.12",
