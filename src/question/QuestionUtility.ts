@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { PDFReader } from "../detect/PDFReader";
 
 export class QuestionUtility {
 
@@ -81,6 +82,19 @@ export class QuestionUtility {
             return Buffer.from(fs.readFileSync(filepath)).toString("base64");
         }
         return "";
+    }
+
+    public static readDucumentFile(filePath: string) : Promise<any> {
+        let filename = filePath.toLowerCase();
+        if(filename.endsWith(".txt") || filename.endsWith(".text") || filename.endsWith(".csv")) {
+            const data = fs.readFileSync(filePath, 'utf8');
+            return Promise.resolve({ text: data });
+        }
+        if(filename.endsWith(".pdf")) {
+            let detector = new PDFReader();
+            return detector.detectText(filePath);
+        }
+        return Promise.resolve({ text: "" });
     }
 
 }

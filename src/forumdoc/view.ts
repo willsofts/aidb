@@ -1,11 +1,11 @@
 import { KnModel, KnOperation } from "@willsofts/will-db";
 import { KnContextInfo, KnDataTable, VerifyError } from "@willsofts/will-core";
-import { ForumHandler } from "./ForumHandler";
+import { ForumDocHandler } from "./ForumDocHandler";
 
 /**
  * This for gui launch when view record
  */
-class ForumViewHandler extends ForumHandler {
+class ForumDocViewHandler extends ForumDocHandler {
 
     protected override async doExecute(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
         try {
@@ -13,7 +13,7 @@ class ForumViewHandler extends ForumHandler {
         } catch(ex: any) {
             if(this.isRecordNotFound(ex)) {
                 let ds = this.emptyDataSet();
-                return this.createDataTable(KnOperation.VIEW, ds, {}, "pages/notinfo");        
+                return this.createDataTable(KnOperation.VIEW, ds, {}, "pages/notinfo"); 
             }
             throw ex;
         }
@@ -21,4 +21,4 @@ class ForumViewHandler extends ForumHandler {
 
 }
 
-export = new ForumViewHandler();
+export = new ForumDocViewHandler();

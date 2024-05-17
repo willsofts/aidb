@@ -1,11 +1,14 @@
 const API_URL = "";
+const system_categories = { };
 $(function() {
+	$("#filename").change(function() { uploadFile(); });
 	$('#questform').submit(function() {
 		if($('#query').val().trim()=="") {
 			$('#query').focus();
 			return false;
 		}
 		sendQuery($('#query').val());
+		$("#fileid").val('');
 		$('#query').val('');
 		return false;
 	});
@@ -18,9 +21,9 @@ $(function() {
 		$("#queryinputlayer").addClass("input-focus");
 	}).bind("blur",function() {
 		$("#queryinputlayer").removeClass("input-focus");
-	}).focus();
+	});
 	$("#clearlinker").click(function() { $("#listmessages").empty(); });
-	$("#addforumlinker").click(function() { window.open("/gui/forum/entry","table_info_window"); });
+	$("#addforumlinker").click(function() { window.open("/gui/forumdoc/entry","forumdoc_info_window"); });
 	$("#speechbutton").click(function() { 
 		$("#queryinputlayer").addClass("input-focus");
 		try { recognition.start(); } catch(ex) { } 
@@ -40,6 +43,11 @@ $(function() {
 	setupCategories();
 	bindingSettings();
 	loadCategories();
+	if($.trim($("#fileid").val())=="") {
+		$('#query').focus();
+	} else {
+		$('#filename').focus();
+	}
 });
 function sendQuery(quest) {
 	let li = $('<li>').addClass("fxc li-topic").append($('<span>').addClass("topic topic-quest").text("Question")).append($('<span>').addClass("text text-quest").text(quest));
@@ -48,9 +56,10 @@ function sendQuery(quest) {
 	questmessages.scrollTo(0,questmessages.scrollHeight);
 	$("#waitlayer").show();
 	let cat = $("input[name='category']:checked").val();
+	if(!cat || cat=="") cat = "DOCFILE";
 	jQuery.ajax({
-		url: API_URL+"/api/chat/quest",
-		data: {category: cat, query: quest},
+		url: API_URL+"/api/chatdoc/quest",
+		data: {category: cat, mime: "DOC", image: $("#fileid").val(), query: quest},
 		type: "POST",
 		dataType: "html",
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -79,34 +88,40 @@ function displayQueryAnswer(query, answer, error) {
 	let txt =  $('<div>').addClass(error?"typed-container text text-error":"typed-container text text-success").append(span);
 	let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer").text("Answer")).append(txt);
 	let qry = $('<li>').addClass("fxc li-query").append($('<span>').addClass("topic topic-query").text("Query")).append($('<span>').addClass("text text-query").text(query));
-	let queryboxchk = $("#querybox").is(":checked");
+	let queryboxchk = false; //$("#querybox").is(":checked");
 	if(!queryboxchk) qry.addClass("fa-hidden");
-	$('#listmessages').append(qry).append(ans);
+	let lst = $('#listmessages');
+	if(queryboxchk) lst.append(qry);
+	lst.append(ans);
 }
 function displayDataSet(data) {
-	if(data && data.length>0) {
+	if(data) {
 		let dsboxchk = $("#datasetbox").is(":checked");
 		let div = $('<div>').addClass("text text-answer table-responsive");
 		let li = $('<li>').addClass("fxc li-dataset").append($('<span>').addClass("topic topic-answer").text("")).append(div);
 		if(!dsboxchk) li.addClass("fa-hidden");
 		$('#listmessages').append(li);
-		let table = $('<table>').addClass("tables table-data table-bordered");
-		let rowhead = $('<tr>');
-		let first = data[0];
-		for(let key in first) {
-			rowhead.append($('<th>').text(key));
-		}
-		table.append($('<thead>').append(rowhead));
-		let tbody = $('<tbody>');
-		$(data).each(function(index, item) {
-			let tr = $('<tr>');
-			for(let key in item) {
-				tr.append($('<td>').text(item[key]));
+		if(Array.isArray(data) && data.length>0) {
+			let table = $('<table>').addClass("tables table-data table-bordered");
+			let rowhead = $('<tr>');
+			let first = data[0];
+			for(let key in first) {
+				rowhead.append($('<th>').text(key));
 			}
-			tbody.append(tr);
-		});
-		table.append(tbody);
-		div.append(table);
+			table.append($('<thead>').append(rowhead));
+			let tbody = $('<tbody>');
+			$(data).each(function(index, item) {
+				let tr = $('<tr>');
+				for(let key in item) {
+					tr.append($('<td>').text(item[key]));
+				}
+				tbody.append(tr);
+			});
+			table.append(tbody);
+			div.append(table);
+		} else {
+			div.text(data);
+		}
 	}
 }
 function setupCategories(categories) {
@@ -128,7 +143,6 @@ function buildCategories(categories) {
 	let ul = $("#categorylisting").empty();
 	for(let cat in categories) {
 		let info = categories[cat];
-		let catname = info.title.replaceAll(' ','').toLowerCase();
 		let li = $('<li>');
 		let div = $('<div>').addClass("category-info");
 		let pointer = $('<label>').addClass("cat-pointer").html("&#160;&#160;");
@@ -145,7 +159,6 @@ function buildCategories(categories) {
 		let m = $('<span>').addClass("m dropbtn").html("&#8942;");
 		let content = $('<div>').addClass("dropdown-content cat-content");
 		let link1 = $('<a>').attr("href","#0").addClass("info-linker").attr("data-cat",cat).text("Setting");
-		let link2 = $('<a>').attr("href","#0").addClass("info-downloader").attr("data-cat",cat).attr("target","table_info_window").attr("download",catname+"_schema.sql").text("Download");
 		let link3 = $('<a>').attr("href","#0").addClass("info-history").attr("data-cat",cat).attr("data-title",info.title).text("History");
 		let link4 = $('<a>').attr("href","#0").addClass("info-reset").attr("data-cat",cat).attr("data-title",info.title).text("Reset");
 		link1.click(function() {
@@ -153,11 +166,6 @@ function buildCategories(categories) {
 			$("#infocategory").val(cat);
 			$("#infoform").submit();
 			return false;
-		});
-		link2.click(function() {
-			let cat = $(this).attr("data-cat");
-			let url = "/api/tableinfo/html?category="+cat;
-			$(this).attr("href",url);
 		});
 		link3.click(function() {
 			let cat = $(this).attr("data-cat");
@@ -171,7 +179,7 @@ function buildCategories(categories) {
 			confirmResetCategory(cat,$(this).attr("data-title"));
 			return false;
 		});
-		content.append(link1).append(link2).append(link3).append(link4);
+		content.append(link1).append(link3).append(link4);
 		menu.append(m).append(content);
 		li.append(div).append(menu);
 		ul.append(li);
@@ -227,15 +235,16 @@ function bindingSettings() {
 function loadCategories() {
 	$("#waitlayer").show();
 	jQuery.ajax({
-		url: API_URL+"/api/forum/list",
+		url: API_URL+"/api/forumdoc/list",
 		type: "POST",
-		data: {group: "DB"},
+		data: {group: "DOC"},
 		dataType: "html",
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 		error : function(transport,status,errorThrown) {
 			$("#waitlayer").hide();
 		},
 		success: function(data,status,transport) {
+			console.log("loadCategories",data);
 			$("#waitlayer").hide();
 			let json = $.parseJSON(data);
 			if(json) {
@@ -278,7 +287,7 @@ function changeRecognitionLanguage(newLang) {
 function confirmResetCategory(cat,title) {
 	if(!confirm("Do you want to reset "+title+" ?")) return false;
 	jQuery.ajax({
-		url: API_URL+"/api/chat/reset",
+		url: API_URL+"/api/chatdoc/reset",
 		data: {category: cat},
 		type: "POST",
 		dataType: "html",
@@ -297,6 +306,48 @@ function confirmResetCategory(cat,title) {
 				displayQueryAnswer(json.query+" "+title, json.answer, json.error);
 			}
 			questmessages.scrollTo(0,questmessages.scrollHeight);
+		}
+	});	
+}
+function uploadFile(aform) {
+	if(!aform) aform = uploadform;
+	let fileExtension = ['pdf','txt'];
+	if ($.inArray($("#filename").val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+		alert("Only pdf or text file type are allowed : "+fileExtension.join(', '));
+		return false;
+	}			
+	$("#fileid").val('');
+	$("#waitlayer").show();
+	let fd = new FormData(aform);
+	jQuery.ajax({
+		url: "/upload/file",
+		type: "POST",
+		dataType: "html",
+		data: fd,
+		enctype: "multipart/form-data",
+		processData: false, 
+		contentType: false, 
+		error : function(transport,status,errorThrown) { 
+			$("#waitlayer").hide();
+			try {
+				let json = $.parseJSON($.trim(data));
+				if(json && json["head"]) {
+					alert(json.head["errordesc"]);
+				}
+				return;
+			} catch(ex) { }
+			alert(errorThrown);
+		},
+		success: function(data,status,transport){ 
+			console.log("response : "+transport.responseText);
+			$("#waitlayer").hide();
+			let json = $.parseJSON($.trim(data));
+			if(json && json["body"]) {
+				let rows = json.body["rows"];
+				if(rows && rows["attachid"]) {
+					$("#fileid").val(rows["attachid"]);
+				}
+			}
 		}
 	});	
 }

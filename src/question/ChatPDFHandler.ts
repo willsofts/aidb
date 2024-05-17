@@ -5,10 +5,9 @@ import { KnDBConnector } from "@willsofts/will-sql";
 import { VisionHandler } from "./VisionHandler";
 import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
-import { PDFReader } from "../detect/PDFReader";
+import { QuestionUtility } from "./QuestionUtility";
 import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
 import { ChatRepository } from "./ChatRepository";
-import fs from 'fs';
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -59,16 +58,7 @@ export class ChatPDFHandler extends VisionHandler {
     }
 
     public readDucumentFile(filePath: string) : Promise<any> {
-        let filename = filePath.toLowerCase();
-        if(filename.endsWith(".txt") || filename.endsWith(".text") || filename.endsWith(".csv")) {
-            const data = fs.readFileSync(filePath, 'utf8');
-            return Promise.resolve({ text: data });
-        }
-        if(filename.endsWith(".pdf")) {
-            let detector = new PDFReader();
-            return detector.detectText(filePath);
-        }
-        return Promise.resolve({ text: "" });
+        return QuestionUtility.readDucumentFile(filePath);
     }
 
     public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {

@@ -8,7 +8,7 @@ import { TknOperateHandler, OPERATE_HANDLERS } from '@willsofts/will-serv';
 import { ForumConfig } from "../models/QuestionAlias";
 
 export class ForumHandler extends TknOperateHandler {
-
+    public group = "DB";
     public progid = "forum";
     public settings : KnSetting = { rowsPerPage: 100, maxRowsPerPage: 100, maxLimit: -1, disableColumnSchema: true, disablePageOffset: true, disableQueryPaging: true };
     public model : KnModel = { 
@@ -18,6 +18,7 @@ export class ForumHandler extends TknOperateHandler {
             forumid: { type: "STRING", key: true },
             forumcode: { type: "STRING" },
             forumtitle: { type: "STRING" },
+            forumgroup: { type: "STRING", created: true, updated: false },
             forumtype: { type: "STRING" },
             forumdialect: { type: "STRING" },
             forumapi: { type: "STRING" },
@@ -101,6 +102,11 @@ export class ForumHandler extends TknOperateHandler {
             knsql.append(" from ");
             knsql.append(model.name);
             let filter = " where ";
+            if(params.forumgroup && params.forumgroup!="") {
+                knsql.append(filter).append("forumgroup = ?forumgroup");
+                knsql.set("forumgroup",params.forumgroup);
+                filter = " and ";
+            }
             if(params.forumtitle && params.forumtitle!="") {
                 knsql.append(filter).append("forumtitle LIKE ?forumtitle");
                 knsql.set("forumtitle","%"+params.forumtitle+"%");
@@ -192,8 +198,9 @@ export class ForumHandler extends TknOperateHandler {
     }
 
     protected async performUpdating(context: any, model: KnModel, db: KnDBConnector) : Promise<KnResultSet> {
-        if(context.params.forumport.trim().length==0) {
-            context.params.forumport = Utilities.parseInteger(context.params.forumport,0);
+        let forumport = context.params.forumport;
+        if(!forumport || forumport.trim().length==0) {
+            context.params.forumport = 0;
         } 
         await this.insertQuestions(context, model, db);
         return super.performUpdating(context, model, db);
@@ -284,7 +291,7 @@ export class ForumHandler extends TknOperateHandler {
      */
     public override async getDataSearch(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
         let rs = await this.doCollecting(context, model);
-        return this.createDataTable(KnOperation.COLLECT, this.createRecordSet(rs), {}, "forum/forum_data");
+        return this.createDataTable(KnOperation.COLLECT, this.createRecordSet(rs), {}, this.progid+"/"+this.progid+"_data");
     }
 
     /**
@@ -309,7 +316,7 @@ export class ForumHandler extends TknOperateHandler {
                 }
                 row.questions = questions;
                 let dt = await this.performCategories(context, model, db);
-                return this.createDataTable(KnOperation.RETRIEVAL, row, dt.entity, "forum/forum_dialog");
+                return this.createDataTable(KnOperation.RETRIEVAL, row, dt.entity, this.progid+"/"+this.progid+"_dialog");
             }
             return this.recordNotFound();
         } catch(ex: any) {
@@ -329,7 +336,7 @@ export class ForumHandler extends TknOperateHandler {
     public override async getDataAdd(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
         let dt = await this.doCategories(context, model);
         dt.action = KnOperation.ADD;
-        dt.renderer = "forum/forum_dialog";
+        dt.renderer = this.progid+"/"+this.progid+"_dialog";
         dt.dataset["forumid"] = uuid();
         return dt;
     }
@@ -360,6 +367,7 @@ export class ForumHandler extends TknOperateHandler {
         this.assignParameters(context,knsql,KnOperation.CREATE,KnOperation.CREATE);
         knsql.set("forumid",record.forumid);
         knsql.set("forumcode",record.forumcode);
+        knsql.set("forumgroup",context.params.forumgroup || this.group); 
         knsql.set("forumport",Utilities.parseInteger(context.params.forumport,0));
         knsql.set("createmillis",record.createmillis);
         knsql.set("createdate",record.createdate,"DATE");
@@ -386,11 +394,15 @@ export class ForumHandler extends TknOperateHandler {
     }
 
     protected async performListing(context: KnContextInfo, model: KnModel, db: KnDBConnector): Promise<KnRecordSet> {
+        let group = context.params.group;
+        if(!group || group.trim().length==0) group = this.group;
         let knsql = new KnSQL();
         knsql.append("select forumid,forumtitle,forumselected,createmillis ");
         knsql.append("from tforum ");
-        knsql.append("where inactive = '0' ");
+        knsql.append("where inactive = '0' and forumgroup = ?forumgroup ");
         knsql.append("order by createmillis ");
+        knsql.set("forumgroup",group);
+        this.logger.debug(this.constructor.name+".performListing",knsql);
         let rs = await knsql.executeQuery(db,context);
         return this.createRecordSet(rs);
     }
@@ -423,6 +435,7 @@ export class ForumHandler extends TknOperateHandler {
         let db = this.getPrivateConnector(model);
         try {
             let rs = await this.performListing(context, model, db);
+            console.log("doList",rs);
             if(rs.rows.length>0) {
                 let hasselected = false;
                 let firstforum = rs.rows[0].forumid;
@@ -439,7 +452,7 @@ export class ForumHandler extends TknOperateHandler {
                 if(!hasselected) { ds[firstforum].selected = true; }
                 return this.createDataTable(KnOperation.LIST, ds);
             }
-            return this.recordNotFound();
+            return this.createDataTable(KnOperation.LIST);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             return Promise.reject(this.getDBError(ex));
@@ -532,13 +545,13 @@ export class ForumHandler extends TknOperateHandler {
 
     public async getDataEntry(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
         let dt = await this.getDataAdd(context, model);
-        dt.renderer = "forum/forum_edit";
+        dt.renderer = this.progid+"/"+this.progid+"_edit";
         return dt;
     }    
 
     public async getDataView(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
         let dt = await this.getDataRetrieval(context, model);
-        dt.renderer = "forum/forum_edit";
+        dt.renderer = this.progid+"/"+this.progid+"_edit";
         return dt;
     }    
 

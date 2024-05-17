@@ -1,0 +1,39 @@
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-12">
+<label for="forumtable" id="forumtable_label" class="control-label"><%=label.get('forumtable_label','Document Prompt Info')%></label>
+<div class="input-group"><textarea id="forumtable" name="forumtable" class="form-control input-md irequired alert-input" rows="7"><%=data.dataset?.forumtable%></textarea><div class="input-group-required"><label class="required">*</label></div></div><div id="forumtable_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumtable_alert','You can not leave this empty')%></div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-12">
+<label for="forumquestions" id="forumquestions_label" class="control-label"><%=label.get('forumquestions_label','Questions')%></label>
+<a href="#0" id="addquestion" class="btn btn-primary btn-md" title="Add Question" tabindex="-1"><i class="fa fa-plus fa-btn-icon" aria-hidden="true"></i></a>
+<div id="questionslayer">
+	<%	let questions = data.dataset?.questions;
+	let rowcount = 5;
+	if(questions && questions.length>0) { 
+		rowcount = 5 - questions.length;
+		for(let index=0; index < questions.length; index++) { 
+			let item = questions[index]; %>
+			<div class="quest-input"><input type="text" name="question" class="form-control input-md" value="<%=item%>"/></div>
+		<%}
+	}
+	for(let index=0; index < rowcount; index++) { %>
+		<div class="quest-input"><input type="text" name="question" class="form-control input-md" value=""/></div>
+<%	}	%>
+</div>						
+					</div>
+				</div>
+			</div>
+	</div>
+</div>

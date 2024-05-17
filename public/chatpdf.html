@@ -130,22 +130,17 @@
 				if(Array.isArray(data) && data.length>0) {
 					let table = $('<table>').addClass("tables table-data table-bordered");
 					let rowhead = $('<tr>');
-					let columns = ["Code","Labels","Value","Correct Value"]; //data[0];
-					columns.forEach(key => {
+					let first = data[0];
+					for(let key in first) {
 						rowhead.append($('<th>').text(key));
-					});
+					}
 					table.append($('<thead>').append(rowhead));
-					columns = ["code","labels","value","correctValue"];
 					let tbody = $('<tbody>');
 					$(data).each(function(index, item) {
 						let tr = $('<tr>');
-						columns.forEach(key => {
-							let v = item[key];
-							if(Array.isArray(v)) {
-								v = v.join(", ");
-							}
-							tr.append($('<td>').text(v));
-						});
+						for(let key in item) {
+							tr.append($('<td>').text(item[key]));
+						}
 						tbody.append(tr);
 					});
 					table.append(tbody);
