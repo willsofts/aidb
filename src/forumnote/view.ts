@@ -1,11 +1,11 @@
 import { KnModel, KnOperation } from "@willsofts/will-db";
 import { KnContextInfo, KnDataTable } from "@willsofts/will-core";
-import { ForumDocHandler } from "./ForumDocHandler";
+import { ForumNoteHandler } from "./ForumNoteHandler";
 
 /**
  * This for gui launch when view record
  */
-class ForumDocViewHandler extends ForumDocHandler {
+class ForumNoteViewHandler extends ForumNoteHandler {
 
     protected override async doExecute(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
         try {
@@ -21,4 +21,4 @@ class ForumDocViewHandler extends ForumDocHandler {
 
 }
 
-export = new ForumDocViewHandler();
+export = new ForumNoteViewHandler();

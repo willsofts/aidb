@@ -1,5 +1,5 @@
 import { KnModel, KnOperation } from "@willsofts/will-db";
-import { KnContextInfo, KnDataTable, VerifyError } from "@willsofts/will-core";
+import { KnContextInfo, KnDataTable } from "@willsofts/will-core";
 import { ForumHandler } from "./ForumHandler";
 
 /**

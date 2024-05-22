@@ -6,7 +6,7 @@ import { VisionHandler } from "./VisionHandler";
 import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
-import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
+import { ChatSession, GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import { ChatRepository } from "./ChatRepository";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -61,6 +61,10 @@ export class ChatPDFHandler extends VisionHandler {
         return QuestionUtility.readDucumentFile(filePath);
     }
 
+    public override getAIModel() : GenerativeModel {
+        return genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+    }
+
     public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: "" };
         let valid = this.validateParameter(quest.question,quest.mime,quest.image);
@@ -71,7 +75,7 @@ export class ChatPDFHandler extends VisionHandler {
         }
         let category = quest.category || "PDFFILE";
         this.logger.debug(this.constructor.name+".processQuest: quest:",quest);
-        const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+        const aimodel = this.getAIModel();
         let db = this.getPrivateConnector(model);
         try {
             const chatmap = ChatRepository.getInstance();
@@ -167,7 +171,8 @@ export class ChatPDFHandler extends VisionHandler {
             let row = rs.rows[0];
             let mime = row.mimetype;
             let path = row.attachpath;
-            return { image: attachId, mime: mime, file: path };
+            let source = row.sourcefile;
+            return { image: attachId, mime: mime, file: path, source: source};
         }
         return null;
     }
@@ -185,7 +190,7 @@ export class ChatPDFHandler extends VisionHandler {
             return Promise.resolve(info);
         }
         try {
-            const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+            const aimodel = this.getAIModel();
             let input = quest.question;
             let prmutil = new PromptUtility();
             let prompt = prmutil.createDocumentPrompt(input,document);

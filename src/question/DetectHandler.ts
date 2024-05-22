@@ -85,17 +85,6 @@ export class DetectHandler extends VisionHandler {
         return info;
     }
 
-    public async getFileImageInfo(attachId: string, db?: KnDBConnector) : Promise<FileImageInfo | null> {
-        let rs = await this.getAttachInfo(attachId,db);
-        if(rs.rows && rs.rows.length > 0) {
-            let row = rs.rows[0];
-            let mime = row.mimetype;
-            let path = row.attachpath;
-            return { image: attachId, mime: mime, file: path };
-        }
-        return null;
-    }
-
     public override async processAsk(quest: QuestInfo, document?: string) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: document };
         if(!quest.question || quest.question.trim().length == 0) {

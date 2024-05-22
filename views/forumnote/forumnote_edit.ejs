@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Document Setting</title>
+		<title>Note Setting</title>
 		<%- include('../asset/meta') %>		
 		<%- include('../asset/styles') %>		
 		<%- include('../asset/scripts') %>	
-		<link rel="stylesheet" type="text/css" href="<%=meta.base_url%>/forumdoc/forumdoc.css" />
-		<script type="text/javascript" src="<%=meta.base_url%>/forumdoc/forumdoc.js"></script>
+		<link rel="stylesheet" type="text/css" href="<%=meta.base_url%>/forumnote/forumnote.css" />
+		<script type="text/javascript" src="<%=meta.base_url%>/forumnote/forumnote.js"></script>
 	</head>
 	<body class="portalbody portalbody-off">
 		<%- include('../partials/page_waiting') %>
 		<div id="ptmainpager" class="pt-page pt-page-current pt-page-controller sfte012-entry-pager">
-			<%- page.createHeader({pid: 'forumdoc', title: label.get('caption','Document Setting')}) %>
+			<%- page.createHeader({pid: 'forumnote', title: label.get('caption','Note Setting')}) %>
 			<div id="entrypanel">
 				<div id="entrylayer" class="entry-layer">
 					<form id="fsentryform" name="fsentryform" method="post">	
@@ -19,8 +19,8 @@
 						<input type="hidden" name="limit" value="<%=page.setting?.limit%>"/>
 						<input type="hidden" name="page" value="<%=page.setting?.page%>"/>
 						<div id="entrylayerarea" class="portal-area sub-entry-layer">
-							<%- include('./forumdoc_key') %>
-							<%- include('./forumdoc_kit') %>
+							<%- include('./forumnote_key') %>
+							<%- include('./forumnote_kit') %>
 							<div class="row">
 								<div id="fs_controlbuttonfooterlayer" class="col-md-12 pull-right text-right">
 									<% if(page.isUpdateMode()) {%>
@@ -39,5 +39,9 @@
 				</div>
 			</div>
 		</div>
+		<div id="uploaddialogpanel">
+			<%- include('./forumnote_dialog_file') %>
+		</div>
+		<div id="infodialogpanel"></div>
 	</body>
 </html>

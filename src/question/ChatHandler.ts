@@ -1,14 +1,12 @@
 import { KnModel, KnOperation } from "@willsofts/will-db";
 import { KnContextInfo, KnDataTable } from "@willsofts/will-core";
 import { KnDBError, KnRecordSet } from "@willsofts/will-sql";
-import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
-import { API_KEY, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../utils/EnvironmentVariable";
+import { ChatSession } from "@google/generative-ai";
+import { API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionHandler } from "./QuestionHandler";
 import { QuestInfo, InquiryInfo } from "../models/QuestionAlias";
 import { ChatRepository } from "./ChatRepository";
-
-const genAI = new GoogleGenerativeAI(API_KEY);
 
 export class ChatHandler extends QuestionHandler {
     public progid = "chat";
@@ -45,7 +43,7 @@ export class ChatHandler extends QuestionHandler {
         }
         let category = quest.category;
         if(!category || category.trim().length==0) category = "AIDB";
-        const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+        const aimodel = this.getAIModel();
         let input = quest.question;
         let db = this.getPrivateConnector(model);
         try {

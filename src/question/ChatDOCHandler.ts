@@ -2,15 +2,11 @@ import { KnModel } from "@willsofts/will-db";
 import { KnDBConnector } from "@willsofts/will-sql";
 import { HTTP } from "@willsofts/will-api";
 import { KnContextInfo, VerifyError } from "@willsofts/will-core";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
 import { ChatPDFHandler } from "./ChatPDFHandler";
 import { QuestInfo, InquiryInfo, ForumConfig } from "../models/QuestionAlias";
 import { ChatRepository } from "./ChatRepository";
 import { QuestionUtility } from "./QuestionUtility";
 import { ForumDocHandler } from "../forumdoc/ForumDocHandler";
-
-const genAI = new GoogleGenerativeAI(API_KEY);
 
 export class ChatDOCHandler extends ChatPDFHandler {
     public progid = "chatdoc";
@@ -43,7 +39,7 @@ export class ChatDOCHandler extends ChatPDFHandler {
         let category = quest.category;
         if(!category || category.trim().length==0) category = "DOCFILE";
         this.logger.debug(this.constructor.name+".processQuest: quest:",quest);
-        const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+        const aimodel = this.getAIModel();
         let db = this.getPrivateConnector(model);
         let input = quest.question;
         try {

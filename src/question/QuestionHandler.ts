@@ -4,7 +4,7 @@ import { KnContextInfo, KnValidateInfo, VerifyError } from "@willsofts/will-core
 import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 import { InquiryHandler } from "./InquiryHandler";
 import { TknOperateHandler } from '@willsofts/will-serv';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import { API_KEY, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
@@ -100,6 +100,10 @@ export class QuestionHandler extends TknOperateHandler {
         }
     }
 
+    public getAIModel() : GenerativeModel {
+        return genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+    }
+
     public async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         if(!quest.question || quest.question.trim().length == 0) {
@@ -109,7 +113,7 @@ export class QuestionHandler extends TknOperateHandler {
         }
         let category = quest.category;
         if(!category || category.trim().length==0) category = "AIDB";
-        const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+        const aimodel = this.getAIModel();
         let input = quest.question;
         let db = this.getPrivateConnector(model);
         try {
@@ -172,7 +176,7 @@ export class QuestionHandler extends TknOperateHandler {
         let category = quest.category;
         if(!category || category.trim().length==0) category = "AIDB";
         try {
-            const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+            const aimodel = this.getAIModel();
             let input = quest.question;
             let table_info = this.getDatabaseTableInfo(category);
             this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
@@ -227,7 +231,7 @@ export class QuestionHandler extends TknOperateHandler {
             return Promise.resolve(info);
         }
         try {
-            const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+            const aimodel = this.getAIModel();
             let input = quest.question;
             let prmutil = new PromptUtility();
             let prompt = prmutil.createAskPrompt(input);

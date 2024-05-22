@@ -1,0 +1,37 @@
+<div id="fsfilemodaldialog_layer" class="modal fade pt-page pt-page-item" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-xm">
+		<div class="modal-content portal-area fa-portal-area">
+			<div class="modal-header">
+				<h4 class="modal-title">
+					<%=label.get('modalheadertitle_file','Upload File')%>
+				</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<div id="uploaddialoglayer" class="entry-dialog-layer">
+				<form id="uploadform" name="uploadform" method="post">
+					<div class="row row-height">
+						<div class="col-md-12 col-height">
+								<div class="table-layer-class">
+									<div class="row row-height">
+										<div class="col-height col-md-12">
+					<label for="filename" id="filename_label" class="control-label"><%=label.get('filename_label','Document File')%></label>
+					<div class="input-group">
+						<input type="hidden" id="filetype" name="type" value="NOTE" />
+						<input type="file" id="filename" name="filename" class="form-control input-md irequired alert-input" accept=".pdf,.txt"/>
+						<div class="input-group-required"><label class="required">*</label></div>
+					</div>
+					<div id="filename_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('filename_alert','You can not leave this empty')%></div>
+										</div>
+									</div>
+								</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="row-heighter modal-footer" >
+				<input type="button" id="uploadbutton" class="btn btn-dark btn-sm" value="<%=label.get('uploadbutton','Upload')%>"/>
+				<input type="button" id="uploadcancelbutton" class="btn btn-dark btn-sm" data-dismiss="modal" value="<%=label.get('uploadcancelbutton','Cancel')%>"/>
+			</div>
+		</div>
+	</div>
+</div>

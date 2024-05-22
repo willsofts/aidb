@@ -197,7 +197,7 @@ export class ForumHandler extends TknOperateHandler {
         }
     }
 
-    protected async performUpdating(context: any, model: KnModel, db: KnDBConnector) : Promise<KnResultSet> {
+    protected override async performUpdating(context: any, model: KnModel, db: KnDBConnector) : Promise<KnResultSet> {
         let forumport = context.params.forumport;
         if(!forumport || forumport.trim().length==0) {
             context.params.forumport = 0;
@@ -362,6 +362,7 @@ export class ForumHandler extends TknOperateHandler {
             createdate: now,
             createtime: Utilities.currentTime(now),
         };
+        context.params.forumid = id;
         await this.insertQuestions(context, model, db);
         let knsql = this.buildInsertQuery(context, model, KnOperation.CREATE);
         this.assignParameters(context,knsql,KnOperation.CREATE,KnOperation.CREATE);
@@ -543,13 +544,13 @@ export class ForumHandler extends TknOperateHandler {
         return result;
     }
 
-    public async getDataEntry(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
+    public override async getDataEntry(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
         let dt = await this.getDataAdd(context, model);
         dt.renderer = this.progid+"/"+this.progid+"_edit";
         return dt;
     }    
 
-    public async getDataView(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
+    public override async getDataView(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
         let dt = await this.getDataRetrieval(context, model);
         dt.renderer = this.progid+"/"+this.progid+"_edit";
         return dt;

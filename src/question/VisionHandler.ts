@@ -2,10 +2,10 @@ import { KnModel } from "@willsofts/will-db";
 import { HTTP } from "@willsofts/will-api";
 import { KnContextInfo, KnValidateInfo, VerifyError } from "@willsofts/will-core";
 import { TknOperateHandler } from '@willsofts/will-serv';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import { API_KEY, API_VISION_MODEL, ALWAYS_REMOVE_ATTACH } from "../utils/EnvironmentVariable";
 import { QuestionUtility } from "./QuestionUtility";
-import { QuestInfo, InquiryInfo, InlineImage } from "../models/QuestionAlias";
+import { QuestInfo, InquiryInfo, InlineImage, FileImageInfo } from "../models/QuestionAlias";
 import { TknAttachHandler } from "@willsofts/will-core";
 import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 
@@ -61,6 +61,10 @@ export class VisionHandler extends TknOperateHandler {
         return await this.processQuestion(quest);
     }
 
+    public getAIModel() : GenerativeModel {
+        return genAI.getGenerativeModel({ model: API_VISION_MODEL,  generationConfig: { temperature: 0 }});
+    }
+
     public async processQuestion(quest: QuestInfo) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         let valid = this.validateParameter(quest.question,quest.mime,quest.image);
@@ -70,7 +74,7 @@ export class VisionHandler extends TknOperateHandler {
             return Promise.resolve(info);
         }
         try {
-            const aimodel = genAI.getGenerativeModel({ model: API_VISION_MODEL,  generationConfig: { temperature: 0 }});
+            const aimodel = this.getAIModel();
             let input = quest.question;
             let image_info = this.getImageInfo(quest.mime,quest.image);
             this.logger.debug(this.constructor.name+".processQuestion: input:",input);
@@ -103,7 +107,7 @@ export class VisionHandler extends TknOperateHandler {
                 info.answer = "No image info found.";
                 return Promise.resolve(info);
             }
-            const aimodel = genAI.getGenerativeModel({ model: API_VISION_MODEL,  generationConfig: { temperature: 0 }});
+            const aimodel = this.getAIModel();
             let input = quest.question;
             this.logger.debug(this.constructor.name+".processAsk: input:",input);
             let result = await aimodel.generateContent([input, image_info]);
@@ -149,6 +153,18 @@ export class VisionHandler extends TknOperateHandler {
             this.logger.error(this.constructor.name,ex);
             return Promise.reject(this.getDBError(ex));
         }
+    }
+
+    public async getFileImageInfo(attachId: string, db?: KnDBConnector) : Promise<FileImageInfo | null> {
+        let rs = await this.getAttachInfo(attachId,db);
+        if(rs.rows && rs.rows.length > 0) {
+            let row = rs.rows[0];
+            let mime = row.mimetype;
+            let path = row.attachpath;
+            let source = row.sourcefile;
+            return { image: attachId, mime: mime, file: path, source: source};
+        }
+        return null;
     }
 
     public getImageInfo(mime: string, images: string) : InlineImage {
