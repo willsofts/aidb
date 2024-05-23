@@ -5,6 +5,7 @@ import { QuestionHandler } from "./question/QuestionHandler";
 let cfg : ForumConfig = {
     type: "DB",     
     api: "",
+    caption: "Forum",
     title: "Inquiry",
     tableinfo : "",
     schema: "MYDB",

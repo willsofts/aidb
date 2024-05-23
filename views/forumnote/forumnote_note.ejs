@@ -1,24 +1,22 @@
-<div id="fsinfomodaldialog_layer" class="modal fade pt-page pt-page-item" tabindex="-1" role="dialog">
-	<div class="modal-dialog modal-xml">
-		<div class="modal-content portal-area fa-portal-area">
-			<div class="modal-header">
-				<h4 class="modal-title">
-					<%=label.get('modalheadertitle_note','Document Info')%>
-				</h4>
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-			</div>
-			<div id="infodialoglayer" class="entry-dialog-layer">
-				<div class="row row-height">
-					<div class="col-height col-md-12">
-						<textarea id="infotext" name="infotext" class="form-control input-md" rows="20" readonly>
-							<%=data.dataset?.prompt%>
-						</textarea>
-					</div>
-				</div>
-			</div>
-			<div class="row-heighter modal-footer" >
-				<input type="button" id="infocancelbutton" class="btn btn-dark btn-sm" data-dismiss="modal" value="<%=label.get('cancelbutton','Cancel')%>"/>
-			</div>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Note Setting</title>
+		<%- include('../asset/meta') %>		
+		<%- include('../asset/styles') %>		
+		<style nonce="YXNzdXJl">
+			h4 { margin: 5px; }
+			#infotext { margin-right: 10px; width: 99%; }	
+			#ptsearchpager { margin-left: 10px; height: 100%; }
+		</style>
+	</head>
+	<body class="portalbody portalbody-off">
+		<h4>Document Info</h4>
+		<div id="ptsearchpager" class="pt-page pt-page-current pt-page-controller">
+			<label class="topic-title"><%=data.dataset?.caption%></label>
+			<textarea id="infotext" name="infotext" class="form-control input-md" rows="20" cols="100" readonly>
+				<%= data.dataset?.prompt %>
+			</textarea>
 		</div>
-	</div>
-</div>
+	</body>
+</html>

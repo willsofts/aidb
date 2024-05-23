@@ -524,6 +524,7 @@ export class ForumHandler extends TknOperateHandler {
             }
             result = {
                 schema: forumid,
+                caption: row.forumtitle,
                 alias: row.dialectalias,
                 dialect: row.forumdialect,
                 url: row.forumurl,

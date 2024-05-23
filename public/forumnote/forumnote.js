@@ -526,10 +526,11 @@ function uploadFile(aform) {
 		}
 	});	
 }
-function showFileInfoDialog() {
+function showDocumentInfo() {
 	startWaiting();
 	let params = {
 		ajax: true,
+		dialog: "dialog",
 		forumid : $("#forumid").val()
 	};
 	let formdata = serializeParameters(params);
@@ -550,5 +551,8 @@ function showFileInfoDialog() {
 			$("#fsinfomodaldialog_layer").modal("show");
 		}
 	});	
+}
+function showFileInfoDialog() {
+	submitWindow({url: BASE_URL+"/gui/forumnote/note", params: {forumid : $("#forumid").val()}, windowName: "document_info_window"});
 }
 //#(390000) programmer code end;

@@ -1,0 +1,24 @@
+<div id="fsinfomodaldialog_layer" class="modal fade pt-page pt-page-item" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-xml">
+		<div class="modal-content portal-area fa-portal-area">
+			<div class="modal-header">
+				<h4 class="modal-title">
+					<%=label.get('modalheadertitle_note','Document Info')%>
+				</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<div id="infodialoglayer" class="entry-dialog-layer">
+				<div class="row row-height">
+					<div class="col-height col-md-12">
+						<textarea id="infotext" name="infotext" class="form-control input-md" rows="20" readonly>
+							<%=data.dataset?.prompt%>
+						</textarea>
+					</div>
+				</div>
+			</div>
+			<div class="row-heighter modal-footer" >
+				<input type="button" id="infocancelbutton" class="btn btn-dark btn-sm" data-dismiss="modal" value="<%=label.get('cancelbutton','Cancel')%>"/>
+			</div>
+		</div>
+	</div>
+</div>

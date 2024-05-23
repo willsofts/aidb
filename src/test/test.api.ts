@@ -7,6 +7,7 @@ const input = Arguments.getString(args,"select * from tdialect","-input") as str
 const forum : ForumConfig = {
     type: "API",     
     api: "http://localhost:8080/api/inquiry/inquire",
+    caption: "Forum",
     title: "Inquire",
     tableinfo : "",
     schema: "AIDB",

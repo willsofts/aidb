@@ -17,6 +17,7 @@ export interface InquiryInfo {
 }
 
 export interface ForumConfig extends KnDBConfig {
+    caption: string; //forumtitle
     title: string; //dialecttitle
     type: string; //forumtype
     tableinfo: string; //forumtable

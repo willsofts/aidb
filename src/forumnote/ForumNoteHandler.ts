@@ -128,8 +128,9 @@ export class ForumNoteHandler extends ForumHandler {
     }    
     
     public async getDataNote(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
+        let dialog = context.params.dialog;
         let dt = await this.doNoteGetting(context, model);
-        dt.renderer = this.progid+"/"+this.progid+"_note";
+        dt.renderer = this.progid+"/"+this.progid+"_note"+(dialog ? "_dialog" : "");
         return dt;
     }    
 
