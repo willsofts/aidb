@@ -13,7 +13,7 @@ export class PromptUtility {
     }
 
     public getCurrentDate() : string {
-        return Utilities.getLongDate();
+        return Utilities.getFormatWeekDate(new Date(),Utilities.LONG," ",Utilities.INTER);
     }
 
     public createChatPrompt(input: string,table_info: string, dialect: string = this.dialect) : string {
@@ -30,7 +30,7 @@ export class PromptUtility {
                 
         Always using alias name or full table name within columns in query statement and avoid field list is ambiguous.
         If someone asks for the table foobar, they really mean the product table. 
-        For additional information, please refer to the current date is ${current_date}.
+        For additional information, please refer to Today is ${current_date}.
                 
         `;
     }
@@ -49,7 +49,7 @@ export class PromptUtility {
                 
         Always using alias name or full table name within columns in query statement and avoid field list is ambiguous.
         If someone asks for the table foobar, they really mean the product table.
-        For additional information, please refer to the current date is ${current_date}.
+        For additional information, please refer to Today is ${current_date}.
                 
         Question: ${input}`;
     }
@@ -77,7 +77,7 @@ export class PromptUtility {
         Question: "Question here"
         Answer: "An answer in double quotes"
         
-        For additional information, please refer to the current date is ${current_date}.
+        For additional information, please refer to Today is ${current_date}.
 
         Question: ${input}`;
     }
@@ -107,12 +107,11 @@ export class PromptUtility {
         Answer: "An answer in double quotes"
         
         Using only the following information to answer.
+        For additional information, please refer to Today is ${current_date}.
         
         ${document_info}
 
         ${prompt_info}
-
-        For additional information, please refer to the current date is ${current_date}.
 
         Question: ${input}`;
     }
@@ -127,12 +126,12 @@ export class PromptUtility {
         Answer: "An answer in double quotes"
         
         Using only the following information to answer the question and reply in Answer format above.
+        For additional information, please refer to Today is ${current_date}.
 
         ${document_info}
 
         ${prompt_info}
 
-        For additional information, please refer to the current date is ${current_date}.
         `;
     }
 

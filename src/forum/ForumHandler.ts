@@ -395,12 +395,17 @@ export class ForumHandler extends TknOperateHandler {
     }
 
     protected async performListing(context: KnContextInfo, model: KnModel, db: KnDBConnector): Promise<KnRecordSet> {
+        let forumid = context.params.forumid;
         let group = context.params.group;
         if(!group || group.trim().length==0) group = this.group;
         let knsql = new KnSQL();
         knsql.append("select forumid,forumtitle,forumselected,createmillis ");
         knsql.append("from tforum ");
         knsql.append("where inactive = '0' and forumgroup = ?forumgroup ");
+        if(forumid && forumid.trim().length>0) {
+            knsql.append("and forumid = ?forumid ");
+            knsql.set("forumid",forumid);
+        }
         knsql.append("order by createmillis ");
         knsql.set("forumgroup",group);
         this.logger.debug(this.constructor.name+".performListing",knsql);
