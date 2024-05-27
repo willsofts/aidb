@@ -9,17 +9,20 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-	<link rel="stylesheet" type="text/css" href="/main/chatdoc.css" />
+	<link rel="stylesheet" type="text/css" href="/main/chat_note.css" />
     <script src="/dist/jquery.min.js"></script>
-    <script src="/main/chatdoc.js"></script>
+    <script src="/main/chat_note.js"></script>
+	<script>
+		forum_id = "<%=data.dataset?.forum_id%>";
+	</script>
   </head>
   <body>
 	<div id="headlayer">
-		<div id="headtitle"><span class="q">Chat</span> &amp; <span class="a">Document</span></div>
+		<div id="headtitle"><span class="q">Chat</span> &amp; <span class="a">Note</span></div>
 	</div>
 	<div id="bodylayer">
 		<div id="categorylayer">
-			<h4 class="system">Category<a href="#0" id="addforumlinker" title="Add Forum" tabindex="-1">&#10009;</a></h4>
+			<h4 class="system">Category<a href="#0" id="addforumlinker" title="Add Category" tabindex="-1">&#10009;</a></h4>
 			<div id="categorylist">
 				<ul id="categorylisting" class="category-list">
 				</ul>
@@ -41,15 +44,6 @@
 			</div>
 			<div id="waitlayer"><img id="waitimg" src="/img/waiting.gif" width="50px" height="50px" alt="" /></div>
 			<div id="formlayer">
-				<div id="uploadlayer">
-					<form id="uploadform" name="uploadform" action="" onsubmit="return false;">
-						<div id="uploadinputlayer">
-							<input type="hidden" id="fileid" name="id" />
-							<input type="hidden" id="filetype" name="type" value="DOC" />
-							<input type="file" id="filename" name="filename" class="input input-md input-ask" accept=".pdf,.txt"/>
-						</div>
-					</form>
-				</div>
 					<form id="questform" name="questform" action="" onsubmit="return false;">
 						<div id="inputlayer">
 							<div id="queryinputlayer" class="input-normal">
@@ -62,10 +56,10 @@
 							<button id="sendbutton" class="input-ask btn">Send</button>
 						</div>
 					</form>
-				<form id="infoform" name="infoform" method="post" action="/gui/forumdoc/view" target="forumdoc_info_window">
+				<form id="infoform" name="infoform" method="post" action="/gui/forumnote/view" target="forumnote_info_window">
 					<input type="hidden" id="infocategory" name="forumid" />
 				</form>	
-				<form id="historyform" name="historyform" method="post" action="/api/chatdoc/view" target="forumdoc_history_window">
+				<form id="historyform" name="historyform" method="post" action="/api/chatnote/view" target="forumnote_history_window">
 					<input type="hidden" id="historyquery" name="query" />
 					<input type="hidden" id="historytitle" name="title" />
 				</form>	

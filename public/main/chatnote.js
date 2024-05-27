@@ -1,5 +1,6 @@
 const API_URL = "";
 const system_categories = { };
+var forum_id = "";
 $(function() {
 	$('#questform').submit(function() {
 		if($('#query').val().trim()=="") {
@@ -38,9 +39,11 @@ $(function() {
 			changeRecognitionLanguage("en");
 		}
 	});
+	const params = new URLSearchParams(window.location.search);
+	if(params.has("forumid")) forum_id = params.get("forumid");
 	setupCategories();
 	bindingSettings();
-	loadCategories();
+	loadCategories(forum_id);
 	$('#query').focus();
 });
 function sendQuery(quest) {
@@ -226,12 +229,13 @@ function bindingSettings() {
 		});
 	});
 }
-function loadCategories() {
+function loadCategories(forumid) {
+	if(!forumid) forumid = "";
 	$("#waitlayer").show();
 	jQuery.ajax({
 		url: API_URL+"/api/forumnote/list",
 		type: "POST",
-		data: {group: "NOTE"},
+		data: {group: "NOTE", forumid: forumid},
 		dataType: "html",
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 		error : function(transport,status,errorThrown) {

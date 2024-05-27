@@ -1,4 +1,5 @@
 const API_URL = "";
+const system_categories = {};
 var forum_id = "";
 $(function() {
 	$('#questform').submit(function() {
@@ -38,8 +39,6 @@ $(function() {
 			changeRecognitionLanguage("en");
 		}
 	});
-	const params = new URLSearchParams(window.location.search);
-	if(params.has("forumid")) forum_id = params.get("forumid");
 	setupCategories();
 	bindingSettings();
 	loadCategories(forum_id);
@@ -174,7 +173,7 @@ function buildCategories(categories) {
 			confirmResetCategory(cat,$(this).attr("data-title"));
 			return false;
 		});
-		content.append(link1).append(link2).append(link3).append(link4);
+		content.append(link2).append(link3).append(link4);
 		menu.append(m).append(content);
 		li.append(div).append(menu);
 		ul.append(li);

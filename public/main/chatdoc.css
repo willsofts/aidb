@@ -110,3 +110,9 @@ h4.example { color: brown; }
 #queryspeechlang { float:right; font-size: 0.7rem; font-weight: bold; margin-bottom: 4px; padding-right: 2px; color: brown; text-decoration: none; }
 #uploadlayer { width: 100%; }
 #uploadform input { cursor: pointer; width: 90%; }
+textarea:focus, input:focus {
+	outline: none;
+}
+.input-icons:focus-within {
+	background-color: antiquewhite;
+}
