@@ -102,15 +102,17 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public async getDatabaseVersioning(forum: ForumConfig) : Promise<string> {
-        let db = this.getConnector(forum);
-        try {
-            let result = await KnDBLibrary.getDBVersion(db, forum);
-            if(result && result.trim().length>0) return result;
-        } catch(ex: any) {
-            this.logger.error(this.constructor.name,ex);
-            return Promise.reject(this.getDBError(ex));
-        } finally {
-            if(db) db.close();
+        if(forum.type=="DB") {
+            let db = this.getConnector(forum);
+            try {
+                let result = await KnDBLibrary.getDBVersion(db, forum);
+                if(result && result.trim().length>0) return result;
+            } catch(ex: any) {
+                this.logger.error(this.constructor.name,ex);
+                return Promise.reject(this.getDBError(ex));
+            } finally {
+                if(db) db.close();
+            }
         }
         return forum.version || "";
     }
