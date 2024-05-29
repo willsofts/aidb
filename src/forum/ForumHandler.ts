@@ -26,6 +26,7 @@ export class ForumHandler extends TknOperateHandler {
             forumuser: { type: "STRING" },
             forumpassword: { type: "STRING" },
             forumdatabase: { type: "STRING" },
+            forumdbversion: { type: "STRING" },
             forumhost: { type: "STRING" },
             forumport: { type: "INTEGER" },
             forumselected: { type: "STRING", defaultValue: "0" },
@@ -544,7 +545,8 @@ export class ForumHandler extends TknOperateHandler {
                 tableinfo: row.forumtable,
                 api: row.forumapi,
                 setting: row.forumsetting,
-                prompt: row.forumprompt
+                prompt: row.forumprompt,
+                version: row.forumdbversion
             };            
         }
         return result;

@@ -2,6 +2,7 @@ import { Utilities } from "@willsofts/will-util";
 
 const ANSWER_PROMPT_INFO = `If result not found then return No result.
         When the question ask about the object, use the object name not object id.`;
+const DATABASE_VERSION_INFO = "Using Database version: ";
 
 export class PromptUtility {
     public readonly dialect : string = "MySQL";
@@ -16,14 +17,16 @@ export class PromptUtility {
         return Utilities.getFormatWeekDate(new Date(),Utilities.LONG," ",Utilities.INTER);
     }
 
-    public createChatPrompt(input: string,table_info: string, dialect: string = this.dialect) : string {
+    public createChatPrompt(input: string, table_info: string, version: string, dialect: string = this.dialect) : string {
         let current_date = this.getCurrentDate();
+        let current_version = version.trim().length>0 ? DATABASE_VERSION_INFO + version : "";
         return `Given an input question, first create a syntactically correct ${dialect} query to run return as the answer.
         Use the following format:
         
         Question: "Question here"
         Answer: "SQL Query to run with plain text in double quotes"
         
+        ${current_version}
         Only use the following tables:
         
         ${table_info}
@@ -35,14 +38,16 @@ export class PromptUtility {
         `;
     }
 
-    public createQueryPrompt(input: string,table_info: string, dialect: string = this.dialect) : string {
+    public createQueryPrompt(input: string, table_info: string, version: string, dialect: string = this.dialect) : string {
         let current_date = this.getCurrentDate();
+        let current_version = version.trim().length>0 ? DATABASE_VERSION_INFO + version : "";
         return `Given an input question, first create a syntactically correct ${dialect} query to run return as the answer.
         Use the following format:
         
         Question: "Question here"
         Answer: "SQL Query to run with plain text in double quotes"
         
+        ${current_version}
         Only use the following tables:
         
         ${table_info}

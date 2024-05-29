@@ -24,6 +24,7 @@ export interface ForumConfig extends KnDBConfig {
     api?: string; //forumapi
     setting?: string; //forumsetting
     prompt?: string; //forumprompt
+    version?: string; //forumdbversion
 }
 
 export interface ImageInfo {

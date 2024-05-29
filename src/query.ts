@@ -16,7 +16,8 @@ let cfg : ForumConfig = {
     password: "root",
     host: "localhost",
     port: 3306,
-    database: "aidb"
+    database: "aidb",
+    version: "",
 };
 
 let args = process.argv.slice(2);

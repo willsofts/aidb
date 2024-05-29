@@ -84,7 +84,7 @@
 						<div class="table-layer-class">
 							<div class="row row-height">
 								<div class="col-height col-md-4">
-			<label for="forumdatabase" id="forumdatabase_label" class="control-label"><%=label.get('forumdatabasen_label','Database')%></label>
+			<label for="forumdatabase" id="forumdatabase_label" class="control-label"><%=label.get('forumdatabase_label','Database')%></label>
 			<div class="input-group"><input type="text" id="forumdatabase" name="forumdatabase" class="form-control input-md irequired alert-input" maxlength="50" value="<%=data.dataset?.forumdatabase%>" /><div class="input-group-required"><label class="required">*</label></div></div><div id="forumdatabase_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumdatabase_alert','You can not leave this empty')%></div>
 								</div>
 								<div class="col-height col-md-4">
@@ -112,6 +112,18 @@
 				</div>
 		</div>
 	</div>	
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-12">
+<label for="forumdbversion" id="forumdbversion_label" class="control-label"><%=label.get('forumdbversion_label','Database Version')%></label>
+<div class="input-group"><input type="text" id="forumdbversion" name="forumdbversion" class="form-control input-md" maxlength="250" value="<%=data.dataset?.forumdbversion%>" /><div class="input-group-required"><label class="required">&nbsp;</label></div></div><div id="forumdbversion_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumdbversion_alert','You can not leave this empty')%></div>
+					</div>
+				</div>
+			</div>
+	</div>
 </div>
 <div class="row row-height">
 	<div class="col-md-12 col-height">

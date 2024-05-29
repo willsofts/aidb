@@ -10,6 +10,7 @@ import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
 import { QuestInfo, InquiryInfo, ForumConfig } from "../models/QuestionAlias";
 import { ForumHandler } from "../forum/ForumHandler";
+import { KnDBLibrary } from "../utils/KnDBLibrary";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -100,6 +101,20 @@ export class QuestionHandler extends TknOperateHandler {
         }
     }
 
+    public async getDatabaseVersioning(forum: ForumConfig) : Promise<string> {
+        let db = this.getConnector(forum);
+        try {
+            let result = await KnDBLibrary.getDBVersion(db, forum);
+            if(result && result.trim().length>0) return result;
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            return Promise.reject(this.getDBError(ex));
+        } finally {
+            if(db) db.close();
+        }
+        return forum.version || "";
+    }
+
     public getAIModel() : GenerativeModel {
         return genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
     }
@@ -121,9 +136,10 @@ export class QuestionHandler extends TknOperateHandler {
             let table_info = forum.tableinfo;
             this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
             this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
+            let version = await this.getDatabaseVersioning(forum);
             //create question prompt with table info
             let prmutil = new PromptUtility();
-            let prompt = prmutil.createQueryPrompt(input, table_info);
+            let prompt = prmutil.createQueryPrompt(input, table_info, version);
             let result = await aimodel.generateContent(prompt);
             let response = result.response;
             let text = response.text();
@@ -180,9 +196,10 @@ export class QuestionHandler extends TknOperateHandler {
             let input = quest.question;
             let table_info = this.getDatabaseTableInfo(category);
             this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
+            let version = "";
             //create question prompt with table info
             let prmutil = new PromptUtility();
-            let prompt = prmutil.createQueryPrompt(input, table_info);
+            let prompt = prmutil.createQueryPrompt(input, table_info, version);
             let result = await aimodel.generateContent(prompt);
             let response = result.response;
             let text = response.text();

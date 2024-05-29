@@ -18,6 +18,7 @@ const forum : ForumConfig = {
     password: "",
     host: "localhost",
     port: 3306,
+    version: "",
 };
 const handler = new QuestionHandler();
 handler.processAPI(input,forum).then((result) => {

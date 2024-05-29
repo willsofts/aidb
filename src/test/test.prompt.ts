@@ -1,9 +1,9 @@
 import { PromptUtility } from "../question/PromptUtility";
 
 let prompt = new PromptUtility();
-let chat = prompt.createChatPrompt("select * from tdialect","table_info");
+let chat = prompt.createChatPrompt("select * from tdialect","table_info","");
 console.log("chat:",chat);
-let query = prompt.createQueryPrompt("select * from tdialect","table_info");
+let query = prompt.createQueryPrompt("select * from tdialect","table_info","");
 console.log("query:",query);
 let answer = prompt.createAnswerPrompt("select * from tdialect","rs");
 console.log("answer:",answer);

@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS `tforum` (
   `forumuser` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `forumpassword` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `forumdatabase` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+	`forumdbversion` VARCHAR(250) NULL DEFAULT NULL COLLATE 'utf8mb3_general_ci',
   `forumhost` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `forumport` int DEFAULT '0',
   `forumselected` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '0',

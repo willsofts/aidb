@@ -19,9 +19,9 @@ export class ChatHandler extends QuestionHandler {
         return ChatRepository.getInstance();
     }
 
-    public getChatHistory(category: string, table_info: string) {
+    public getChatHistory(category: string, table_info: string, version: string) {
         let prmutil = new PromptUtility();
-        let prompt = prmutil.createChatPrompt("", table_info);
+        let prompt = prmutil.createChatPrompt("", table_info, version);
         return [
             {
                 role: "user",
@@ -54,7 +54,8 @@ export class ChatHandler extends QuestionHandler {
             let table_info = forum.tableinfo;
             let chat = chatmap.get(category);
             if(!chat) {
-                let history = this.getChatHistory(category, table_info);
+                let version = await this.getDatabaseVersioning(forum);
+                let history = this.getChatHistory(category, table_info, version);
                 chat = aimodel.startChat({
                     history: history,
                     generationConfig: {
