@@ -487,6 +487,8 @@ function uploadFile(aform) {
 		alertmsg("Only pdf or text file type are allowed : "+fileExtension.join(', '));
 		return false;
 	}			
+	if($.trim($("#fileid").val())!="") $("#attachid").val($("#fileid").val());
+	if($.trim($("#forumurl").val())!="") $("#attachid").val($("#forumurl").val());
 	startWaiting();
 	let fd = new FormData(aform);
 	jQuery.ajax({
