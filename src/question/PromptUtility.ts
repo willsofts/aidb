@@ -14,7 +14,7 @@ export class PromptUtility {
     }
 
     public getCurrentDate() : string {
-        return Utilities.getFormatWeekDate(new Date(),Utilities.LONG," ",Utilities.INTER);
+        return Utilities.currentDate() + " ("+ Utilities.getFormatWeekDate(new Date(),Utilities.LONG," ",Utilities.INTER)+")";
     }
 
     public createChatPrompt(input: string, table_info: string, version: string, dialect: string = this.dialect) : string {
@@ -131,12 +131,11 @@ export class PromptUtility {
         Answer: "An answer in double quotes"
         
         Using only the following information to answer the question and reply in Answer format above.
-        For additional information, please refer to the current date or Today is ${current_date}.
 
         ${document_info}
 
         ${prompt_info}
-
+        For additional information, please refer to the current date or Today is ${current_date}.
         `;
     }
 
