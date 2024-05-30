@@ -14,7 +14,9 @@ export class PromptUtility {
     }
 
     public getCurrentDate() : string {
-        return Utilities.currentDate() + " ("+ Utilities.getFormatWeekDate(new Date(),Utilities.LONG," ",Utilities.INTER)+")";
+        let now = new Date();
+        let current_date = now.toLocaleDateString("th-TH",{year: "numeric", month:"long", day:"numeric", weekday: "long"});
+        return Utilities.currentDate(now) + " ("+ Utilities.getFormatWeekDate(now,Utilities.LONG," ",Utilities.INTER)+" : "+current_date+")";
     }
 
     public createChatPrompt(input: string, table_info: string, version: string, dialect: string = this.dialect) : string {
@@ -33,7 +35,7 @@ export class PromptUtility {
                 
         Always using alias name or full table name within columns in query statement and avoid field list is ambiguous.
         If someone asks for the table foobar, they really mean the product table. 
-        For additional information, using the current date or today is ${current_date}.
+        For additional information, the current date or today is ${current_date}.
                 
         `;
     }
@@ -54,7 +56,7 @@ export class PromptUtility {
                 
         Always using alias name or full table name within columns in query statement and avoid field list is ambiguous.
         If someone asks for the table foobar, they really mean the product table.
-        For additional information, using the current date or today is ${current_date}.
+        For additional information, the current date or today is ${current_date}.
                 
         Question: ${input}`;
     }
@@ -82,7 +84,7 @@ export class PromptUtility {
         Question: "Question here"
         Answer: "An answer in double quotes"
         
-        For additional information, using the current date or today is ${current_date}.
+        For additional information, the current date or today is ${current_date}.
 
         Question: ${input}`;
     }
@@ -112,7 +114,7 @@ export class PromptUtility {
         Answer: "An answer in double quotes"
         
         Using only the following information to answer.
-        For additional information, using the current date or today is ${current_date}.
+        For additional information, the current date or today is ${current_date}.
         
         ${document_info}
 
@@ -135,7 +137,7 @@ export class PromptUtility {
         ${document_info}
 
         ${prompt_info}
-        For additional information, using the current date or today is ${current_date}.
+        For additional information, the current date or today is ${current_date}.
         `;
     }
 
