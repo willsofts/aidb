@@ -141,4 +141,11 @@ export class PromptUtility {
         `;
     }
 
+    public createCleansingPrompt(text: string, input: string = "Please correct text from info") : string {
+        return `${input}.
+    
+        ${text}
+        `;
+    }
+
 }

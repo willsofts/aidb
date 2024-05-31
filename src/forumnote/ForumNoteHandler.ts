@@ -6,6 +6,12 @@ import { TknAttachHandler } from "@willsofts/will-core";
 import { FileImageInfo } from "../models/QuestionAlias";
 import { QuestionUtility } from "../question/QuestionUtility";
 import { OPERATE_HANDLERS } from '@willsofts/will-serv';
+import { CLEANSING_TEXT, API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
+import { PromptUtility } from "../question/PromptUtility";
+import path from 'path';
+
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 export class ForumNoteHandler extends ForumHandler {
 
@@ -70,8 +76,24 @@ export class ForumNoteHandler extends ForumHandler {
         return null;
     }
 
-    public readDucumentFile(filePath: string) : Promise<any> {
-        return QuestionUtility.readDucumentFile(filePath);
+    public getAIModel() : GenerativeModel {
+        return genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+    }
+
+    public async readDucumentFile(filePath: string) : Promise<any> {
+        let isPDF = path.extname(filePath).toLowerCase() == ".pdf";
+        let data = await QuestionUtility.readDucumentFile(filePath);
+        if(isPDF && (data && data.text && data.text.trim().length > 0) && CLEANSING_TEXT) {
+            const aimodel = this.getAIModel();
+            let prmutil = new PromptUtility();
+            let prompt = prmutil.createCleansingPrompt(data.text);
+            let result = await aimodel.generateContent(prompt);
+            let response = result.response;
+            let text = response.text();
+            this.logger.debug(this.constructor.name+".readDucumentFile: response:",text);
+            data.cleartext = text;
+        }
+        return Promise.resolve(data);
     }
 
     protected async updateDocumentInfo(db: KnDBConnector, forumid: string, context?: any) : Promise<KnResultSet | undefined> {
@@ -81,12 +103,14 @@ export class ForumNoteHandler extends ForumHandler {
         if(file_info && file_info.file.length > 0) {
             let data = await this.readDucumentFile(file_info.file);
             if(data && data.text && data.text.trim().length > 0) {
+                let cleartext = data.cleartext ? data.cleartext : data.text; 
                 let sql = new KnSQL();
-                sql.append("update tforum set forumurl = ?forumurl, forumapi = ?forumapi, forumprompt = ?forumprompt ");
+                sql.append("update tforum set forumurl = ?forumurl, forumapi = ?forumapi, forumprompt = ?forumprompt, forumremark = ?forumremark ");
                 sql.append("where forumid = ?forumid ");
                 sql.set("forumurl",fileid);
                 sql.set("forumapi",file_info.source);
-                sql.set("forumprompt",data.text);
+                sql.set("forumprompt",cleartext);
+                sql.set("forumremark",data.text);
                 sql.set("forumid",forumid);
                 let rs = await sql.executeUpdate(db);
                 return Promise.resolve(rs);
