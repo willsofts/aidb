@@ -116,3 +116,5 @@ textarea:focus, input:focus {
 .input-icons:focus-within {
 	background-color: antiquewhite;
 }
+table.table-cat td { border: none; padding: 0px; border-spacing: 0px; }
+table.table-cat td.first { vertical-align: top; }
