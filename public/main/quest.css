@@ -6,7 +6,7 @@ body { margin: 0; padding: 0; font: 13px Helvetica, Arial; font-size: 1rem; back
 /*#questform button { width: 100px; padding: 10px; } */
 #inputlayer { display: flex; flex-direction: row; }
 #questlayer { position: relative; padding-right:0px; margin-right:0px; }
-#questmessages { overflow: auto; margin-bottom: 8%; width: 100%; }
+#questmessages { overflow: auto; margin-bottom: 60px; width: 100%; }
 #listmessages { margin: 0; list-style-type: none; padding: 0px; }
 #listmessages li { padding: 5px; }
 .text-quest { background: ghostwhite; color: black !important; font-weight: bold; }
@@ -114,3 +114,8 @@ textarea:focus, input:focus {
 .input-icons:focus-within {
 	background-color: antiquewhite;
 }
+#categorylisting li:nth-child(odd) {
+	background-color: #f1f0f0;
+}
+table.table-cat td { border: none; padding: 0px; border-spacing: 0px; }
+table.table-cat td.first { vertical-align: top; }

@@ -128,9 +128,9 @@ function setupCategories(categories) {
 function setupSelectedCategories(categories) {
 	$("label.label-cat").each(function(index,element) {
 		$(element).click(function() {
-			$("label.label-cat").removeClass("cat-selected").parent().find("label.cat-pointer").html("&#160;&#160;");
-			$(this).addClass("cat-selected").parent().find("label.cat-pointer").html("&#187;");
-			buildExamples($(this).parent().find("input[name='category']").val(),categories);
+			$("label.label-cat").removeClass("cat-selected").closest("div").find("label.cat-pointer").html("&#160;&#160;");
+			$(this).addClass("cat-selected").closest("div").find("label.cat-pointer").html("&#187;");
+			buildExamples($(this).closest("div").find("input[name='category']").val(),categories);
 		});
 	});
 	buildExamples($("input[name='category']:checked").val(),categories);
@@ -151,7 +151,16 @@ function buildCategories(categories) {
 			input.attr("checked","checked");
 			label.addClass("cat-selected");
 		}
-		div.append(span).append(label);
+		//div.append(span).append(label);
+		let table = $('<table>').addClass("table-cat");
+		let tr = $('<tr>');
+		let td1 = $('<td>').addClass("first");
+		let td2 = $('<td>').addClass("second");
+		td1.append(span);
+		td2.append(label);
+		tr.append(td1).append(td2);
+		table.append(tr);
+		div.append(table);
 		let menu = $('<div>').addClass("menu dropdown cat-menu");
 		let m = $('<span>').addClass("m dropbtn").html("&#8942;");
 		let content = $('<div>').addClass("dropdown-content cat-content");
