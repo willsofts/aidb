@@ -6,7 +6,7 @@ import { TknAttachHandler } from "@willsofts/will-core";
 import { FileImageInfo } from "../models/QuestionAlias";
 import { QuestionUtility } from "../question/QuestionUtility";
 import { OPERATE_HANDLERS } from '@willsofts/will-serv';
-import { CLEANSING_TEXT, API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
+import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import { PromptUtility } from "../question/PromptUtility";
 import path from 'path';
@@ -80,10 +80,11 @@ export class ForumNoteHandler extends ForumHandler {
         return genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
     }
 
-    public async readDucumentFile(filePath: string) : Promise<any> {
+    public async readDucumentFile(filePath: string, cleansing: string) : Promise<any> {
+        let isCleansing = cleansing && cleansing == "1";
         let isPDF = path.extname(filePath).toLowerCase() == ".pdf";
         let data = await QuestionUtility.readDucumentFile(filePath);
-        if(isPDF && (data && data.text && data.text.trim().length > 0) && CLEANSING_TEXT) {
+        if(isPDF && (data && data.text && data.text.trim().length > 0) && isCleansing) {
             const aimodel = this.getAIModel();
             let prmutil = new PromptUtility();
             let prompt = prmutil.createCleansingPrompt(data.text);
@@ -97,11 +98,12 @@ export class ForumNoteHandler extends ForumHandler {
     }
 
     protected async updateDocumentInfo(db: KnDBConnector, forumid: string, context?: any) : Promise<KnResultSet | undefined> {
+        let cleansing = context.params.cleansing;
         let fileid = context.params.fileid;
         let file_info = await this.getFileImageInfo(fileid,db);
         this.logger.debug(this.constructor.name+"updateDocumentInfo: fileinfo",file_info);
         if(file_info && file_info.file.length > 0) {
-            let data = await this.readDucumentFile(file_info.file);
+            let data = await this.readDucumentFile(file_info.file,cleansing);
             if(data && data.text && data.text.trim().length > 0) {
                 let cleartext = data.cleartext ? data.cleartext : data.text; 
                 let sql = new KnSQL();
