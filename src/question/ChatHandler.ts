@@ -25,11 +25,11 @@ export class ChatHandler extends QuestionHandler {
         return [
             {
                 role: "user",
-                parts: prompt,
+                parts: [{text: prompt}],
             },
             {
                 role: "model",
-                parts: "Great to meet you. What would you like to know?",
+                parts: [{text: "Great to meet you. What would you like to know?"}],
             },
         ];
     }

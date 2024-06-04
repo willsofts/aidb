@@ -38,11 +38,11 @@ export class ChatPDFHandler extends VisionHandler {
         return [
             {
                 role: "user",
-                parts: prompt,
+                parts: [{text: prompt}],
             },
             {
                 role: "model",
-                parts: "Great to meet you. What would you like to know?",
+                parts: [{text: "Great to meet you. What would you like to know?"}],
             },
         ];
     }
