@@ -240,7 +240,7 @@ export class ChatPDFHandler extends VisionHandler {
         }
         chatmap.remove(category);
         this.logger.debug(this.constructor.name+".processReset: remove category:",category);
-        return Promise.resolve({ error: false, question: category, query: "reset", answer: "OK", dataset: [] });
+        return Promise.resolve({ error: false, question: category, query: "reset", answer: "Reset OK", dataset: [] });
     }
 
 }
