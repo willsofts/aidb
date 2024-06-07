@@ -76,16 +76,18 @@ export class ForumNoteHandler extends ForumHandler {
         return null;
     }
 
-    public getAIModel() : GenerativeModel {
-        return genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+    public getAIModel(context?: KnContextInfo) : GenerativeModel {
+        let model = context?.params?.model;
+        if(!model || model.trim().length==0) model = API_MODEL;
+        return genAI.getGenerativeModel({ model: model,  generationConfig: { temperature: 0 }});
     }
 
-    public async readDucumentFile(filePath: string, cleansing: string) : Promise<any> {
+    public async readDucumentFile(filePath: string, cleansing: string,context?: any) : Promise<any> {
         let isCleansing = cleansing && cleansing == "1";
         let isPDF = path.extname(filePath).toLowerCase() == ".pdf";
         let data = await QuestionUtility.readDucumentFile(filePath);
         if(isPDF && (data && data.text && data.text.trim().length > 0) && isCleansing) {
-            const aimodel = this.getAIModel();
+            const aimodel = this.getAIModel(context);
             let prmutil = new PromptUtility();
             let prompt = prmutil.createCleansingPrompt(data.text);
             let result = await aimodel.generateContent(prompt);
@@ -103,7 +105,7 @@ export class ForumNoteHandler extends ForumHandler {
         let file_info = await this.getFileImageInfo(fileid,db);
         this.logger.debug(this.constructor.name+"updateDocumentInfo: fileinfo",file_info);
         if(file_info && file_info.file.length > 0) {
-            let data = await this.readDucumentFile(file_info.file,cleansing);
+            let data = await this.readDucumentFile(file_info.file,cleansing,context);
             if(data && data.text && data.text.trim().length > 0) {
                 let cleartext = data.cleartext ? data.cleartext : data.text; 
                 let sql = new KnSQL();

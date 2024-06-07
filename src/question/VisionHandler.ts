@@ -37,11 +37,11 @@ export class VisionHandler extends TknOperateHandler {
     }
 
     public async doQuest(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
-        return this.processQuest(context,{category: context.params.category, question: context.params.query, mime: context.params.mime, image: context.params.image, agent: context.params.agent},model);
+        return this.processQuest(context,{category: context.params.category, question: context.params.query, mime: context.params.mime, image: context.params.image, agent: context.params.agent, model: context.params.model || ""},model);
     }
 
     public async doAsk(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
-        return this.processAsk({category: context.params.category, question: context.params.query, mime: context.params.mime, image: context.params.image,agent: context.params.agent});
+        return this.processAsk({category: context.params.category, question: context.params.query, mime: context.params.mime, image: context.params.image,agent: context.params.agent, model: context.params.model || ""}, context);
     }
 
     public validateParameter(question: string, mime: string, image: string) : KnValidateInfo {
@@ -58,14 +58,17 @@ export class VisionHandler extends TknOperateHandler {
     }
 
     public async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
-        return await this.processQuestion(quest);
+        return await this.processQuestion(quest,context);
     }
 
-    public getAIModel() : GenerativeModel {
-        return genAI.getGenerativeModel({ model: API_VISION_MODEL,  generationConfig: { temperature: 0 }});
+    public getAIModel(context?: KnContextInfo) : GenerativeModel {
+        let model = context?.params?.model;
+        if(!model || model.trim().length==0) model = API_VISION_MODEL;
+        this.logger.debug(this.constructor.name+".getAIModel: using model",model);
+        return genAI.getGenerativeModel({ model: model,  generationConfig: { temperature: 0 }});
     }
 
-    public async processQuestion(quest: QuestInfo) : Promise<InquiryInfo> {
+    public async processQuestion(quest: QuestInfo,context?: KnContextInfo) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         let valid = this.validateParameter(quest.question,quest.mime,quest.image);
         if(!valid.valid) {
@@ -74,7 +77,7 @@ export class VisionHandler extends TknOperateHandler {
             return Promise.resolve(info);
         }
         try {
-            const aimodel = this.getAIModel();
+            const aimodel = this.getAIModel(context);
             let input = quest.question;
             let image_info = this.getImageInfo(quest.mime,quest.image);
             this.logger.debug(this.constructor.name+".processQuestion: input:",input);
@@ -92,7 +95,7 @@ export class VisionHandler extends TknOperateHandler {
         return info;
     }
 
-    public async processAsk(quest: QuestInfo) : Promise<InquiryInfo> {
+    public async processAsk(quest: QuestInfo, context?: KnContextInfo) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         let valid = this.validateParameter(quest.question,"img",quest.image);
         if(!valid.valid) {
@@ -107,7 +110,7 @@ export class VisionHandler extends TknOperateHandler {
                 info.answer = "No image info found.";
                 return Promise.resolve(info);
             }
-            const aimodel = this.getAIModel();
+            const aimodel = this.getAIModel(context);
             let input = quest.question;
             this.logger.debug(this.constructor.name+".processAsk: input:",input);
             let result = await aimodel.generateContent([input, image_info]);

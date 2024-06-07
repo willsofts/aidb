@@ -26,9 +26,10 @@ function sendQuery(quest) {
 	questmessages.scrollTo(0,questmessages.scrollHeight);
 	$("#waitlayer").show();
 	let cat = $("input[name='category']:checked").val();
+	let model = $("input[name='model']:checked").val();
 	jQuery.ajax({
 		url: API_URL+"/api/chat/quest",
-		data: {category: cat, query: quest},
+		data: {category: cat, model: model, query: quest},
 		type: "POST",
 		dataType: "html",
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",

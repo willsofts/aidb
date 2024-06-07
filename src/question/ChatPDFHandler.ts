@@ -61,8 +61,11 @@ export class ChatPDFHandler extends VisionHandler {
         return QuestionUtility.readDucumentFile(filePath);
     }
 
-    public override getAIModel() : GenerativeModel {
-        return genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+    public getAIModel(context?: KnContextInfo) : GenerativeModel {
+        let model = context?.params?.model;
+        if(!model || model.trim().length==0) model = API_MODEL;
+        this.logger.debug(this.constructor.name+".getAIModel: using model",model);
+        return genAI.getGenerativeModel({ model: model,  generationConfig: { temperature: 0 }});
     }
 
     public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
@@ -75,7 +78,7 @@ export class ChatPDFHandler extends VisionHandler {
         }
         let category = quest.category || "PDFFILE";
         this.logger.debug(this.constructor.name+".processQuest: quest:",quest);
-        const aimodel = this.getAIModel();
+        const aimodel = this.getAIModel(context);
         let db = this.getPrivateConnector(model);
         try {
             const chatmap = ChatRepository.getInstance();
@@ -138,7 +141,7 @@ export class ChatPDFHandler extends VisionHandler {
         return info;
     }
 
-    public async processQuestion(quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+    public async processQuestion(quest: QuestInfo, context?: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         let valid = this.validateParameter(quest.question,quest.mime,quest.image);
         if(!valid.valid) {
@@ -152,7 +155,7 @@ export class ChatPDFHandler extends VisionHandler {
             info.answer = "";
             let data = await this.readDucumentFile(quest.image); //quest.image is file path
             this.logger.debug(this.constructor.name+".processQuestion: data:",data);
-            info = await this.processAsk(quest,data.text);
+            info = await this.processAsk(quest,context,data.text);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
@@ -177,7 +180,7 @@ export class ChatPDFHandler extends VisionHandler {
         return null;
     }
 
-    public override async processAsk(quest: QuestInfo, document?: string) : Promise<InquiryInfo> {
+    public override async processAsk(quest: QuestInfo, context?: KnContextInfo, document?: string) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: document };
         if(!quest.question || quest.question.trim().length == 0) {
             info.error = true;
@@ -190,7 +193,7 @@ export class ChatPDFHandler extends VisionHandler {
             return Promise.resolve(info);
         }
         try {
-            const aimodel = this.getAIModel();
+            const aimodel = this.getAIModel(context);
             let input = quest.question;
             let prmutil = new PromptUtility();
             let prompt = prmutil.createDocumentPrompt(input,document);

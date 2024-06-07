@@ -53,7 +53,7 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public async performQuest(context: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
-        return this.processQuest(context, {question: context.params.query, category: context.params.category || "AIDB", mime: context.params.mime, image: context.params.image, agent: context.params.agent}, model);
+        return this.processQuest(context, {question: context.params.query, category: context.params.category || "AIDB", mime: context.params.mime, image: context.params.image, agent: context.params.agent, model: context.params.model || ""}, model);
     }
 
     public async doQuest(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
@@ -63,7 +63,7 @@ export class QuestionHandler extends TknOperateHandler {
 
     public async doAsk(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
         await this.validateInputFields(context, model, "query");
-        return this.processAsk({question: context.params.query, category: context.params.category || "AIDB", mime: context.params.mime, image: context.params.image, agent: context.params.agent});
+        return this.processAsk({question: context.params.query, category: context.params.category || "AIDB", mime: context.params.mime, image: context.params.image, agent: context.params.agent, model: context.params.model || ""},context);
     }
 
     public async doReset(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
@@ -117,8 +117,11 @@ export class QuestionHandler extends TknOperateHandler {
         return forum.version || "";
     }
 
-    public getAIModel() : GenerativeModel {
-        return genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+    public getAIModel(context?: KnContextInfo) : GenerativeModel {
+        let model = context?.params?.model;
+        if(!model || model.trim().length==0) model = API_MODEL;
+        this.logger.debug(this.constructor.name+".getAIModel: using model",model);
+        return genAI.getGenerativeModel({ model: model,  generationConfig: { temperature: 0 }});
     }
 
     public async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
@@ -130,7 +133,7 @@ export class QuestionHandler extends TknOperateHandler {
         }
         let category = quest.category;
         if(!category || category.trim().length==0) category = "AIDB";
-        const aimodel = this.getAIModel();
+        const aimodel = this.getAIModel(context);
         let input = quest.question;
         let db = this.getPrivateConnector(model);
         try {
@@ -183,7 +186,7 @@ export class QuestionHandler extends TknOperateHandler {
         return info;
     }
 
-    public async processQuestion(quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+    public async processQuestion(quest: QuestInfo, context?: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         //old fashion by file system handler
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         if(!quest.question || quest.question.length == 0) {
@@ -194,7 +197,7 @@ export class QuestionHandler extends TknOperateHandler {
         let category = quest.category;
         if(!category || category.trim().length==0) category = "AIDB";
         try {
-            const aimodel = this.getAIModel();
+            const aimodel = this.getAIModel(context);
             let input = quest.question;
             let table_info = this.getDatabaseTableInfo(category);
             this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
@@ -241,8 +244,8 @@ export class QuestionHandler extends TknOperateHandler {
         return info;
     }
 
-    public async processAsk(quest: QuestInfo | string) : Promise<InquiryInfo> {
-        if(typeof quest == "string") quest = { question: quest, category: "AIDB", mime: "", image: "", agent: ""};
+    public async processAsk(quest: QuestInfo | string, context?: KnContextInfo) : Promise<InquiryInfo> {
+        if(typeof quest == "string") quest = { question: quest, category: "AIDB", mime: "", image: "", agent: "", model:""};
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         if(!quest.question || quest.question.length == 0) {
             info.error = true;
@@ -250,7 +253,7 @@ export class QuestionHandler extends TknOperateHandler {
             return Promise.resolve(info);
         }
         try {
-            const aimodel = this.getAIModel();
+            const aimodel = this.getAIModel(context);
             let input = quest.question;
             let prmutil = new PromptUtility();
             let prompt = prmutil.createAskPrompt(input);

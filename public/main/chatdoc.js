@@ -57,9 +57,10 @@ function sendQuery(quest) {
 	$("#waitlayer").show();
 	let cat = $("input[name='category']:checked").val();
 	if(!cat || cat=="") cat = "DOCFILE";
+	let model = $("input[name='model']:checked").val();
 	jQuery.ajax({
 		url: API_URL+"/api/chatdoc/quest",
-		data: {category: cat, mime: "DOC", image: $("#fileid").val(), query: quest},
+		data: {category: cat, model: model, mime: "DOC", image: $("#fileid").val(), query: quest},
 		type: "POST",
 		dataType: "html",
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",

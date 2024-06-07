@@ -23,11 +23,12 @@
 			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
 			$('#listmessages').append(li);
 			$(".input-ask").prop('disabled', true);
+			let model = $("input[name='model']:checked").val();
 			window.scrollTo(0,questmessages.scrollHeight);
 			$("#waitlayer").show();
 			jQuery.ajax({
 				url: API_URL+"/api/chatpdf/quest",
-				data: {mime: "PDF", image: $("#fileid").val(), query: quest},
+				data: {mime: "PDF", model: model, image: $("#fileid").val(), query: quest},
 				type: "POST",
 				dataType: "html",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",

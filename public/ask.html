@@ -39,12 +39,22 @@
 	  .table-data > tbody tr:nth-child(odd) { background-color: #f1f0f0; }
 	  .table-responsive { overflow: auto; }
 	  #waitlayer { display: none; text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+	  .separator-linker { border-top: 1px solid #e0e0e0; }
 	  span.q { color: brown; }
 	  span.a { color: green; }
 	  hr { margin: 5px 0; margin-left: 15px; margin-right: 30px; }
 	  .typed-container { display: inline-block; width: 100%; }
 	  .typed-out { color:#0000; background:linear-gradient(black 0 0) 0 0; background-repeat:no-repeat; background-clip:text; background-size:calc(var(--n)*1ch) 200%; animation: to 3s linear forwards; }
 	  @keyframes to { from { background-size:0 200% } }
+	  .m { cursor: pointer; width: 30px; }
+	  .m:hover { background-color: #ddd; }
+	  .menu { float: right; }
+	  .dropbtn { padding: 5px 10px; border: none; border-radius: 5px; }
+	  .dropdown { position: relative; display: inline-block; font-size: 1rem; }
+	  .dropdown-content { display: none; position: absolute; right: 0; top: 25px; background-color: #f1f1f1; min-width: 200px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
+	  .dropdown-content a { color: black; padding: 12px 16px; text-decoration: none; display: block; text-align: left; }
+	  .dropdown-content a:hover { background-color: #ddd; }
+	  .dropdown:hover .dropdown-content { display: block; }
     </style>	
     <script src="/dist/jquery.min.js"></script>
     <script nonce="YXNzdXJl">
@@ -67,11 +77,12 @@
 			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
 			$('#listmessages').append(li);
 			$(".input-ask").prop('disabled', true);
+			let model = $("input[name='model']:checked").val();
 			window.scrollTo(0,questmessages.scrollHeight);
 			$("#waitlayer").show();
 			jQuery.ajax({
 				url: API_URL+"/api/question/ask",
-				data: {query: quest},
+				data: {model: model, query: quest},
 				type: "POST",
 				dataType: "html",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -105,6 +116,14 @@
   <body>
 	<div id="headlayer">
 		<div id="headtitle"><span class="q">Question</span> &amp; <span class="a">Answer</span></div>
+		<div class="menu dropdown">			
+			<span class="m dropbtn">&#9776;</span>
+			<div class="dropdown-content">
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_1" value="gemini-1.5-flash" checked /><label for="mobel_1">Gemini 1.5 Flash<label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_2" value="gemini-pro" /><label for="mobel_2">Gemini Pro<label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_3" value="gemini-1.5-pro" /><label for="mobel_3">Gemini 1.5 Pro</label></a>
+			</div>
+		</div>
 	</div>	
 	<div id="examplequest">
 		<hr/>

@@ -56,7 +56,7 @@ hr { margin: 5px 0; margin-left: 15px; margin-right: 30px; }
 .menu { float: right; }
 .dropbtn { padding: 5px 10px; border: none; border-radius: 5px; }
 .dropdown { position: relative; display: inline-block; font-size: 1rem; }
-.dropdown-content { display: none; position: absolute; right: 0; top: 25px; background-color: #f1f1f1; min-width: 120px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
+.dropdown-content { display: none; position: absolute; right: 0; top: 25px; background-color: #f1f1f1; min-width: 180px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
 .dropdown-content a { color: black; padding: 12px 16px; text-decoration: none; display: block; text-align: left; }
 .dropdown-content a:hover { background-color: #ddd; }
 .dropdown:hover .dropdown-content { display: block; }
@@ -95,5 +95,5 @@ input.cat-radio { display: none; }
 .setting-content label { cursor: pointer; padding-left: 5px; }
 h4.system { color: brown; }
 h4.example { color: brown; }
-#clearlinker { border-top: 1px solid #e0e0e0; }
+.separator-linker { border-top: 1px solid #e0e0e0; }
 .fa-hidden { display: none; }

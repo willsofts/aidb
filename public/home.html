@@ -43,10 +43,13 @@
 				<div id="questsetting" class="menu dropdown setting-menu">
 					<span class="m dropbtn setting"><em class="fa fa-gear"></em></span>
 					<div class="dropdown-content setting-content">
-						<a href="#0" tabindex="-1"><input type="checkbox" id="querybox" checked /><label for="querybox">Query<label></label></a>
+						<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_1" value="gemini-1.5-flash" checked /><label for="mobel_1">Gemini 1.5 Flash<label></label></a>
+						<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_2" value="gemini-pro" /><label for="mobel_2">Gemini Pro<label></label></a>
+						<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_3" value="gemini-1.5-pro" /><label for="mobel_3">Gemini 1.5 Pro</label></a>
+						<a href="#0" tabindex="-1" class="separator-linker"><input type="checkbox" id="querybox" checked /><label for="querybox">Query<label></label></a>
 						<a href="#0" tabindex="-1"><input type="checkbox" id="datasetbox" checked /><label for="datasetbox">Data Set</label></a>
-						<a href="#0" id="clearlinker" tabindex="-1"><span><em class="fa fa-trash"></em></span><label id="clearlabel">Clear</label></a>
-					  </div>
+						<a href="#0" tabindex="-1" class="separator-linker" id="clearlinker"><span><em class="fa fa-trash"></em></span><label id="clearlabel">Clear</label></a>
+					</div>
 		  		</div>
 			</div>
 			<div id="questmessages">

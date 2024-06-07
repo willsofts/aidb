@@ -43,7 +43,7 @@ export class ChatHandler extends QuestionHandler {
         }
         let category = quest.category;
         if(!category || category.trim().length==0) category = "AIDB";
-        const aimodel = this.getAIModel();
+        const aimodel = this.getAIModel(context);
         let input = quest.question;
         let db = this.getPrivateConnector(model);
         try {

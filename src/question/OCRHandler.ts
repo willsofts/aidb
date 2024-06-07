@@ -87,7 +87,7 @@ export class OCRHandler extends VisionHandler {
         return info;
     }
 
-    public override async processQuestion(quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+    public override async processQuestion(quest: QuestInfo, context?: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         let valid = this.validateParameter(quest.question,quest.mime,quest.image);
         if(!valid.valid) {

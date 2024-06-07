@@ -1,12 +1,11 @@
 import { KnModel } from "@willsofts/will-db";
 import { KnContextInfo } from "@willsofts/will-core";
-import { QuestInfo, InquiryInfo, FileImageInfo } from "../models/QuestionAlias";
-import { KnDBConnector } from "@willsofts/will-sql";
+import { QuestInfo, InquiryInfo } from "../models/QuestionAlias";
 import { VisionHandler } from "./VisionHandler";
 import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { PDFReader } from "../detect/PDFReader";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -41,7 +40,7 @@ export class DetectHandler extends VisionHandler {
                 let detector = new PDFReader();
                 let data = await detector.detectText(image_info.file);
                 this.logger.debug(this.constructor.name+".processQuestion: data:",data);
-                info = await this.processAsk(quest,data.text);
+                info = await this.processAsk(quest,context,data.text);
             } else {
                 info.error = true;
                 info.answer = "No document file found.";
@@ -58,7 +57,7 @@ export class DetectHandler extends VisionHandler {
         return info;
     }
 
-    public async processQuestion(quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+    public async processQuestion(quest: QuestInfo, context?: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         let valid = this.validateParameter(quest.question,quest.mime,quest.image);
         if(!valid.valid) {
@@ -73,7 +72,7 @@ export class DetectHandler extends VisionHandler {
             let detector = new PDFReader();
             let data = await detector.detectText(quest.image); //quest.image is file path
             this.logger.debug(this.constructor.name+".processQuestion: data:",data);
-            info = await this.processAsk(quest,data.text);
+            info = await this.processAsk(quest,context,data.text);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
@@ -85,7 +84,14 @@ export class DetectHandler extends VisionHandler {
         return info;
     }
 
-    public override async processAsk(quest: QuestInfo, document?: string) : Promise<InquiryInfo> {
+    public getAIModel(context?: KnContextInfo) : GenerativeModel {
+        let model = context?.params?.model;
+        if(!model || model.trim().length==0) model = API_MODEL;
+        this.logger.debug(this.constructor.name+".getAIModel: using model",model);
+        return genAI.getGenerativeModel({ model: model,  generationConfig: { temperature: 0 }});
+    }
+
+    public override async processAsk(quest: QuestInfo, context?: KnContextInfo, document?: string) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: document };
         if(!quest.question || quest.question.trim().length == 0) {
             info.error = true;
@@ -98,7 +104,7 @@ export class DetectHandler extends VisionHandler {
             return Promise.resolve(info);
         }
         try {
-            const aimodel = genAI.getGenerativeModel({ model: API_MODEL,  generationConfig: { temperature: 0 }});
+            const aimodel = this.getAIModel(context);
             let input = quest.question;
             let prmutil = new PromptUtility();
             let prompt = prmutil.createDocumentPrompt(input,document);

@@ -38,6 +38,24 @@
 	<div class="col-md-12 col-height">
 			<div class="table-layer-class">
 				<div class="row row-height">
+					<div class="col-height col-md-4">
+<label for="model" id="model_label" class="control-label"><%=label.get('model_label','Model')%></label>
+<div class="input-group">
+	<select id="model" name="model" class="form-control input-md">
+		<option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
+		<option value="gemini-pro">Gemini Pro</option>
+		<option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+	</select>
+<div class="input-group-required"><label class="required">&nbsp;</label></div></div><div id="model_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('model_alert','You can not leave this empty')%></div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
 					<div class="col-height col-md-12">
 <label for="forumtable" id="forumtable_label" class="control-label"><%=label.get('forumtable_label','Document Prompt Info')%></label>
 <div class="input-group"><textarea id="forumtable" name="forumtable" class="form-control input-md irequired alert-input" rows="7"><%=data.dataset?.forumtable%></textarea><div class="input-group-required"><label class="required">*</label></div></div><div id="forumtable_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumtable_alert','You can not leave this empty')%></div>

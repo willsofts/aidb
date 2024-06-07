@@ -39,7 +39,7 @@ export class ChatDOCHandler extends ChatPDFHandler {
         let category = quest.category;
         if(!category || category.trim().length==0) category = "DOCFILE";
         this.logger.debug(this.constructor.name+".processQuest: quest:",quest);
-        const aimodel = this.getAIModel();
+        const aimodel = this.getAIModel(context);
         let db = this.getPrivateConnector(model);
         let input = quest.question;
         try {
