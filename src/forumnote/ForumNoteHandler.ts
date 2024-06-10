@@ -109,8 +109,9 @@ export class ForumNoteHandler extends ForumHandler {
             if(data && data.text && data.text.trim().length > 0) {
                 let cleartext = data.cleartext ? data.cleartext : data.text; 
                 let sql = new KnSQL();
-                sql.append("update tforum set forumurl = ?forumurl, forumapi = ?forumapi, forumprompt = ?forumprompt, forumremark = ?forumremark ");
+                sql.append("update tforum set forumdbversion = ?forumdbversion, forumurl = ?forumurl, forumapi = ?forumapi, forumprompt = ?forumprompt, forumremark = ?forumremark ");
                 sql.append("where forumid = ?forumid ");
+                sql.set("forumdbversion",context.params.model);
                 sql.set("forumurl",fileid);
                 sql.set("forumapi",file_info.source);
                 sql.set("forumprompt",cleartext);

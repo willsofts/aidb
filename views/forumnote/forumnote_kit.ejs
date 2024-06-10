@@ -39,12 +39,12 @@
 			<div class="table-layer-class">
 				<div class="row row-height">
 					<div class="col-height col-md-4">
-<label for="model" id="model_label" class="control-label"><%=label.get('model_label','Model')%></label>
+<label for="model" id="model_label" class="control-label"><%=label.get('model_label','Cleansing Data Model')%></label>
 <div class="input-group">
 	<select id="model" name="model" class="form-control input-md">
-		<option value="gemini-1.5-flash" selected>Gemini 1.5 Flash</option>
-		<option value="gemini-pro">Gemini Pro</option>
-		<option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+		<option value="gemini-1.5-flash" <%=page.selected("gemini-1.5-flash",data.dataset?.forumdbversion)%>>Gemini 1.5 Flash</option>
+		<option value="gemini-pro" <%=page.selected("gemini-pro",data.dataset?.forumdbversion)%>>Gemini Pro</option>
+		<option value="gemini-1.5-pro" <%=page.selected("gemini-1.5-pro",data.dataset?.forumdbversion)%>>Gemini 1.5 Pro</option>
 	</select>
 <div class="input-group-required"><label class="required">&nbsp;</label></div></div><div id="model_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('model_alert','You can not leave this empty')%></div>
 					</div>
