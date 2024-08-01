@@ -125,6 +125,13 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        if(quest.agent=="GEMINI") {
+            return await this.processQuestGemini(context, quest, model);
+        }
+        return await this.processQuestGemini(context, quest, model);        
+    }
+
+    public async processQuestGemini(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         if(!quest.question || quest.question.trim().length == 0) {
             info.error = true;
@@ -187,6 +194,13 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public async processQuestion(quest: QuestInfo, context?: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        if(quest.agent=="GEMINI") {
+            return await this.processQuestionGemini(quest, context, model);
+        }
+        return await this.processQuestionGemini(quest, context, model);            
+    }
+
+    public async processQuestionGemini(quest: QuestInfo, context?: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         //old fashion by file system handler
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         if(!quest.question || quest.question.length == 0) {
@@ -245,6 +259,16 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public async processAsk(quest: QuestInfo | string, context?: KnContextInfo) : Promise<InquiryInfo> {
+        if(typeof quest == "string") {
+            return await this.processAskGemini(quest, context);
+        }
+        if(quest.agent=="GEMINI") {
+            return await this.processAskGemini(quest, context);
+        }
+        return await this.processAskGemini(quest, context);            
+    }
+
+    public async processAskGemini(quest: QuestInfo | string, context?: KnContextInfo) : Promise<InquiryInfo> {
         if(typeof quest == "string") quest = { question: quest, category: "AIDB", mime: "", image: "", agent: "", model:""};
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         if(!quest.question || quest.question.length == 0) {

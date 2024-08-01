@@ -34,7 +34,14 @@ export class ChatHandler extends QuestionHandler {
         ];
     }
 
-    public async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+    public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        if(quest.agent=="GEMINI") {
+            return await this.processQuestGemini(context, quest, model);
+        }
+        return await this.processQuestGemini(context, quest, model);
+    }
+
+    public override async processQuestGemini(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         if(!quest.question || quest.question.trim().length == 0) {
             info.error = true;
