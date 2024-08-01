@@ -18,7 +18,7 @@ services:
     user: "node"
     working_dir: /usr/node/app
     environment:
-      - NPM_TOKEN=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
+      - NPM_TOKEN=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
       - EXPRESS_HTTPS=true
       - EXPRESS_KEY=./cert/key.pem
       - EXPRESS_CERT=./cert/cert.pem
