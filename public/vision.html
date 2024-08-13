@@ -46,6 +46,15 @@
 	  .typed-container { display: inline-block; width: 100%; }
 	  .typed-out { color:#0000; background:linear-gradient(black 0 0) 0 0; background-repeat:no-repeat; background-clip:text; background-size:calc(var(--n)*1ch) 200%; animation: to 3s linear forwards; }
 	  @keyframes to { from { background-size:0 200% } }
+	  .m { cursor: pointer; width: 30px; }
+	  .m:hover { background-color: #ddd; }
+	  .menu { float: right; }
+	  .dropbtn { padding: 5px 10px; border: none; border-radius: 5px; }
+	  .dropdown { position: relative; display: inline-block; font-size: 1rem; }
+	  .dropdown-content { display: none; position: absolute; right: 0; top: 25px; background-color: #f1f1f1; min-width: 200px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
+	  .dropdown-content a { color: black; padding: 12px 16px; text-decoration: none; display: block; text-align: left; }
+	  .dropdown-content a:hover { background-color: #ddd; }
+	  .dropdown:hover .dropdown-content { display: block; }
     </style>	
     <script src="/dist/jquery.min.js"></script>
     <script nonce="YXNzdXJl">
@@ -66,11 +75,12 @@
 			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
 			$('#listmessages').append(li);
 			$(".input-ask").prop('disabled', true);
+			let model = $("input[name='model']:checked").val();
 			window.scrollTo(0,questmessages.scrollHeight);
 			$("#waitlayer").show();
 			jQuery.ajax({
 				url: API_URL+"/api/vision/ask",
-				data: {image: $("#fileid").val(), query: quest},
+				data: {model: model, image: $("#fileid").val(), query: quest},
 				type: "POST",
 				dataType: "html",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -144,6 +154,13 @@
   <body>
 	<div id="headlayer">
 		<div id="headtitle"><span class="q">Question</span> &amp; <span class="a">Vision</span></div>
+		<div class="menu dropdown">			
+			<span class="m dropbtn">&#9776;</span>
+			<div class="dropdown-content">
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_1" value="gemini-1.5-flash" checked /><label for="mobel_1">Gemini 1.5 Flash<label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_2" value="gemini-pro-vision" /><label for="mobel_2">Gemini Pro Vision<label></a>
+			</div>
+		</div>
 	</div>	
 	<div id="examplequest">
 		<hr/>
