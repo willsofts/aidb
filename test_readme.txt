@@ -1,4 +1,6 @@
-set API_KEY=AIzaSyDB3AjxSvK54EbngBB95_3xAIQucGctAGc
+For Gemini: set API_KEY=AIzaSyDB3AjxSvK54EbngBB95_3xAIQucGctAGc
+For Claude: setx ANTHROPIC_API_KEY "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"
+For more info about Claude, please visit: https://docs.anthropic.com/en/docs/quickstart
 
 curl -X POST http://localhost:8080/api/question/quest -d "query=Find out best seller of 5 products in March,2024 ?"
 curl -X POST http://localhost:8080/api/inquiry/inquire -d "query=select * from cust_product"
