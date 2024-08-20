@@ -5,12 +5,13 @@ import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 import { InquiryHandler } from "./InquiryHandler";
 import { TknOperateHandler } from '@willsofts/will-serv';
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
-import { API_KEY, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../utils/EnvironmentVariable";
+import { API_KEY, API_KEY_CLAUDE, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND, API_MODEL_CLAUDE } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
 import { QuestInfo, InquiryInfo, ForumConfig } from "../models/QuestionAlias";
 import { ForumHandler } from "../forum/ForumHandler";
 import { KnDBLibrary } from "../utils/KnDBLibrary";
+import { claudeProcess } from "../claude/generateClaudeSystem";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -118,10 +119,17 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public getAIModel(context?: KnContextInfo) : GenerativeModel {
+        let result: any = "";
         let model = context?.params?.model;
-        if(!model || model.trim().length==0) model = API_MODEL;
-        this.logger.debug(this.constructor.name+".getAIModel: using model",model);
-        return genAI.getGenerativeModel({ model: model,  generationConfig: { temperature: 0 }});
+        if(!model || model.trim().length==0 || model=="gemini-1.5-flash") {
+            model = API_MODEL;
+            result = genAI.getGenerativeModel({ model: model,  generationConfig: { temperature: 0 }});
+        } else if (!model || model.trim().length==0 || model=="claude") {
+            model = API_MODEL_CLAUDE;
+            result = "CLAUDE";
+        }
+        this.logger.debug(this.constructor.name+".getAIModel: using model ", model);
+        return result
     }
 
     public async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
@@ -181,6 +189,64 @@ export class QuestionHandler extends TknOperateHandler {
                 text = response.text();
                 this.logger.debug(this.constructor.name+".processQuest: response:",text);
                 info.answer = this.parseAnswer(text);
+            }
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            info.error = true;
+            info.answer = this.getDBError(ex).message;
+		} finally {
+			if(db) db.close();
+        }
+        this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
+        return info;
+    }
+
+    public async processQuestClaude(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        if(!quest.question || quest.question.trim().length == 0) {
+            info.error = true;
+            info.answer = "No question found.";
+            return Promise.resolve(info);
+        }
+        let category = quest.category;
+        if(!category || category.trim().length==0) category = "AIDB";
+        const aimodel = this.getAIModel(context);
+        let input = quest.question;
+        let db = this.getPrivateConnector(model);
+        try {
+            let forum = await this.getForumConfig(db,category,context);
+            let table_info = forum.tableinfo;
+            this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
+            this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
+            let version = await this.getDatabaseVersioning(forum);
+            //create question prompt with table info
+            let prmutil = new PromptUtility();
+            let system_prompt = prmutil.createClaudeQueryPrompt(table_info, version);
+            let result = await claudeProcess(system_prompt, input);
+            this.logger.debug(this.constructor.name+".processQuest: response:",result);
+            //try to extract SQL from the response
+            let sql = this.parseAnswer(result,false);
+            this.logger.debug(this.constructor.name+".processQuest: sql:",sql);
+            if(!this.isValidQuery(sql,info)) {
+                return Promise.resolve(info);
+            }
+            info.query = sql;
+            //then run the SQL query
+            let rs = await this.doEnquiry(sql, forum);
+            this.logger.debug(this.constructor.name+".processQuest: rs:",rs);
+            if(rs.records == 0 && API_ANSWER_RECORD_NOT_FOUND) {
+                info.answer = "Record not found.";
+                return Promise.resolve(info);
+            }
+            info.dataset = rs.rows;
+            if(API_ANSWER) {
+                let datarows = JSON.stringify(rs.rows);
+                this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
+                //create reply prompt from sql and result set
+                system_prompt = prmutil.createAnswerPrompt(input, datarows, forum.prompt);
+                let result = await claudeProcess(system_prompt, input);
+                this.logger.debug(this.constructor.name+".processQuest: response:",result);
+                info.answer = this.parseAnswer(result);
             }
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);

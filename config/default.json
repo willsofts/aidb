@@ -1,7 +1,9 @@
 {
     "HTTP_PORT": 8080,
     "API_KEY": "AIzaSyD3tFpGMJjP_BwAn1Wx49sHdYqp4wM4Mls",
+    "API_KEY_CLAUDE": "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",
     "API_MODEL": "gemini-1.5-flash",
+    "API_CLAUDE_MODEL": "claude",
     "API_VISION_MODEL": "gemini-1.5-flash",
     "API_ANSWER": "true",
     "BASE_URL": "",

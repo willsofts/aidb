@@ -60,6 +60,24 @@ export class PromptUtility {
                 
         Question: ${input}`;
     }
+
+    public createClaudeQueryPrompt(table_info: string, version: string, dialect: string = this.dialect) : string {
+        let current_date = this.getCurrentDate();
+        let current_version = version.trim().length>0 ? DATABASE_VERSION_INFO + version : "";
+        return `Given an input question, first create a syntactically correct ${dialect} query to run return as the answer.
+        Use the following format (without any explaination):
+        
+        Answer: "SQL Query to run with plain text in double quotes"
+        
+        ${current_version}
+        Only use the following tables:
+        
+        ${table_info}
+                
+        Always using alias name or full table name within columns in query statement and avoid field list is ambiguous.
+        If someone asks for the table foobar, they really mean the product table.
+        For additional information, the current date or today is ${current_date}.`;
+    }
     
     public createAnswerPrompt(input: string, rs: string, prompt_info: string | undefined = undefined) : string {
         if(!prompt_info || prompt_info.trim().length==0) prompt_info = ANSWER_PROMPT_INFO;

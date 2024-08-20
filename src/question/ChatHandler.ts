@@ -7,6 +7,7 @@ import { PromptUtility } from "./PromptUtility";
 import { QuestionHandler } from "./QuestionHandler";
 import { QuestInfo, InquiryInfo } from "../models/QuestionAlias";
 import { ChatRepository } from "./ChatRepository";
+import { claudeProcess } from "../claude/generateClaudeSystem";
 
 export class ChatHandler extends QuestionHandler {
     public progid = "chat";
@@ -37,6 +38,8 @@ export class ChatHandler extends QuestionHandler {
     public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         if(quest.agent=="GEMINI") {
             return await this.processQuestGemini(context, quest, model);
+        } else if (quest.agent=="CLAUDE") {
+            return await this.processQuestClaude(context, quest, model);
         }
         return await this.processQuestGemini(context, quest, model);
     }
@@ -75,6 +78,7 @@ export class ChatHandler extends QuestionHandler {
             let result = await chat.sendMessage(msg);
             let response = result.response;
             let text = response.text();
+            console.log("text:",text);
             this.logger.debug(this.constructor.name+".processQuest: response:",text);
             //try to extract SQL from the response
             let sql = this.parseAnswer(text,true);
@@ -145,6 +149,64 @@ export class ChatHandler extends QuestionHandler {
                 text = response.text();
                 this.logger.debug(this.constructor.name+".processQuest: response:",text);
                 info.answer = this.parseAnswer(text);
+            }
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            info.error = true;
+            info.answer = this.getDBError(ex).message;
+		} finally {
+			if(db) db.close();
+        }
+        this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
+        return info;
+    }
+
+    public override async processQuestClaude(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        if(!quest.question || quest.question.trim().length == 0) {
+            info.error = true;
+            info.answer = "No question found.";
+            return Promise.resolve(info);
+        }
+        let category = quest.category;
+        if(!category || category.trim().length==0) category = "AIDB";
+        const aimodel = this.getAIModel(context);
+        let input = quest.question;
+        let db = this.getPrivateConnector(model);
+        try {
+            let forum = await this.getForumConfig(db,category,context);
+            let table_info = forum.tableinfo;
+            this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
+            this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
+            let version = await this.getDatabaseVersioning(forum);
+            //create question prompt with table info
+            let prmutil = new PromptUtility();
+            let system_prompt = prmutil.createClaudeQueryPrompt(table_info, version);
+            let result = await claudeProcess(system_prompt, input);
+            this.logger.debug(this.constructor.name+".processQuest: response:",result);
+            //try to extract SQL from the response
+            let sql = this.parseAnswer(result,false);
+            this.logger.debug(this.constructor.name+".processQuest: sql:",sql);
+            if(!this.isValidQuery(sql,info)) {
+                return Promise.resolve(info);
+            }
+            info.query = sql;
+            //then run the SQL query
+            let rs = await this.doEnquiry(sql, forum);
+            this.logger.debug(this.constructor.name+".processQuest: rs:",rs);
+            if(rs.records == 0 && API_ANSWER_RECORD_NOT_FOUND) {
+                info.answer = "Record not found.";
+                return Promise.resolve(info);
+            }
+            info.dataset = rs.rows;
+            if(API_ANSWER) {
+                let datarows = JSON.stringify(rs.rows);
+                this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
+                //create reply prompt from sql and result set
+                system_prompt = prmutil.createAnswerPrompt(input, datarows, forum.prompt);
+                let result = await claudeProcess(system_prompt, input);
+                this.logger.debug(this.constructor.name+".processQuest: response:",result);
+                info.answer = this.parseAnswer(result);
             }
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);

@@ -52,9 +52,10 @@ function sendQuery(quest) {
 	$("#waitlayer").show();
 	let cat = $("input[name='category']:checked").val();
 	let model = $("input[name='model']:checked").val();
+	let agent = $("input[name='model']:checked").attr("data-agent");
 	jQuery.ajax({
 		url: API_URL+"/api/chat/quest",
-		data: {category: cat, model: model, query: quest},
+		data: {category: cat, model: model, query: quest, agent: agent},
 		type: "POST",
 		dataType: "html",
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
