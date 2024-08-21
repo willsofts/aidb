@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { API_MODEL_CLAUDE } from "../utils/EnvironmentVariable";
 
 const anthropic = new Anthropic();
 interface TextContentBlock {
@@ -7,7 +8,7 @@ interface TextContentBlock {
 
 export async function claudeProcess(system_prompt: string, question: string): Promise<any> {
     const msg = await anthropic.messages.create({
-        model: "claude-3-5-sonnet-20240620",
+        model: API_MODEL_CLAUDE,
         max_tokens: 1000,
         temperature: 0,
         system: system_prompt,

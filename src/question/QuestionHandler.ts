@@ -5,7 +5,7 @@ import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 import { InquiryHandler } from "./InquiryHandler";
 import { TknOperateHandler } from '@willsofts/will-serv';
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
-import { API_KEY, API_KEY_CLAUDE, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND, API_MODEL_CLAUDE } from "../utils/EnvironmentVariable";
+import { API_KEY, API_MODEL, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND, API_VISION_MODEL } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
 import { QuestInfo, InquiryInfo, ForumConfig } from "../models/QuestionAlias";
@@ -119,17 +119,10 @@ export class QuestionHandler extends TknOperateHandler {
     }
 
     public getAIModel(context?: KnContextInfo) : GenerativeModel {
-        let result: any = "";
         let model = context?.params?.model;
-        if(!model || model.trim().length==0 || model=="gemini-1.5-flash") {
-            model = API_MODEL;
-            result = genAI.getGenerativeModel({ model: model,  generationConfig: { temperature: 0 }});
-        } else if (!model || model.trim().length==0 || model=="claude") {
-            model = API_MODEL_CLAUDE;
-            result = "CLAUDE";
-        }
-        this.logger.debug(this.constructor.name+".getAIModel: using model ", model);
-        return result
+        if(!model || model.trim().length==0) model = API_VISION_MODEL;
+        this.logger.debug(this.constructor.name+".getAIModel: using model",model);
+        return genAI.getGenerativeModel({ model: model,  generationConfig: { temperature: 0 }});
     }
 
     public async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
@@ -210,7 +203,6 @@ export class QuestionHandler extends TknOperateHandler {
         }
         let category = quest.category;
         if(!category || category.trim().length==0) category = "AIDB";
-        const aimodel = this.getAIModel(context);
         let input = quest.question;
         let db = this.getPrivateConnector(model);
         try {
