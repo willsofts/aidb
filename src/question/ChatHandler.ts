@@ -2,7 +2,7 @@ import { KnModel, KnOperation } from "@willsofts/will-db";
 import { KnContextInfo, KnDataTable } from "@willsofts/will-core";
 import { KnDBError, KnRecordSet } from "@willsofts/will-sql";
 import { ChatSession } from "@google/generative-ai";
-import { API_ANSWER, API_ANSWER_RECORD_NOT_FOUND } from "../utils/EnvironmentVariable";
+import { API_ANSWER, API_ANSWER_RECORD_NOT_FOUND, API_MODEL_CLAUDE } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionHandler } from "./QuestionHandler";
 import { QuestInfo, InquiryInfo } from "../models/QuestionAlias";
@@ -181,7 +181,9 @@ export class ChatHandler extends QuestionHandler {
             //create question prompt with table info
             let prmutil = new PromptUtility();
             let system_prompt = prmutil.createClaudeQueryPrompt(table_info, version);
-            let result = await claudeProcess(system_prompt, input);
+            let model = context?.params?.model;
+            if(!model || model.trim().length==0) model = API_MODEL_CLAUDE;
+            let result = await claudeProcess(system_prompt, input, model);
             this.logger.debug(this.constructor.name+".processQuest: response:",result);
             //try to extract SQL from the response
             let sql = this.parseAnswer(result,false);
@@ -203,7 +205,7 @@ export class ChatHandler extends QuestionHandler {
                 this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
                 //create reply prompt from sql and result set
                 system_prompt = prmutil.createAnswerPrompt(input, datarows, forum.prompt);
-                let result = await claudeProcess(system_prompt, input);
+                let result = await claudeProcess(system_prompt, input, model);
                 this.logger.debug(this.constructor.name+".processQuest: response:",result);
                 info.answer = this.parseAnswer(result);
             }

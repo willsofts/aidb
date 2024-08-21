@@ -6,9 +6,9 @@ interface TextContentBlock {
     text: string;
 }
 
-export async function claudeProcess(system_prompt: string, question: string): Promise<any> {
+export async function claudeProcess(system_prompt: string, question: string, model: string): Promise<any> {
     const msg = await anthropic.messages.create({
-        model: API_MODEL_CLAUDE,
+        model: model,
         max_tokens: 1000,
         temperature: 0,
         system: system_prompt,
