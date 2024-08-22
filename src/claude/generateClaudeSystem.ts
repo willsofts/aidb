@@ -1,5 +1,4 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { API_MODEL_CLAUDE } from "../utils/EnvironmentVariable";
 
 const anthropic = new Anthropic();
 interface TextContentBlock {
