@@ -167,19 +167,6 @@ export class ChatPDFHandler extends VisionHandler {
         return info;
     }
 
-    public async getFileImageInfo(attachId: string, db?: KnDBConnector) : Promise<FileImageInfo | null> {
-        if(!attachId || attachId.length == 0) return null;
-        let rs = await this.getAttachInfo(attachId,db);
-        if(rs.rows && rs.rows.length > 0) {
-            let row = rs.rows[0];
-            let mime = row.mimetype;
-            let path = row.attachpath;
-            let source = row.sourcefile;
-            return { image: attachId, mime: mime, file: path, source: source};
-        }
-        return null;
-    }
-
     public override async processAsk(quest: QuestInfo, context?: KnContextInfo, document?: string) : Promise<InquiryInfo> {
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: document };
         if(!quest.question || quest.question.trim().length == 0) {

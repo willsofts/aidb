@@ -165,7 +165,8 @@ export class VisionHandler extends TknOperateHandler {
             let mime = row.mimetype;
             let path = row.attachpath;
             let source = row.sourcefile;
-            return { image: attachId, mime: mime, file: path, source: source};
+            let stream = row.attachstream;
+            return { image: attachId, mime: mime, file: path, source: source, stream: stream };
         }
         return null;
     }

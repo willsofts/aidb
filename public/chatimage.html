@@ -10,30 +10,17 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 	<link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css" />
-	<link rel="stylesheet" type="text/css" href="/main/main.css" />
+	<link rel="stylesheet" type="text/css" href="/main/chatimage.css" />
     <script src="/dist/jquery.min.js"></script>
-    <script src="/main/category.js"></script>
-    <script src="/main/main.js"></script>
+    <script src="/main/chatimage.js"></script>
   </head>
   <body>
 	<div id="headlayer">
-		<div id="headtitle"><span class="q">Question</span> &amp; <span class="a">Answer</span></div>
-		<div class="menu dropdown">			
-			<span class="m dropbtn">&#9776;</span>
-			<div class="dropdown-content">
-			  <a href="/ask.html" target="ask_me_window" tabindex="-1">Ask Me</a>
-			  <a href="/vision.html" target="vision_me_window" tabindex="-1">Vision Me</a>
-			  <a href="/ocr.html" target="ocr_me_window" tabindex="-1">OCR Me</a>
-			  <a href="/chatpdf.html" target="chatpdf_window" tabindex="-1">Chat PDF</a>
-			  <a href="/chatdoc.html" target="chatpdf_window" tabindex="-1">Chat DOC</a>
-			  <a href="/chatnote.html" target="chatnote_window" tabindex="-1">Chat Note</a>
-			  <a href="/chatimage.html" target="chatimage_window" tabindex="-1">Chat Image</a>
-			</div>
-		</div>
+		<div id="headtitle"><span class="q">Chat</span> &amp; <span class="a">Image</span></div>
 	</div>
 	<div id="bodylayer">
 		<div id="categorylayer">
-			<h4 class="system">System</h4>
+			<h4 class="system">Category<a href="#0" id="addforumlinker" title="Add Forum" tabindex="-1"><em class="fa fa-plus"></em></a></h4>
 			<div id="categorylist">
 				<ul id="categorylisting" class="category-list">
 				</ul>
@@ -47,8 +34,7 @@
 						<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_1" value="gemini-1.5-flash" checked /><label for="mobel_1">Gemini 1.5 Flash</label></a>
 						<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_2" value="gemini-pro" /><label for="mobel_2">Gemini Pro</label></a>
 						<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_3" value="gemini-1.5-pro" /><label for="mobel_3">Gemini 1.5 Pro</label></a>
-						<a href="#0" tabindex="-1" class="separator-linker"><input type="checkbox" id="querybox" checked /><label for="querybox">Query</label></a>
-						<a href="#0" tabindex="-1"><input type="checkbox" id="datasetbox" checked /><label for="datasetbox">Data Set</label></a>
+						<a href="#0" tabindex="-1" class="separator-linker"><input type="checkbox" id="datasetbox" checked /><label for="datasetbox">Data Set</label></a>
 						<a href="#0" tabindex="-1" class="separator-linker" id="clearlinker"><span><em class="fa fa-trash"></em></span><label id="clearlabel">Clear</label></a>
 					</div>
 		  		</div>
@@ -59,14 +45,33 @@
 			</div>
 			<div id="waitlayer"><img id="waitimg" src="/img/waiting.gif" width="50px" height="50px" alt="" /></div>
 			<div id="formlayer">
-				<form id="questform" name="questform" action="" onsubmit="return false;">
-					<div id="inputlayer">
-						<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off" placeholder="Question here"></textarea>
-						<button id="sendbutton" class="input-ask btn"><em class="fa fa-send"></em> Send</button>
-					</div>
-				</form>
-				<form id="infoform" name="infoform" method="post" action="/gui/tableinfo/tableinfo" target="table_info_window">
-					<input type="hidden" id="infocategory" name="category" />
+				<div id="uploadlayer">
+					<form id="uploadform" name="uploadform" action="" onsubmit="return false;">
+						<div id="uploadinputlayer">
+							<input type="hidden" id="fileid" name="id" />
+							<input type="hidden" id="filetype" name="type" value="DOC" />
+							<input type="file" id="filename" name="filename" class="input input-md input-ask" accept=".png,.jpg,.jpeg"/>
+						</div>
+					</form>
+				</div>
+					<form id="questform" name="questform" action="" onsubmit="return false;">
+						<div id="inputlayer">
+							<div id="queryinputlayer" class="input-normal">
+								<textarea rows="1" id="query" name="query" class="input input-md input-ask" autocomplete="off" placeholder="Question here"></textarea>
+								<div id="queryspeechlayer">
+									<a href="#0" id="queryspeechlang" tabindex="-1">TH</a>
+									<a href="#0" id="speechbutton" class="input-ask btn" title="Speech" tabindex="-1"><img id="blinker" src="/img/mic.svg" ></a>
+								</div>
+							</div>
+							<button id="sendbutton" class="input-ask btn"><em class="fa fa-send"></em> Send</button>
+						</div>
+					</form>
+				<form id="infoform" name="infoform" method="post" action="/gui/forumdoc/view" target="forumdoc_info_window">
+					<input type="hidden" id="infocategory" name="forumid" />
+				</form>	
+				<form id="historyform" name="historyform" method="post" action="/api/chatimage/view" target="forumimage_history_window">
+					<input type="hidden" id="historyquery" name="query" />
+					<input type="hidden" id="historytitle" name="title" />
 				</form>	
 			</div>
 		</div>

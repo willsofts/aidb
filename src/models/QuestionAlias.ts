@@ -45,4 +45,5 @@ export interface InlineImage {
 export interface FileImageInfo extends ImageInfo {
     file: string;
     source: string;
+    stream?: string;
 }
