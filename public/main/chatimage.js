@@ -356,8 +356,22 @@ function uploadFile(aform) {
 				let rows = json.body["rows"];
 				if(rows && rows["attachid"]) {
 					$("#fileid").val(rows["attachid"]);
+					displayImage($("#filename").val());
 				}
 			}
 		}
 	});	
+}
+function displayImage(imgfile) {
+	console.log("displayImage: "+imgfile);
+	let div = $('<div>').addClass("text text-answer table-responsive");
+	let li = $('<li>').addClass("fxc li-dataset").append($('<span>').addClass("topic topic-answer").text("")).append(div);
+	$('#listmessages').append(li);
+	let img = $("<img></img>");
+	div.append(img);
+	let reader = new FileReader();
+	reader.onload = function(e) {
+		img.attr("src",e.target.result);
+	};
+	reader.readAsDataURL(document.getElementById("filename").files[0]);
 }
