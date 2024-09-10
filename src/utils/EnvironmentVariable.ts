@@ -11,3 +11,8 @@ export const API_ANSWER_RECORD_NOT_FOUND: boolean = config.env("API_ANSWER_RECOR
 export const ALWAYS_REMOVE_ATTACH: boolean = config.env("ALWAYS_REMOVE_ATTACH","true") === "true";
 export const ROTATE_DEGREE_OFFSET: number = parseInt(config.env("ROTATE_DEGREE_OFFSET","2")) || 2;
 export const CLEANSING_TEXT: boolean = config.env("CLEANSING_TEXT","true") === "true";
+
+export const API_OLLAMA_HOST: string = config.env("OLLAMA_HOST","http://172.31.199.54:11434");
+export const API_OLLAMA_PORT: string = config.env("OLLAMA_PORT","11434");
+export const API_OLLAMA_TIMEOUT: number = 600;
+export const API_OLLAMA_STREAM: boolean = false;

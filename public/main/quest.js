@@ -53,6 +53,24 @@ function sendQuery(quest) {
 	let cat = $("input[name='category']:checked").val();
 	let model = $("input[name='model']:checked").val();
 	let agent = $("input[name='model']:checked").attr("data-agent");
+	
+	let isGemini = model.toUpperCase().includes("GEMINI", 0);
+	let isOLlama = model.toUpperCase().includes("LLAMA", 0);
+	//let agent = isGemini ? "GEMINI" : isOLlama ? "LLAMA" : model.trim();
+	if (isOLlama) {
+		// llama 3.1 8B-llama3.1 & gemma 2-gemma2
+		agent = "LLAMA";
+		const subModel = model.split("-");
+		if (subModel.length == 2) {
+			
+			agent = subModel[0].trim();
+			model = subModel[1].trim();
+			
+			console.log("AGENT [" + agent + "]");
+			console.log("MODEL [" + model + "]");
+		}
+	}
+	// --------
 	jQuery.ajax({
 		url: API_URL+"/api/chat/quest",
 		data: {category: cat, model: model, query: quest, agent: agent},

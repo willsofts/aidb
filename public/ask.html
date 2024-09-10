@@ -78,6 +78,23 @@
 			$('#listmessages').append(li);
 			$(".input-ask").prop('disabled', true);
 			let model = $("input[name='model']:checked").val();
+			// Add llama 3.1 model 
+			let isGemini = model.toUpperCase().includes("GEMINI", 0);
+			let isOLlama = model.toUpperCase().includes("LLAMA", 0);
+			let agent = isGemini ? "GEMINI" : isOLlama ? "LLAMA" : model;
+			if (isOLlama) {
+				// llama 3.1 8B-llama3.1 & gemma 2-gemma2
+				const subModel = model.split("-");
+				if (subModel.length == 2) {
+					
+					agent = subModel[0].trim();
+					model = subModel[1].trim();
+					
+					console.log("AGENT [" + agent + "]");
+					console.log("MODEL [" + model + "]");
+				}
+			}
+			// --------
 			window.scrollTo(0,questmessages.scrollHeight);
 			$("#waitlayer").show();
 			jQuery.ajax({

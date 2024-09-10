@@ -5,13 +5,16 @@ import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 import { InquiryHandler } from "./InquiryHandler";
 import { TknOperateHandler } from '@willsofts/will-serv';
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
-import { API_KEY, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND, API_VISION_MODEL, API_MODEL_CLAUDE } from "../utils/EnvironmentVariable";
+import { API_KEY, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND, API_VISION_MODEL, API_MODEL_CLAUDE, API_OLLAMA_HOST, API_OLLAMA_TIMEOUT } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
 import { QuestInfo, InquiryInfo, ForumConfig } from "../models/QuestionAlias";
 import { ForumHandler } from "../forum/ForumHandler";
 import { KnDBLibrary } from "../utils/KnDBLibrary";
 import { claudeProcess } from "../claude/generateClaudeSystem";
+import ollama from "ollama";
+import { Ollama } from 'ollama'
+import { PromptOLlamaUtility } from "./PromptOLlamaUtility";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -253,6 +256,68 @@ export class QuestionHandler extends TknOperateHandler {
         return info;
     }
 
+    public async processQuestOllama(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        if(!quest.question || quest.question.trim().length == 0) {
+            info.error = true;
+            info.answer = "No question found.";
+            return Promise.resolve(info);
+        }
+        let category = quest.category;
+        if(!category || category.trim().length==0) category = "AIDB";
+        const aimodel = this.getAIModel(context);
+        let input = quest.question;
+        let db = this.getPrivateConnector(model);
+        try {
+            let forum = await this.getForumConfig(db,category,context);
+            let table_info = forum.tableinfo;
+            this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
+            this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
+            let version = await this.getDatabaseVersioning(forum);
+            //create question prompt with table info
+            let prmutil = new PromptUtility();
+            let prompt = prmutil.createQueryPrompt(input, table_info, version);
+            let result = await aimodel.generateContent(prompt);
+            let response = result.response;
+            let text = response.text();
+            this.logger.debug(this.constructor.name+".processQuest: response:",text);
+            //try to extract SQL from the response
+            let sql = this.parseAnswer(text,false);
+            this.logger.debug(this.constructor.name+".processQuest: sql:",sql);
+            if(!this.isValidQuery(sql,info)) {
+                return Promise.resolve(info);
+            }
+            info.query = sql;
+            //then run the SQL query
+            let rs = await this.doEnquiry(sql, forum);
+            this.logger.debug(this.constructor.name+".processQuest: rs:",rs);
+            if(rs.records == 0 && API_ANSWER_RECORD_NOT_FOUND) {
+                info.answer = "Record not found.";
+                return Promise.resolve(info);
+            }
+            info.dataset = rs.rows;
+            if(API_ANSWER) {
+                let datarows = JSON.stringify(rs.rows);
+                this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
+                //create reply prompt from sql and result set
+                prompt = prmutil.createAnswerPrompt(input, datarows, forum.prompt);
+                result = await aimodel.generateContent(prompt);
+                response = result.response;
+                text = response.text();
+                this.logger.debug(this.constructor.name+".processQuest: response:",text);
+                info.answer = this.parseAnswer(text);
+            }
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            info.error = true;
+            info.answer = this.getDBError(ex).message;
+		} finally {
+			if(db) db.close();
+        }
+        this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
+        return info;
+    }
+
     public async processQuestion(quest: QuestInfo, context?: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         if(quest.agent=="GEMINI") {
             return await this.processQuestionGemini(quest, context, model);
@@ -322,10 +387,23 @@ export class QuestionHandler extends TknOperateHandler {
         if(typeof quest == "string") {
             return await this.processAskGemini(quest, context);
         }
-        if(quest.agent=="GEMINI") {
-            return await this.processAskGemini(quest, context);
-        }
-        return await this.processAskGemini(quest, context);            
+        // if(quest.agent=="GEMINI") {
+        //     return await this.processAskGemini(quest, context);
+        // }
+        // return await this.processAskGemini(quest, context);    
+
+        
+        switch (quest.agent?.toLocaleUpperCase()) {
+            
+            case "GEMMA 2" :
+            case "LLAMA 3.1" : {
+                return await this.processAskOllama(quest, context);
+            }
+            case "GEMINI" : 
+            default : { //otherwise GEMINI
+                return await this.processAskGemini(quest, context);
+            }
+        }   
     }
 
     public async processAskGemini(quest: QuestInfo | string, context?: KnContextInfo) : Promise<InquiryInfo> {
@@ -346,6 +424,51 @@ export class QuestionHandler extends TknOperateHandler {
             let text = response.text();
             this.logger.debug(this.constructor.name+".processAsk: response:",text);
             info.answer = this.parseAnswer(text);
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            info.error = true;
+            info.answer = this.getDBError(ex).message;
+        }
+        this.logger.debug(this.constructor.name+".processAsk: return:",JSON.stringify(info));
+        return info;
+    }
+
+    public async processAskOllama(quest: QuestInfo | string, context?: KnContextInfo) : Promise<InquiryInfo> {
+        if(typeof quest == "string") quest = { question: quest, category: "AIDB", mime: "", image: "", agent: "", model:""};
+        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
+        if(!quest.question || quest.question.length == 0) {
+            info.error = true;
+            info.answer = "No question found.";
+            return Promise.resolve(info);
+        }
+        try {
+            // const aimodel = this.getAIModel(context);
+            // let input = quest.question;
+            // let prmutil = new PromptUtility();
+            // let prompt = prmutil.createAskPrompt(input);
+            // let result = await aimodel.generateContent(prompt);
+            // let response = result.response;
+            // let text = response.text();
+            // this.logger.debug(this.constructor.name+".processAsk: response:",text);
+            // info.answer = this.parseAnswer(text);
+            let input = quest.question;
+            
+            let prmutil = new PromptOLlamaUtility();
+            let prompt = prmutil.createAskPrompt(input);
+
+            
+            //const ollama = new Ollama({ host: 'http://127.0.0.1:12123' })
+            const ollama = new Ollama({ host: API_OLLAMA_HOST })
+            const result = await ollama.generate({
+                model: quest.model!,
+                keep_alive: API_OLLAMA_TIMEOUT,
+                prompt: prompt,
+                stream: false,
+            })
+            let response = result.response;
+            this.logger.debug(this.constructor.name+".processAsk: response:", response);
+            info.answer = this.parseAnswer(response);
+            
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
