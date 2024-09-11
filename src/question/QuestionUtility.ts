@@ -46,7 +46,7 @@ export class QuestionUtility {
         if(hasGrave && ans.endsWith("`")) {
             ans = ans.substring(0,ans.length-1);
         }
-        return ans.trim();
+        return this.trime(ans.trim());
     }
 
     public static readDatabaseFileInfo(schemafile: string = "aidb_schema.sql", dbDir: string = "database", curDir?: string) : string {
@@ -95,6 +95,10 @@ export class QuestionUtility {
             return detector.detectText(filePath);
         }
         return Promise.resolve({ text: "" });
+    }
+
+    public static trime(text: string) : string {
+        return text.replaceAll("\\n","\n");
     }
 
 }

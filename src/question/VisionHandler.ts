@@ -85,7 +85,7 @@ export class VisionHandler extends TknOperateHandler {
             let response = result.response;
             let text = response.text();
             this.logger.debug(this.constructor.name+".processQuestion: response:",text);
-            info.answer = text;
+            info.answer = QuestionUtility.trime(text);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
@@ -117,7 +117,7 @@ export class VisionHandler extends TknOperateHandler {
             let response = result.response;
             let text = response.text();
             this.logger.debug(this.constructor.name+".processAsk: response:",text);
-            info.answer = text;
+            info.answer = QuestionUtility.trime(text);
             this.deleteAttach(quest.image);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
