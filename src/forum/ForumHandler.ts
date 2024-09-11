@@ -366,7 +366,7 @@ export class ForumHandler extends TknOperateHandler {
         context.params.forumid = id;
         await this.insertQuestions(context, model, db);
         let knsql = this.buildInsertQuery(context, model, KnOperation.CREATE);
-        this.assignParameters(context,knsql,KnOperation.CREATE,KnOperation.CREATE);
+        await this.assignParameters(context,knsql,KnOperation.CREATE,KnOperation.CREATE);
         knsql.set("forumid",record.forumid);
         knsql.set("forumcode",record.forumcode);
         knsql.set("forumgroup",context.params.forumgroup || this.group); 
