@@ -59,7 +59,6 @@ function sendQuery(quest) {
 	//let agent = isGemini ? "GEMINI" : isOLlama ? "LLAMA" : model.trim();
 	if (isOLlama) {
 		// llama 3.1 8B-llama3.1 & gemma 2-gemma2
-		agent = "LLAMA";
 		const subModel = model.split("-");
 		if (subModel.length == 2) {
 			

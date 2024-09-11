@@ -21,6 +21,8 @@ services:
       - NODE_ENV=development
       - NPM_TOKEN=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
       - GOOGLE_APPLICATION_CREDENTIALS=/usr/node/app/key/service_account_key.json
+      - OLLAMA_HOST=http://172.31.199.54:11434
+      - OLLAMA_PORT=11434
     restart: always
     volumes:
       - ./:/usr/node/app

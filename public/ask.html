@@ -77,11 +77,13 @@
 			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
 			$('#listmessages').append(li);
 			$(".input-ask").prop('disabled', true);
+
 			let model = $("input[name='model']:checked").val();
-			// Add llama 3.1 model 
+			let agent = $("input[name='model']:checked").attr("data-agent");
+
 			let isGemini = model.toUpperCase().includes("GEMINI", 0);
 			let isOLlama = model.toUpperCase().includes("LLAMA", 0);
-			let agent = isGemini ? "GEMINI" : isOLlama ? "LLAMA" : model;
+			//let agent = isGemini ? "GEMINI" : isOLlama ? "LLAMA" : model;
 			if (isOLlama) {
 				// llama 3.1 8B-llama3.1 & gemma 2-gemma2
 				const subModel = model.split("-");
@@ -99,7 +101,7 @@
 			$("#waitlayer").show();
 			jQuery.ajax({
 				url: API_URL+"/api/question/ask",
-				data: {model: model, query: quest},
+				data: {model: model, query: quest, agent: agent},
 				type: "POST",
 				dataType: "html",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -136,9 +138,10 @@
 		<div class="menu dropdown">			
 			<span class="m dropbtn">&#9776;</span>
 			<div class="dropdown-content">
-				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_1" value="gemini-1.5-flash" checked /><label for="mobel_1">Gemini 1.5 Flash<label></a>
-				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_2" value="gemini-pro" /><label for="mobel_2">Gemini Pro<label></a>
-				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_3" value="gemini-1.5-pro" /><label for="mobel_3">Gemini 1.5 Pro</label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_1" value="gemini-1.5-flash" data-agent="GEMINI" checked /><label for="mobel_1">Gemini 1.5 Flash<label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_2" value="gemini-pro" data-agent="GEMINI" /><label for="mobel_2">Gemini Pro<label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_3" value="gemini-1.5-pro" data-agent="GEMINI" /><label for="mobel_3">Gemini 1.5 Pro</label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_4" value="llama 3.1-llama3.1" data-agent="LLAMA3.1" /><label for="mobel_4">Llama 3.1 8B</label></a>
 			</div>
 		</div>
 	</div>	

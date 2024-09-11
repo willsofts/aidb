@@ -392,7 +392,11 @@ export class QuestionHandler extends TknOperateHandler {
         // }
         // return await this.processAskGemini(quest, context);    
 
-        
+        console.log("[PROCESS QUEST]");
+        console.log("category: " + quest.category);
+        console.log("agent: " + quest.agent);
+        console.log("model: " + quest.model);
+        console.log("question: " + quest.question);
         switch (quest.agent?.toLocaleUpperCase()) {
             
             case "GEMMA 2" :

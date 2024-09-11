@@ -24,6 +24,8 @@ services:
       - EXPRESS_CERT=./cert/cert.pem
       - GOOGLE_APPLICATION_CREDENTIALS=/usr/node/app/key/service_account_key.json
       - ANTHROPIC_API_KEY=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
+      - OLLAMA_HOST=http://172.31.199.54:11434
+      - OLLAMA_PORT=11434
     restart: always
     volumes:
       - ./:/usr/node/app
