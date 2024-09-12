@@ -25,47 +25,36 @@ export class PromptOLlamaUtility {
         let current_date = this.getCurrentDate();
         let current_version = version.trim().length>0 ? DATABASE_VERSION_INFO + version : "";
 
+        // 4 th 
+        // return `You are a ${dialect} (version ${version}) Database administrator. 
+        // You must answer with only 1 best syntactically correct SQL query statement in ${dialect} version ${version}. 
+        // Use the following format (without any explaination):
 
-        switch (category.toLocaleUpperCase())
-        {
-            case "AIDB1": 
-            case "AIDB2":
-                    
-                    // 4 th 
-                    return `You are a ${dialect} (version ${version}) Database administrator. 
-                    You must answer with only 1 best syntactically correct SQL query statement in ${dialect} version ${version}. 
-                    Use the following format (without any explaination):
+        // Question: "Question here"
+        // Answer: "SQL Query to run with plain text in double quotes"
         
-                    Question: "Question here"
-                    Answer: "SQL Query to run with plain text in double quotes"
-                    
-                    The fields you answer must only declared in following tables:
+        // The fields you answer must only declared in following tables:
 
-                    ${table_info}
-           
-                    `;
+        // ${table_info}
 
-            break;
+        
+        // `;
+        return `You are a ${dialect} (version ${version}) Database administrator. 
+        You must answer with only 1 best syntactically correct SQL query statement in ${dialect} version ${version}. 
+        Use the following format (without any explaination):
 
-            default: 
-                    return `Given an input question, first create a syntactically correct ${dialect} query to run return as the answer.
-                    Use the following format:
-                    
-                    Question: "Question here"
-                    Answer: "SQL Query to run with plain text in double quotes"
-                    
-                    ${current_version}
-                    Only use the following tables:
-                    
-                    ${table_info}
-                            
-                    Always using alias name or full table name within columns in query statement and avoid field list is ambiguous.
-                    If someone asks for the table foobar, they really mean the product table. 
-                    For additional information, the current date or today is ${current_date}.
-                            
-                    `;
-            break;
-        }
+        Question: "Question here"
+        Answer: "SQL Query to run with plain text in double quotes"
+
+        ${current_version}
+        The fields you answer must only declared in following tables:
+
+        ${table_info}
+
+        current date or today is ${current_date}.
+
+        Ask in Thai answer with Thai, Ask in English answer with English
+        `;
     }
 
     public createChatPrompt_ori(input: string, table_info: string, version: string, dialect: string = this.dialect) : string {

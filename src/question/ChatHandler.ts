@@ -8,8 +8,9 @@ import { QuestionHandler } from "./QuestionHandler";
 import { QuestInfo, InquiryInfo } from "../models/QuestionAlias";
 import { ChatRepository } from "./ChatRepository";
 import { claudeProcess } from "../claude/generateClaudeSystem";
-import { Ollama } from 'ollama'
+
 import { PromptOLlamaUtility } from "./PromptOLlamaUtility";
+import { ollamaChat, ollamaGenerate } from "../ollama/generateOllama";
 
 export class ChatHandler extends QuestionHandler {
     public progid = "chat";
@@ -40,12 +41,13 @@ export class ChatHandler extends QuestionHandler {
     public getChatHistoryOllama(category: string, table_info: string, version: string) {
         let prmutil = new PromptOLlamaUtility();
         let prompt = prmutil.createChatPrompt(category, "", table_info, version);
-        return [
-            {
-                role: "user",
-                parts: [{text: prompt}],
-            },
-        ];
+        return prompt;
+        // return [
+        //     {
+        //         role: "user",
+        //         parts: [{text: prompt}],
+        //     },
+        // ];
     }
 
     public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
@@ -250,7 +252,7 @@ export class ChatHandler extends QuestionHandler {
         }
         let category = quest.category;
         if(!category || category.trim().length==0) category = "AIDB";
-        const ollama = new Ollama({ host: API_OLLAMA_HOST })
+        
         let input = quest.question;
         let db = this.getPrivateConnector(model);
         try 
@@ -264,13 +266,8 @@ export class ChatHandler extends QuestionHandler {
             //if(!chat) {
             let version = await this.getDatabaseVersioning(forum);
             let history = this.getChatHistoryOllama(category, table_info, version);              
-            let response = await ollama.chat({
-                model: quest.model!,
-                keep_alive: API_OLLAMA_TIMEOUT,
-                messages: [
-                    { role: 'system', content: JSON.stringify(JSON.stringify(history[0].parts)) },
-                    { role: 'user', content: input }],
-            })
+            let response = await ollamaChat(history, input, quest.model!);
+
             //let msg = "Question: "+input;
             let text = response.message.content;
             this.logger.debug(this.constructor.name+".processQuest: response:",text);
@@ -304,12 +301,7 @@ export class ChatHandler extends QuestionHandler {
                 //create reply prompt from sql and result set
                 let prmutil = new PromptOLlamaUtility();
                 let prompt = prmutil.createAnswerPrompt(input, datarows, forum.prompt);
-                let result = await ollama.generate({
-                    model: quest.model!,
-                    keep_alive: API_OLLAMA_TIMEOUT,
-                    prompt: prompt,
-                    stream: false
-                })
+                let result = await ollamaGenerate(prompt, quest.model!);
                 let response = result.response; 
                 this.logger.debug(this.constructor.name+".processQuest: response:", response);
                 info.answer = this.parseAnswer(response);

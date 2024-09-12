@@ -15,6 +15,7 @@ import { claudeProcess } from "../claude/generateClaudeSystem";
 import ollama from "ollama";
 import { Ollama } from 'ollama'
 import { PromptOLlamaUtility } from "./PromptOLlamaUtility";
+import { ollamaChat, ollamaGenerate } from "../ollama/generateOllama";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -439,13 +440,14 @@ export class QuestionHandler extends TknOperateHandler {
             let input = quest.question;            
             let prmutil = new PromptOLlamaUtility();
             let prompt = prmutil.createAskPrompt(input);
-            const ollama = new Ollama({ host: API_OLLAMA_HOST })
-            const result = await ollama.generate({
-                model: quest.model!,
-                keep_alive: API_OLLAMA_TIMEOUT,
-                prompt: prompt,
-                stream: false,
-            })
+            //const ollama = new Ollama({ host: API_OLLAMA_HOST })
+            // const result = await ollama.generate({
+            //     model: quest.model!,
+            //     keep_alive: API_OLLAMA_TIMEOUT,
+            //     prompt: prompt,
+            //     stream: false,
+            // })
+            let result = await ollamaGenerate(prompt, quest.model!);
             let response = result.response;
             this.logger.debug(this.constructor.name+".processAsk: response:", response);
             info.answer = this.parseAnswer(response);
