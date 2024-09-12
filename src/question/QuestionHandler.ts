@@ -5,17 +5,15 @@ import { KnRecordSet, KnDBConnector } from "@willsofts/will-sql";
 import { InquiryHandler } from "./InquiryHandler";
 import { TknOperateHandler } from '@willsofts/will-serv';
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
-import { API_KEY, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND, API_VISION_MODEL, API_MODEL_CLAUDE, API_OLLAMA_HOST, API_OLLAMA_TIMEOUT } from "../utils/EnvironmentVariable";
+import { API_KEY, API_ANSWER, API_ANSWER_RECORD_NOT_FOUND, API_VISION_MODEL, API_MODEL_CLAUDE } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
 import { QuestInfo, InquiryInfo, ForumConfig } from "../models/QuestionAlias";
 import { ForumHandler } from "../forum/ForumHandler";
 import { KnDBLibrary } from "../utils/KnDBLibrary";
 import { claudeProcess } from "../claude/generateClaudeSystem";
-import ollama from "ollama";
-import { Ollama } from 'ollama'
 import { PromptOLlamaUtility } from "./PromptOLlamaUtility";
-import { ollamaChat, ollamaGenerate } from "../ollama/generateOllama";
+import { ollamaGenerate } from "../ollama/generateOllama";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 

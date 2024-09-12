@@ -447,7 +447,7 @@ var fs_requiredfields = {
 	"forumdatabase":{msg:""}, 
 	"forumhost":{msg:""}, 
 	"forumport":{msg:""}, 
-	"forumtable":{msg:""}
+	"forumtable_gemini":{msg:""}
 };
 //#(390000) programmer code begin;
 function setupDataTable() {

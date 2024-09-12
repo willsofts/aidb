@@ -125,29 +125,72 @@
 			</div>
 	</div>
 </div>
-<div class="row row-height">
-	<div class="col-md-12 col-height">
-			<div class="table-layer-class">
-				<div class="row row-height">
-					<div class="col-height col-md-12">
-<label for="forumprompt" id="forumprompt_label" class="control-label"><%=label.get('forumprompt_label','Answer Prompt Info')%></label>
-<div class="input-group"><textarea id="forumprompt" name="forumprompt" class="form-control input-md" rows="2"><%=data.dataset?.forumprompt%></textarea><div class="input-group-required"><label class="required">&#160;</label></div></div><div id="forumprompt_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumprompt_alert','You can not leave this empty')%></div>
-					</div>
-				</div>
-			</div>
-	</div>
+
+<div id="fsagenttablayer">
+	<ul id="fsagenttabbar" class="nav nav-tabs navbar-left nav-tabbar-agent" role="tablist">
+<%	
+	let agents = data.entity?.tagent;
+	if(agents) {
+		let firstflag = true;
+		for(let agent in agents) {
+			let agentname = agents[agent];
+			let activing = firstflag ? "active":"";
+			agent = agent.toLowerCase();
+%>
+		<li class="nav-item active" role="presentation">
+			<a id="linker_<%=agent%>" class="nav-link agent-link <%=activing%>" href="#entryagent_<%=agent%>" data-toggle="tab" data-target="#entryagent_<%=agent%>" role="tab" aria-controls="entryagent_<%=agent%>" aria-selected="<%=firstflag%>"><%=agentname%></a>
+  		</li>
+<%
+			firstflag = false;
+		}
+	}
+%>
+	</ul>
 </div>
-<div class="row row-height">
-	<div class="col-md-12 col-height">
-			<div class="table-layer-class">
-				<div class="row row-height">
-					<div class="col-height col-md-12">
-<label for="forumtable" id="forumtable_label" class="control-label"><%=label.get('forumtable_label','Table Schema Info')%></label>
-<div class="input-group"><textarea id="forumtable" name="forumtable" class="form-control input-md irequired alert-input" rows="15"><%=data.dataset?.forumtable%></textarea><div class="input-group-required"><label class="required">*</label></div></div><div id="forumtable_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumtable_alert','You can not leave this empty')%></div>
+<div id="entrytabagent" class="tab-content">
+<%
+	if(agents) {
+		let firstflag = true;
+		for(let agent in agents) {
+			let agentname = agents[agent];
+			let activing = firstflag ? "show active":"";
+			agent = agent.toLowerCase();
+			let forumpromptname = "forumprompt_"+agent;
+			let forumpromptdata = data.dataset[forumpromptname];
+			let forumtablename = "forumtable_"+agent;
+			let forumtabledata = data.dataset[forumtablename];
+%>
+<div id="entryagent_<%=agent%>" class="tab-pane fade <%=activing%>">
+	<div class="row row-height">
+		<div class="col-md-12 col-height">
+				<div class="table-layer-class">
+					<div class="row row-height">
+						<div class="col-height col-md-12">
+	<label for="<%=forumpromptname%>" id="forumprompt_label_<%=agent%>" class="control-label"><%=label.get('forumprompt_label','Answer Prompt Info')%></label>
+	<div class="input-group"><textarea id="<%=forumpromptname%>" name="<%=forumpromptname%>" class="form-control input-md" rows="2"><%=forumpromptdata%></textarea><div class="input-group-required"><label class="required">&#160;</label></div></div><div id="forumprompt_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumprompt_alert','You can not leave this empty')%></div>
+						</div>
 					</div>
 				</div>
-			</div>
+		</div>
 	</div>
+	<div class="row row-height">
+		<div class="col-md-12 col-height">
+				<div class="table-layer-class">
+					<div class="row row-height">
+						<div class="col-height col-md-12">
+	<label for="<%=forumtablename%>" id="forumtable_label_<%=agent%>" class="control-label"><%=label.get('forumtable_label','Table Schema Info')%></label>
+	<div class="input-group"><textarea id="<%=forumtablename%>" name="<%=forumtablename%>" class="form-control input-md irequired alert-input" rows="15"><%=forumtabledata%></textarea><div class="input-group-required"><label class="required">*</label></div></div><div id="forumtable_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('forumtable_alert','You can not leave this empty')%></div>
+						</div>
+					</div>
+				</div>
+		</div>
+	</div>	
+</div>
+<%
+			firstflag = false;
+		}
+	}
+%>
 </div>
 
 <div class="row row-height">

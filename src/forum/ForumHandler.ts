@@ -31,9 +31,9 @@ export class ForumHandler extends TknOperateHandler {
             forumport: { type: "INTEGER" },
             forumselected: { type: "STRING", defaultValue: "0" },
             forumsetting: { type: "STRING" },
-            forumtable: { type: "STRING" },
+            forumtable: { type: "STRING", created: true, updated: true },
             forumremark: { type: "STRING" },
-            forumprompt: { type: "STRING" },
+            forumprompt: { type: "STRING", created: true, updated: true },
             inactive: { type: "STRING", selected: true, created: false, updated: false, defaultValue: "0" },
             editflag: { type: "STRING", selected: true, created: true, updated: false, defaultValue: "1" },
             createmillis: { type: "BIGINT", selected: true, created: true, updated: false, defaultValue: Utilities.currentTimeMillis() },
@@ -79,6 +79,8 @@ export class ForumHandler extends TknOperateHandler {
         sql.set("editdate",Utilities.now(),"DATE");
         sql.set("edittime",Utilities.now(),"TIME");
         sql.set("edituser",this.userToken?.userid);
+        sql.set("forumprompt",context.params.forumprompt_gemini);
+        sql.set("forumtable",context.params.forumtable_gemini);
     }
 
     /* try to validate fields for insert, update, delete, retrieve */
@@ -162,10 +164,15 @@ export class ForumHandler extends TknOperateHandler {
     }
 
     protected async performCategories(context: KnContextInfo, model: KnModel, db: KnDBConnector) : Promise<KnDataTable> {
-        //let settings = this.getCategorySetting(context, "tdialect");
+        //let settings = this.getCategorySetting(context, "tdialect"); //this setting come from method getDataSetting
         //let result = await this.getDataCategories(context, db, settings);
         //let entity = result.entity as KnDataEntity;
-        let entity : KnDataEntity = { };
+        let settings = [{tableName:"tagent", keyField:"agentid", orderFields:"seqno", addonFields:"seqno", setting: { categoryName: "tagent", keyName: "agentid", valueNames: ["nameen"]} }];
+        let datacategory = await this.getDataCategories(context, db, settings);
+        let entity = datacategory.entity as KnDataEntity;
+        if(!entity.tagent || Object.keys(entity.tagent).length ==0) {
+            entity.tagent = {"GEMINI":"GEMINI"};
+        }
         let forumtype = {"DB":"Database","API":"API"};
         entity["tforumtype"] = forumtype;
         let tdialect : KnDataSet = { };
@@ -180,7 +187,8 @@ export class ForumHandler extends TknOperateHandler {
         }
         entity["tdialect"] = tdialect;
         entity["dialects"] = dialects;
-        return this.createDataTable("categories", {}, entity);
+        return datacategory;
+        //return this.createDataTable("categories", {}, entity);
     }
 
     /* override to handle launch router when invoked from menu */
@@ -204,11 +212,13 @@ export class ForumHandler extends TknOperateHandler {
             context.params.forumport = 0;
         } 
         await this.insertQuestions(context, model, db);
+        await this.insertForumAgent(context, model, db);
         return super.performUpdating(context, model, db);
     }
 
     protected async performClearing(context: any, model: KnModel, db: KnDBConnector) : Promise<KnResultSet> {
         await this.deleteQuestions(context, model, db, context.params.forumid);
+        await this.deleteForumAgent(context, model, db, context.params.forumid);
         return super.performClearing(context, model, db);
     }
 
@@ -243,8 +253,113 @@ export class ForumHandler extends TknOperateHandler {
         return result;
     }
 
+    protected async deleteForumAgent(context: any, model: KnModel, db: KnDBConnector, forumid: string) : Promise<KnResultSet> {
+        let knsql = new KnSQL();
+        knsql.append("delete from tforumagent where forumid = ?forumid ");
+        knsql.set("forumid",forumid);
+        return await knsql.executeUpdate(db,context);
+    }
+
+    protected async getAgentInfo(context: any, db: KnDBConnector) : Promise<string[]> {
+        let results : string[] = [];
+        let knsql = new KnSQL();
+        knsql.append("select agentid,seqno from tagent order by seqno ");
+        let rs = await knsql.executeQuery(db,context);
+        if(rs.rows.length > 0) {
+            for(let i=0; i<rs.rows.length; i++) {
+                let row = rs.rows[i];
+                results.push(row.agentid);
+            }
+        }
+        if(results.length == 0) results.push("GEMINI");
+        return results;
+    }
+
+    protected async insertForumAgent(context: any, model: KnModel, db: KnDBConnector) : Promise<KnRecordSet> {
+        let result : KnRecordSet = { records: 0, rows: [], columns: []};
+        let forumid = context.params.forumid;
+        let curmillis = Utilities.currentTimeMillis();
+        let curdate = Utilities.now();
+        let curtime = curdate;
+        let agents = await this.getAgentInfo(context,db);
+        let knsql = new KnSQL();
+        knsql.append("insert into tforumagent(forumid,agentid,forumtable,forumprompt,forumremark,createdate,createtime,createmillis,createuser,editdate,edittime,editmillis,edituser) ");
+        knsql.append("values(?forumid,?agentid,?forumtable,?forumprompt,?forumremark,?createdate,?createtime,?createmillis,?createuser,?editdate,?edittime,?editmillis,?edituser) ");
+        let updsql = new KnSQL();
+        updsql.append("update tforumagent set forumtable=?forumtable, forumprompt=?forumprompt, forumremark=?forumremark, ");
+        updsql.append("editdate=?editdate, edittime=?edittime, editmillis=?editmillis, edituser=?edituser ");
+        updsql.append("where forumid = ?forumid and agentid = ?agentid ");
+        for(let agent of agents) {
+            let agentid = agent.toLowerCase();
+            let forumtable = context.params["forumtable_"+agentid];
+            let forumprompt = context.params["forumprompt_"+agentid];
+            let forumremark = context.params["forumremark_"+agentid];
+            updsql.clearParameter();
+            updsql.set("forumid",forumid);
+            updsql.set("agentid",agent);
+            updsql.set("forumtable",forumtable);
+            updsql.set("forumprompt",forumprompt);
+            updsql.set("forumremark",forumremark);
+            updsql.set("editdate",curdate,"DATE");
+            updsql.set("edittime",curtime,"TIME");
+            updsql.set("editmillis",curmillis);
+            updsql.set("edituser",this.userToken?.userid);
+            let urs = await updsql.executeUpdate(db,context);
+            let ures = this.createRecordSet(urs);
+            result.records += ures.records;                
+            if(ures.records == 0) {
+                knsql.clearParameter();
+                knsql.set("forumid",forumid);
+                knsql.set("agentid",agent);
+                knsql.set("forumtable",forumtable);
+                knsql.set("forumprompt",forumprompt);
+                knsql.set("forumremark",forumremark);
+                knsql.set("createdate",curdate,"DATE");
+                knsql.set("createtime",curtime,"TIME");
+                knsql.set("createmillis",curmillis);
+                knsql.set("createuser",this.userToken?.userid);
+                knsql.set("editdate",curdate,"DATE");
+                knsql.set("edittime",curtime,"TIME");
+                knsql.set("editmillis",curmillis);
+                knsql.set("edituser",this.userToken?.userid);
+                let rs = await knsql.executeUpdate(db,context);
+                let res = this.createRecordSet(rs);
+                result.records += res.records;                
+            }
+        }
+        return result;
+    }
+
     protected async doGetting(context: KnContextInfo, model: KnModel, action: string = KnOperation.GET): Promise<KnDataTable> {
         return this.doRetrieving(context, model, action);
+    }
+
+    protected async retrieveDataSet(context: KnContextInfo, db: KnDBConnector, rs: KnRecordSet) : Promise<KnDataSet> {
+        let row = this.transformData(rs.rows[0]);
+        let ars = await this.performRetrieveForumAgent(db, context.params.forumid, context);
+        if(ars.rows.length > 0) {
+            for(let arow of ars.rows) {
+                let agentid = arow.agentid.toLowerCase();
+                row["forumtable_"+agentid] = arow.forumtable;
+                row["forumprompt_"+agentid] = arow.forumprompt;
+                row["forumremark_"+agentid] = arow.forumremark;
+            }
+        }
+        if(!row.forumtable_gemini) {
+            row.forumtable_gemini = row.forumtable;
+            row.forumprompt_gemini = row.forumprompt;
+            row.forumremark_gemini = row.forumremark;
+        }
+        row.forumport = row.forumport.toString().replaceAll(",","");
+        let questions = [];
+        let qrs = await this.performQuestionGetting(context, db, row.forumid);
+        if(qrs && qrs.rows.length>0) {
+            for(let i=0; i<qrs.rows.length; i++) {
+                questions.push(qrs.rows[i].question);                    
+            }
+        }
+        row.questions = questions;
+        return row;
     }
 
     protected override async doRetrieving(context: KnContextInfo, model: KnModel, action: string = KnOperation.RETRIEVE): Promise<KnDataTable> {
@@ -252,16 +367,7 @@ export class ForumHandler extends TknOperateHandler {
         try {
             let rs = await this.performRetrieving(db, context.params.forumid, context);
             if(rs.rows.length>0) {
-                let row = this.transformData(rs.rows[0]);
-                row.forumport = row.forumport.toString().replaceAll(",","");
-                let questions = [];
-                let qrs = await this.performQuestionGetting(context, db, row.forumid);
-                if(qrs && qrs.rows.length>0) {
-                    for(let i=0; i<qrs.rows.length; i++) {
-                        questions.push(qrs.rows[i].question);                    
-                    }
-                }
-                row.questions = questions;
+                let row = await this.retrieveDataSet(context,db,rs);
                 return this.createDataTable(KnOperation.RETRIEVE, row);
             }
             return this.recordNotFound();
@@ -283,7 +389,28 @@ export class ForumHandler extends TknOperateHandler {
         let rs = await knsql.executeQuery(db,context);
         return this.createRecordSet(rs);
     }
+
+    protected async performRetrieveForumAgent(db: KnDBConnector, forumid: string, context?: KnContextInfo): Promise<KnRecordSet> {
+        let knsql = new KnSQL();
+        knsql.append("SELECT agentid,forumtable,forumprompt,forumremark ");
+        knsql.append("FROM tforumagent ");
+        knsql.append("WHERE forumid = ?forumid ");
+        knsql.set("forumid",forumid);
+        let rs = await knsql.executeQuery(db,context);
+        return this.createRecordSet(rs);
+    }
     
+    public async getForumAgent(db: KnDBConnector, forumid: string, agentid: string, context?: KnContextInfo): Promise<KnRecordSet> {
+        let knsql = new KnSQL();
+        knsql.append("SELECT forumtable,forumprompt,forumremark ");
+        knsql.append("FROM tforumagent ");
+        knsql.append("WHERE forumid = ?forumid and agentid = ?agentid ");
+        knsql.set("forumid",forumid);
+        knsql.set("agentid",agentid);
+        let rs = await knsql.executeQuery(db,context);
+        return this.createRecordSet(rs);
+    }
+
     /**
      * Override for search action (return data collection)
      * @param context 
@@ -294,7 +421,7 @@ export class ForumHandler extends TknOperateHandler {
         let rs = await this.doCollecting(context, model);
         return this.createDataTable(KnOperation.COLLECT, this.createRecordSet(rs), {}, this.progid+"/"+this.progid+"_data");
     }
-
+    
     /**
      * Override for retrieval action (return record not found error if not found any record)
      * @param context 
@@ -306,16 +433,7 @@ export class ForumHandler extends TknOperateHandler {
         try {
             let rs =  await this.performRetrieving(db, context.params.forumid, context);
             if(rs.rows.length>0) {
-                let row = this.transformData(rs.rows[0]);
-                row.forumport = row.forumport.toString().replaceAll(",","");
-                let questions = [];
-                let qrs = await this.performQuestionGetting(context, db, row.forumid);
-                if(qrs && qrs.rows.length>0) {
-                    for(let i=0; i<qrs.rows.length; i++) {
-                        questions.push(qrs.rows[i].question);                    
-                    }
-                }
-                row.questions = questions;
+                let row = await this.retrieveDataSet(context,db,rs);
                 let dt = await this.performCategories(context, model, db);
                 return this.createDataTable(KnOperation.RETRIEVAL, row, dt.entity, this.progid+"/"+this.progid+"_dialog");
             }
@@ -365,6 +483,7 @@ export class ForumHandler extends TknOperateHandler {
         };
         context.params.forumid = id;
         await this.insertQuestions(context, model, db);
+        await this.insertForumAgent(context, model, db);
         let knsql = this.buildInsertQuery(context, model, KnOperation.CREATE);
         await this.assignParameters(context,knsql,KnOperation.CREATE,KnOperation.CREATE);
         knsql.set("forumid",record.forumid);
@@ -517,9 +636,19 @@ export class ForumHandler extends TknOperateHandler {
 
     public async getForumConfig(db: KnDBConnector, forumid: string, context?: KnContextInfo) : Promise<ForumConfig | undefined> {
         let result : ForumConfig | undefined = undefined;
+        let agentid = context?.params?.agent;
         let rs = await this.getForumRecord(db, forumid, context);
         if(rs.rows.length>0) {
             let row = rs.rows[0];
+            if(agentid) {
+                let ars = await this.getForumAgent(db, forumid, agentid, context);
+                if(ars.records > 0) {
+                    let arow = ars.rows[0];
+                    if(arow.forumtable) row.forumtable = arow.forumtable;
+                    if(arow.forumprompt) row.forumprompt = arow.forumprompt;
+                    if(arow.forumremark) row.forumremark = arow.forumremark;
+                }
+            }
             let dialectoptions = {};
             if(row.dialectoptions && row.dialectoptions!="") {
                 try {
