@@ -1,7 +1,6 @@
 import { KnModel, KnOperation } from "@willsofts/will-db";
 import { KnContextInfo, KnValidateInfo, KnDataTable } from "@willsofts/will-core";
-import { QuestInfo, InquiryInfo, FileImageInfo } from "../models/QuestionAlias";
-import { KnDBConnector } from "@willsofts/will-sql";
+import { QuestInfo, InquiryInfo } from "../models/QuestionAlias";
 import { VisionHandler } from "./VisionHandler";
 import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";

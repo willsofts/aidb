@@ -9,7 +9,6 @@ import { QuestInfo, InquiryInfo } from "../models/QuestionAlias";
 import { ChatRepository } from "./ChatRepository";
 import { claudeProcess } from "../claude/generateClaudeSystem";
 import { Ollama } from 'ollama'
-import { stringify } from "querystring";
 import { PromptOLlamaUtility } from "./PromptOLlamaUtility";
 
 export class ChatHandler extends QuestionHandler {
@@ -46,34 +45,17 @@ export class ChatHandler extends QuestionHandler {
                 role: "user",
                 parts: [{text: prompt}],
             },
-            // {
-            //     role: "model",
-            //     parts: [{text: "Great to meet you. What would you like to know?"}],
-            // },
         ];
     }
 
     public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
-        
-        // if(quest.agent=="GEMINI") {
-        //     return await this.processQuestGemini(context, quest, model);
-        // } else if (quest.agent=="CLAUDE") {
-        //     return await this.processQuestClaude(context, quest, model);
-        // }
-        // return await this.processQuestGemini(context, quest, model);
-
-        console.log("[PROCESS QUEST]");
-        console.log("category: " + quest.category);
-        console.log("agent: " + quest.agent);
-        console.log("model: " + quest.model);
-        console.log("question: " + quest.question);
-        switch (quest.agent?.toLocaleUpperCase()) {
-            
+        console.log(this.constructor.name+":[PROCESS QUEST]",quest);
+        switch (quest.agent?.toLocaleUpperCase()) {            
             case "CLAUDE": {
                 return await this.processQuestClaude(context, quest, model);
             }
-            case "GEMMA 2" :
-            case "LLAMA 3.1" : {
+            case "GEMMA" :
+            case "LLAMA" : {
                 return await this.processQuestOllama(context, quest, model);
             }
             case "GEMINI" :
@@ -260,8 +242,6 @@ export class ChatHandler extends QuestionHandler {
     }
 
     public override async processQuestOllama(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
-        //console.log("[PROCESS QUEST " + model + "]");
-
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         if(!quest.question || quest.question.trim().length == 0) {
             info.error = true;
@@ -270,8 +250,6 @@ export class ChatHandler extends QuestionHandler {
         }
         let category = quest.category;
         if(!category || category.trim().length==0) category = "AIDB";
-
-        //const ollama = new Ollama({ host: 'http://127.0.0.1:12123' })
         const ollama = new Ollama({ host: API_OLLAMA_HOST })
         let input = quest.question;
         let db = this.getPrivateConnector(model);
@@ -279,25 +257,13 @@ export class ChatHandler extends QuestionHandler {
         {
             const chatmap = ChatRepository.getInstance();
             let forum = await this.getForumConfig(db,category,context);
-            // console.log("-------------------------------------------");
-            // console.log("TableInfo: " + forum.tableinfo);
             this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
             this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
-            let table_info = forum.tableinfo;
-            
-
+            let table_info = forum.tableinfo;            
             let chat = chatmap.get(category);
             //if(!chat) {
             let version = await this.getDatabaseVersioning(forum);
-            let history = this.getChatHistoryOllama(category, table_info, version);
-              
-            // console.log("\n-------------------------------------------");
-            // console.log("+[HISTORY]");
-            // console.log(JSON.stringify(history[0].parts));
-            // console.log("-[HISTORY]");
-            // console.log("-------------------------------------------");
-            // console.log("\n-------------------------------------------");
-            // console.log("+[CHAT BEGIN]")
+            let history = this.getChatHistoryOllama(category, table_info, version);              
             let response = await ollama.chat({
                 model: quest.model!,
                 keep_alive: API_OLLAMA_TIMEOUT,
@@ -305,31 +271,16 @@ export class ChatHandler extends QuestionHandler {
                     { role: 'system', content: JSON.stringify(JSON.stringify(history[0].parts)) },
                     { role: 'user', content: input }],
             })
-
-            let msg = "Question: "+input;
+            //let msg = "Question: "+input;
             let text = response.message.content;
             this.logger.debug(this.constructor.name+".processQuest: response:",text);
-            // console.log("-[CHAT END]");
-            // console.log("-------------------------------------------");
-            // console.log("+[RESPONSE BEGIN]");
-            // console.log(text);
-            // console.log("-[RESPONSE END]");
-            // console.log("-------------------------------------------");
-
-
             //try to extract SQL from the response
             let sql = this.parseAnswer(text,true);
             this.logger.debug(this.constructor.name+".processQuest: sql:",sql);
             if(!this.isValidQuery(sql,info)) {
                 return Promise.resolve(info);
             }
-            // console.log("\n-------------------------------------------");
-            // console.log("[SQL BEGIN]");
-            // console.log(sql);
-            // console.log("[SQL END]");
-            // console.log("-------------------------------------------");
             info.query = sql;
-
             //then run the SQL query
             let rs : KnRecordSet = { records: 0, rows: [], columns: [] };
             try {
@@ -341,73 +292,15 @@ export class ChatHandler extends QuestionHandler {
                 }
             } catch(ex: any) {
                 this.logger.error(this.constructor.name,ex);
-                // if(ex instanceof KnDBError) {
-                //     //try again
-                //     //let msg = "Error: "+ex.message;
-                //     //let result = await chat.sendMessage(msg);
-                //     //let response = result.response;
-                //     //let text = response.text();
-                //     //this.logger.debug(this.constructor.name+".processQuest: catch response:",text);
-                //     //let sql = this.parseAnswer(text,true);
-                //     //this.logger.debug(this.constructor.name+".processQuest: catch sql:",sql);
-                //     //this.logger.debug(this.constructor.name+".processAsk: response:", response);
-                //     //info.answer = this.parseAnswer(response);
-                    
-                //     let msg = "Error: "+ex.message;
-                //     let response = await ollama.chat({
-                //         model: quest.model!,
-                //         keep_alive: API_OLLAMA_TIMEOUT,
-                //         messages: [
-                //             //{ role: 'system', content: JSON.stringify(JSON.stringify(history[0].parts)) },
-                //             { role: 'user', content: msg }]
-                //     })
-                    
-                //     let text = response.message.content;
-                //     this.logger.debug(this.constructor.name+".processQuest: catch response:",text);
-                //     let sql = this.parseAnswer(text,true);
-                //     this.logger.debug(this.constructor.name+".processQuest: catch sql:",sql);
-                //     if(!sql || sql.trim().length==0) {
-                //         info.error = true;
-                //         info.answer = this.getDBError(ex).message;
-                //         return Promise.resolve(info);    
-                //     }
-                //     if(!this.isValidQuery(sql,info)) {
-                //         return Promise.resolve(info);
-                //     }
-                //     info.query = sql;
-                //     try {
-                //         rs = await this.doEnquiry(sql, forum);
-                //         this.logger.debug(this.constructor.name+".processQuest: catch rs:",rs);
-                //         if(rs.records == 0 && API_ANSWER_RECORD_NOT_FOUND) {
-                //             info.answer = "Record not found.";
-                //             return Promise.resolve(info);
-                //         }
-                //     } catch(exc: any) {
-                //         this.logger.error(this.constructor.name,exc);
-                //         info.error = true;
-                //         info.answer = this.getDBError(exc).message;
-                //         //this.sendError(chat,info.answer);
-                //         return Promise.resolve(info);                    
-                //     }
-                // } else {
-                //     info.error = true;
-                //     info.answer = this.getDBError(ex).message;
-                //     //this.sendError(chat,info.answer);
-                //     return Promise.resolve(info);
-                // }
-                
                 info.error = true;
                 info.answer = this.getDBError(ex).message;
                 //this.sendError(chat,info.answer);
                 return Promise.resolve(info);
             }
             info.dataset = rs.rows;
-            if(API_ANSWER) {
-                
+            if(API_ANSWER) {                
                 let datarows = JSON.stringify(rs.rows);
                 this.logger.debug(this.constructor.name+".processQuest: SQLResult:",datarows);
-
-
                 //create reply prompt from sql and result set
                 let prmutil = new PromptOLlamaUtility();
                 let prompt = prmutil.createAnswerPrompt(input, datarows, forum.prompt);
@@ -420,15 +313,6 @@ export class ChatHandler extends QuestionHandler {
                 let response = result.response; 
                 this.logger.debug(this.constructor.name+".processQuest: response:", response);
                 info.answer = this.parseAnswer(response);
-                // console.log("\n-------------------------------------------");
-                // console.log("[ANSWER BEGIN]");
-                // console.log( "\ninput     -> " + input);
-                // console.log( "\nf prompt  -> " + forum.prompt);
-                // console.log( "\nprompt    -> " + prompt);
-                // console.log( "\nresponse  -> " + response);
-                // console.log( "\ninfo      -> " + info.answer);
-                // console.log("[ANSWER END]");
-                // console.log("\n-------------------------------------------");
             }
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);

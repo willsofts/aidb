@@ -387,20 +387,10 @@ export class QuestionHandler extends TknOperateHandler {
         if(typeof quest == "string") {
             return await this.processAskGemini(quest, context);
         }
-        // if(quest.agent=="GEMINI") {
-        //     return await this.processAskGemini(quest, context);
-        // }
-        // return await this.processAskGemini(quest, context);    
-
-        console.log("[PROCESS QUEST]");
-        console.log("category: " + quest.category);
-        console.log("agent: " + quest.agent);
-        console.log("model: " + quest.model);
-        console.log("question: " + quest.question);
-        switch (quest.agent?.toLocaleUpperCase()) {
-            
-            case "GEMMA 2" :
-            case "LLAMA 3.1" : {
+        console.log(this.constructor.name+":[PROCESS QUEST]",quest);
+        switch (quest.agent?.toLocaleUpperCase()) {            
+            case "GEMMA" :
+            case "LLAMA" : {
                 return await this.processAskOllama(quest, context);
             }
             case "GEMINI" : 
@@ -446,22 +436,9 @@ export class QuestionHandler extends TknOperateHandler {
             return Promise.resolve(info);
         }
         try {
-            // const aimodel = this.getAIModel(context);
-            // let input = quest.question;
-            // let prmutil = new PromptUtility();
-            // let prompt = prmutil.createAskPrompt(input);
-            // let result = await aimodel.generateContent(prompt);
-            // let response = result.response;
-            // let text = response.text();
-            // this.logger.debug(this.constructor.name+".processAsk: response:",text);
-            // info.answer = this.parseAnswer(text);
-            let input = quest.question;
-            
+            let input = quest.question;            
             let prmutil = new PromptOLlamaUtility();
             let prompt = prmutil.createAskPrompt(input);
-
-            
-            //const ollama = new Ollama({ host: 'http://127.0.0.1:12123' })
             const ollama = new Ollama({ host: API_OLLAMA_HOST })
             const result = await ollama.generate({
                 model: quest.model!,
