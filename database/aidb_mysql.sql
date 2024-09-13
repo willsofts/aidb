@@ -10,6 +10,19 @@
 CREATE DATABASE IF NOT EXISTS `aidb` /*!40100 DEFAULT CHARACTER SET utf8mb3 */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `aidb`;
 
+CREATE TABLE IF NOT EXISTS `tagent` (
+  `agentid` varchar(10) NOT NULL,
+  `nameen` varchar(50) NOT NULL,
+  `nameth` varchar(50) NOT NULL,
+  `seqno` int NOT NULL,
+  PRIMARY KEY (`agentid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep ai agent';
+
+INSERT INTO `tagent` (`agentid`, `nameen`, `nameth`, `seqno`) VALUES
+	('CLAUDE', 'CLAUDE', 'CLAUDE', 2),
+	('GEMINI', 'GEMINI', 'GEMINI', 1),
+	('LLAMA', 'LLAMA', 'LLAMA', 3);
+
 CREATE TABLE IF NOT EXISTS `tattachfile` (
   `attachid` varchar(50) NOT NULL,
   `attachno` varchar(50) NOT NULL,
@@ -63,7 +76,6 @@ CREATE TABLE IF NOT EXISTS `tforum` (
   `forumuser` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `forumpassword` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `forumdatabase` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-	`forumdbversion` VARCHAR(250) NULL DEFAULT NULL COLLATE 'utf8mb3_general_ci',
   `forumhost` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `forumport` int DEFAULT '0',
   `forumselected` varchar(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT '0',
@@ -94,6 +106,24 @@ INSERT INTO `tforum` (`forumid`, `forumcode`, `forumtitle`, `forumgroup`, `forum
 	('API1', 'API1', 'API Inquiry', 'DB', 'API', 'MYSQL', 'http://localhost:8080/api/inquiry/inquire', '', '', '', '', '', 0, '0', NULL, 'CREATE TABLE IF NOT EXISTS `cust_info` (\r\n  `customer_id` varchar(50) NOT NULL COMMENT \'customer id\',\r\n  `customer_name` varchar(50) NOT NULL COMMENT \'customer name\',\r\n  `customer_surname` varchar(50) NOT NULL COMMENT \'customer surname\',\r\n  PRIMARY KEY (`customer_id`)\r\n) ENGINE=InnoDB COMMENT=\'table keep customer information\';\r\n\r\nCREATE TABLE IF NOT EXISTS `cust_order` (\r\n  `order_id` varchar(50) NOT NULL COMMENT \'order id\',\r\n  `customer_id` varchar(50) NOT NULL COMMENT \'customer id from table cust_info.customer_id\',\r\n  `order_date` date NOT NULL COMMENT \'order date\',\r\n  `order_time` time NOT NULL COMMENT \'order time\',\r\n  `order_status` varchar(50) DEFAULT NULL,\r\n  `order_total_unit` bigint NOT NULL DEFAULT (0) COMMENT \'order total unit\',\r\n  `order_total_amount` decimal(20,2) NOT NULL COMMENT \'order total amount\',\r\n  PRIMARY KEY (`order_id`,`customer_id`) USING BTREE\r\n) ENGINE=InnoDB COMMENT=\'table keep order master\';\r\n\r\nCREATE TABLE IF NOT EXISTS `cust_order_detail` (\r\n  `order_id` varchar(50) NOT NULL COMMENT \'order id from table cust_order.order_id\',\r\n  `product_id` varchar(50) NOT NULL COMMENT \'product id from table cust_product.product_id\',\r\n  `order_date` date NOT NULL COMMENT \'order date\',\r\n  `order_time` time NOT NULL COMMENT \'order time\',\r\n  `order_unit` bigint NOT NULL COMMENT \'order unit\',\r\n  `order_price` decimal(20,2) NOT NULL COMMENT \'order price\',\r\n  `order_discount` decimal(20,2) NOT NULL,\r\n  `order_amount` decimal(20,2) NOT NULL COMMENT \'order amount\',\r\n  PRIMARY KEY (`order_id`,`product_id`)\r\n) ENGINE=InnoDB COMMENT=\'table keep product under order from table torder\';\r\n\r\nCREATE TABLE IF NOT EXISTS `cust_product` (\r\n  `product_id` varchar(50) NOT NULL COMMENT \'product id\',\r\n  `product_name` varchar(50) DEFAULT NULL COMMENT \'product name\',\r\n  `product_price` decimal(16,2) DEFAULT NULL COMMENT \'product price\',\r\n  `product_index` int DEFAULT NULL,\r\n  PRIMARY KEY (`product_id`) USING BTREE\r\n) ENGINE=InnoDB COMMENT=\'table keep product information\';\r\n\r\n\r\nUse the following tables relationship:\r\n\r\ncust_order.customer_id = cust_info.customer_id\r\ncust_order_detail.order_id = cust_order.order_id\r\ncust_order_detail.product_id = cust_product.product_id\r\n', NULL, NULL, '0', '2024-03-27', '08:28:14', 1711502893995, NULL, '0', '2024-03-27', '08:43:54', 1711503834241, NULL),
 	('DOCFILE', 'DOCFILE', 'Chat Document', 'DOC', 'DB', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '0', NULL, 'In case of Thai message, please answer in Thai message too.', NULL, NULL, '0', '2024-05-17', '08:55:38', 1715910937624, NULL, '0', '2024-05-17', '08:55:38', 1715910937624, NULL),
 	('NOTEFILE', 'NOTEFILE', 'Chat Note', 'NOTE', 'DB', NULL, 'holiday_securities.txt', NULL, NULL, NULL, NULL, NULL, 0, '0', NULL, 'In case of Thai message, please answer in Thai message too.', NULL, 'ประกาศวันหยุดตามประเพณีของทีมหลักทรัพย์ (Securities) ประจำปี 2567\r\n\r\nทีมหลักทรัพย์ขอประกาศวันหยุดประจำปีของทีม โดยอิงกับประกาศวันหยุดของธนาคารแห่งประเทศไทย และ\r\nวันหยุดประจำปีของกลุ่มบริษัทฟรีวิลล์ ประจำปี 2567 ดังนี้\r\n \r\nวันที่(Date) 															หยุด (Holiday)\r\nวันจันทร์ 1 มกราคม 			วันขึ้นปีใหม่ 										1 วัน (Day)\r\nวันจันทร์ 26 กุมภาพันธ์ 		ชดเชยวันมาฆบูชา 									1 วัน (Day)\r\nวันจันทร์ 8 เมษายน 			ชดเชยวันพระบาทสมเด็จพระพุทธยอดฟ้าจุฬาโลกมหาราช 			1 วัน (Day)\r\n			และวันที่ระลึกมหาจักรีบรมราชวงศ์\r\nวันจันทร์ 15 เมษายน 		วันสงกรานต์ 										1 วัน (Day)\r\nวันอังคาร 16 เมษายน 		ชดเชยวันสงกรานต์ 									1 วัน (Day)\r\nวันพุธ 1 พฤษภาคม 			วันแรงงานแห่งชาติ 									1 วัน (Day)\r\nวันจันทร์ 6 พฤษภาคม 		ชดเชยวันฉัตรมงคล 									1 วัน (Day)\r\nวันพุธ 22 พฤษภาคม 		วันวิสาขบูชา 										1 วัน (Day)\r\nวันจันทร์ 3 มิถุนายน 			วันเฉลิมพระชนมพรรษาสมเด็จพระนางเจ้าสุทิดา 				1 วัน (Day)\r\n			พัชรสุธาพิมลลักษณ พระบรมราชินี\r\nวันจันทร์ 22 กรกฎาคม 		ชดเชยวันอาสาฬหบูชา 								1 วัน (Day)\r\nวันจันทร์ 29 กรกฎาคม 		ชดเชยวันเฉลิมพระชนมพรรษา 										\r\n			สมเด็จพระเจ้าอยู่หัวมหาวชิราลงกรณ บดินทรเทพยวรางกูร		1 วัน (Day)\r\nวันจันทร์ 12 สิงหาคม 		วันเฉลิมพระชนมพรรษา สมเด็จพระนางเจ้าสิริกิติ 				1 วัน (Day)\r\n			พระบรมราชินีนาถ พระบรมราชชนนีพันปีหลวง และ \r\n			วันแม่แห่งชาติ (วันเสาร์ 12 สิงหาคม)\r\nวันจันทร์ 14 ตุลาคม 			ชดเชยวันคล้ายวันสวรรคต พระบาทสมเด็จ							\r\n			พระปรมินทรมหาภูมิพลอดุลยเดช บรมนาถบพิตร		1 วัน (Day)\r\nวันพุธ 23 ตุลาคม 			วันปิยมหาราช 										1 วัน (Day)\r\nวันพฤหัสบดี 5 ธันวาคม 		วันคล้ายวันเฉลิมพระชนมพรรษาพระบาทสมเด็จพระปรมินทรมหาภูมิพลอดุลยเดช\r\n			บรมนาถบพิตร วันชาติ และวันพ่อแห่งชาติ 			1 วัน (Day)\r\nวันอังคาร 10 ธันวาคม 		วันรัฐธรรมนูญ 										1 วัน (Day)\r\nวันอังคาร 31 ธันวาคม 		วันสิ้นปี 											1 วัน (Day)\r\n\r\n\r\n							รวมวันหยุด (Total) 17 วัน (Days)\r\n									\r\n									\r\nแต่เนื่องจากจำนวนวันหยุดของกลุ่มบริษัทฟรีวิลล์ ประจำปี 2567 มีจำนวนทั้งสิ้น 18 วัน ตามประกาศของ HR\r\nดังนั้นทางทีมหลักทรัพย์จึงขอประกาศวันหยุดเพิ่มเติมจากวันหยุดของบริษัทข้างต้น ดังนี้\r\n\r\nลำดับ 	วันทำงานของทีมหลักทรัพย์ 								วันที่กำหนดให้หยุดทดแทน\r\n1 	ทำงานในวันหยุดชดเชยวันตรุษจีน 				ให้เลือกหยุด 1 วัน ในช่วงครึ่ง ปีแรก \r\n	(วันที่ 12 กุมภาพันธ์ 2567)				(วันที่ 1 มกราคม 2567 – วันที่ 30 มิถุนายม 2567)\r\n\r\n\r\n						รวมวันหยุดของทีมหลักทรัพย์ (Total) 18 วัน (Days)\r\n\r\n\r\nหมายเหตุ\r\nกรณีหยุดทดแทนวันหยุดชดเชยวันตรุษจีน (12 กุมภาพันธ์ 2567) ให้เลือกหยุดในช่วงวันที่กำหนดให้หยุดทดแทน\r\nตามตารางข้างต้น โดยต้องได้รับการอนุมัติล่วงหน้าจากหัวหน้างานตามความเหมาะสมในระบบ EZWOW แบบ\r\nGeneral Leave (Paid) (ไม่สามารถเก็บสะสมข้ามปีได้)\r\n\r\n', '0', '2024-05-22', '10:08:52', 1716347332486, NULL, '0', '2024-05-22', '10:08:53', 1716347332510, NULL);
+
+CREATE TABLE IF NOT EXISTS `tforumagent` (
+  `forumid` varchar(50) NOT NULL,
+  `agentid` varchar(10) NOT NULL,
+  `forumtable` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `forumprompt` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `forumremark` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `createdate` date DEFAULT NULL,
+  `createtime` time DEFAULT NULL,
+  `createmillis` bigint DEFAULT NULL,
+  `createuser` varchar(50) DEFAULT NULL,
+  `editdate` date DEFAULT NULL,
+  `edittime` time DEFAULT NULL,
+  `editmillis` bigint DEFAULT NULL,
+  `edituser` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`forumid`,`agentid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep forum setting by agent';
+
 
 CREATE TABLE IF NOT EXISTS `tforumquest` (
   `forumid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'tforum.forumid',

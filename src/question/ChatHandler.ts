@@ -2,13 +2,12 @@ import { KnModel, KnOperation } from "@willsofts/will-db";
 import { KnContextInfo, KnDataTable } from "@willsofts/will-core";
 import { KnDBError, KnRecordSet } from "@willsofts/will-sql";
 import { ChatSession } from "@google/generative-ai";
-import { API_ANSWER, API_ANSWER_RECORD_NOT_FOUND, API_MODEL_CLAUDE, API_OLLAMA_HOST, API_OLLAMA_TIMEOUT } from "../utils/EnvironmentVariable";
+import { API_ANSWER, API_ANSWER_RECORD_NOT_FOUND, API_MODEL_CLAUDE } from "../utils/EnvironmentVariable";
 import { PromptUtility } from "./PromptUtility";
 import { QuestionHandler } from "./QuestionHandler";
 import { QuestInfo, InquiryInfo } from "../models/QuestionAlias";
 import { ChatRepository } from "./ChatRepository";
 import { claudeProcess } from "../claude/generateClaudeSystem";
-
 import { PromptOLlamaUtility } from "./PromptOLlamaUtility";
 import { ollamaChat, ollamaGenerate } from "../ollama/generateOllama";
 
