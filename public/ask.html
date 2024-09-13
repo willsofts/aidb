@@ -80,22 +80,7 @@
 
 			let model = $("input[name='model']:checked").val();
 			let agent = $("input[name='model']:checked").attr("data-agent");
-
-			let isGemini = model.toUpperCase().includes("GEMINI", 0);
-			let isOLlama = model.toUpperCase().includes("LLAMA", 0);
-			//let agent = isGemini ? "GEMINI" : isOLlama ? "LLAMA" : model;
-			if (isOLlama) {
-				// llama 3.1 8B-llama3.1 & gemma 2-gemma2
-				const subModel = model.split("-");
-				if (subModel.length == 2) {
-					
-					agent = subModel[0].trim();
-					model = subModel[1].trim();
-					
-					console.log("AGENT [" + agent + "]");
-					console.log("MODEL [" + model + "]");
-				}
-			}
+			
 			// --------
 			window.scrollTo(0,questmessages.scrollHeight);
 			$("#waitlayer").show();
@@ -141,7 +126,8 @@
 				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_1" value="gemini-1.5-flash" data-agent="GEMINI" checked /><label for="mobel_1">Gemini 1.5 Flash<label></a>
 				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_2" value="gemini-pro" data-agent="GEMINI" /><label for="mobel_2">Gemini Pro<label></a>
 				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_3" value="gemini-1.5-pro" data-agent="GEMINI" /><label for="mobel_3">Gemini 1.5 Pro</label></a>
-				<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_4" value="llama 3.1-llama3.1" data-agent="LLAMA3.1" /><label for="mobel_4">Llama 3.1 8B</label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_4" value="llama3.1" data-agent="LLAMA" /><label for="mobel_4">Llama 3.1 8B</label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_5" value="gemma2" data-agent="GEMMA" /><label for="mobel_5">Gemma 2 9B</label></a>
 			</div>
 		</div>
 	</div>	
