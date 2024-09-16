@@ -471,7 +471,8 @@ export class ForumHandler extends TknOperateHandler {
 
     protected override async performCreating(context: any, model: KnModel, db: KnDBConnector) : Promise<KnResultSet> {
         let now = Utilities.now();
-        let id = context.params.forumid || uuid();
+        let id = context.params.forumid;
+        if(!id || id.trim().length == 0) id = uuid();
         let record = {
             forumid: id,
             forumcode: context.params.forumcode || id,

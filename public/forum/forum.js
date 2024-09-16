@@ -434,9 +434,11 @@ function setupDialogComponents() {
 	//#(385000) programmer code begin;
 	$("#addquestion").click(function() { addNewQuestion(); });
 	setupInputs();
+	setTimeout(function() { $("#forumtitle").focus(); },500);
 	//#(385000) programmer code end;
 }
 var fs_requiredfields = {
+	"forumid":{msg:""}, 
 	"forumtitle":{msg:""}, 
 	"forumtype":{msg:""}, 
 	"forumdialect":{msg:""}, 

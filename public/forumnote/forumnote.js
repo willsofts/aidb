@@ -162,6 +162,7 @@ function validSaveForm(callback) {
 function save(aform) {
 	//#(190000) programmer code begin;
 	fs_requiredfields = {
+		"forumid":{msg:""}, 
 		"forumtitle":{msg:""}, 
 		"forumfile":{msg:""},
 		"forumtable":{msg:""}
@@ -208,6 +209,7 @@ function save(aform) {
 function update(aform) {
 	//#(230000) programmer code begin;
 	fs_requiredfields = {
+		"forumid":{msg:""}, 
 		"forumtitle":{msg:""}, 
 		"forumfile":{msg:""},
 		"forumtable":{msg:""}
@@ -432,9 +434,11 @@ function setupDialogComponents() {
 	$("#addquestion").click(function() { addNewQuestion(); });
 	$("#fileuploadbutton").click(function() { showUploadDialog(); });
 	$("#fileviewbutton").click(function() { showFileInfoDialog(); });
+	setTimeout(function() { $("#forumtitle").focus(); },500);
 	//#(385000) programmer code end;
 }
 var fs_requiredfields = {
+	"forumid":{msg:""}, 
 	"forumtitle":{msg:""}, 
 	"forumfile":{msg:""},
 	"forumtable":{msg:""}

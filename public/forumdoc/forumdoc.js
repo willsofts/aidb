@@ -416,9 +416,11 @@ function setupDialogComponents() {
 	$("#dialogpanel").find(".modal-dialog").draggable();
 	//#(385000) programmer code begin;
 	$("#addquestion").click(function() { addNewQuestion(); });
+	setTimeout(function() { $("#forumtitle").focus(); },500);
 	//#(385000) programmer code end;
 }
 var fs_requiredfields = {
+	"forumid":{msg:""}, 
 	"forumtitle":{msg:""}, 
 	"forumtable":{msg:""}
 };
