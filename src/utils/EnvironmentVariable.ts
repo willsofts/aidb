@@ -1,3 +1,4 @@
+import os from "os";
 import config from "@willsofts/will-util";
 
 export const DB_SECTION: string = config.env("DB_SECTION","MYSQL");
@@ -16,3 +17,7 @@ export const API_OLLAMA_HOST: string = config.env("OLLAMA_HOST","http://172.31.1
 export const API_OLLAMA_PORT: string = config.env("OLLAMA_PORT","11434");
 export const API_OLLAMA_TIMEOUT: number = 600;
 export const API_OLLAMA_STREAM: boolean = false;
+
+export const UPLOAD_RESOURCES_PATH: string = config.env("UPLOAD_RESOURCES_PATH") || os.tmpdir();
+export const UPLOAD_FILE_TYPES : string = config.env("UPLOAD_FILE_TYPES","jpeg|jpg|png|pdf|txt|text|csv|doc|docx|xls|xlsx");
+export const UPLOAD_FILE_SIZE : number = parseInt(config.env("UPLOAD_FILE_SIZE","10485760")) || 10*1024*1024; //10MB
