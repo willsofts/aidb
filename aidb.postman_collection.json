@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "34450a0c-934a-4654-9e93-acbf04ce06af",
+		"name": "aidb",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6759618"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/api/forumdoc/insert",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"forumid\":\"MY-KEY\",\r\n    \"forumtitle\":\"My Title\",\r\n    \"forumtable\" : \"If Thai message then answer in Thai message\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/forumdoc/insert",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"forumdoc",
+						"insert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/forumdoc/retrieve",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "forumid",
+							"value": "MY-KEY",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/forumdoc/retrieve",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"forumdoc",
+						"retrieve"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/forumdoc/update",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"forumid\":\"MY-KEY\",\r\n    \"forumtitle\":\"My Title Updated\",\r\n    \"forumtable\" : \"If Thai message then answer in Thai message\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/forumdoc/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"forumdoc",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/forumdoc/remove",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "forumid",
+							"value": "MY-KEY",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/forumdoc/remove",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"forumdoc",
+						"remove"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/file/image/ask",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "category",
+							"value": "MY-KEY",
+							"description": "this is your key from forum insert",
+							"type": "text"
+						},
+						{
+							"key": "query",
+							"value": "Summarize text from information",
+							"description": "this is your question to ask",
+							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "IMG",
+							"description": "fixed must define IMG",
+							"type": "text"
+						},
+						{
+							"key": "filename",
+							"description": "this is your image file on client",
+							"type": "file",
+							"src": "/D:/AI/aidb/images/po.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/file/image/ask",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"file",
+						"image",
+						"ask"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
