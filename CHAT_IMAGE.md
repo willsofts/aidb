@@ -278,7 +278,7 @@ ex.
 ```
 curl -X POST -H "Content-Type: application/json" http://localhost:8080/api/chatimage/ask -d "{\"category\":\"MY-KEY\", \"query\":\"Summarize text from information\", \"mime\": \"image/jpeg\", \"image\":\"XXXX\"}"
 ```
-or see test/test.ask.image.ts
+or see [test/test.ask.image.ts](./src/test/test.ask.image.ts)
 
 reponse:
 ```
