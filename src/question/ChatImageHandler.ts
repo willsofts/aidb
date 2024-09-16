@@ -3,7 +3,7 @@ import { KnDBConnector } from "@willsofts/will-sql";
 import { HTTP } from "@willsofts/will-api";
 import { KnContextInfo, VerifyError } from "@willsofts/will-core";
 import { ChatPDFHandler } from "./ChatPDFHandler";
-import { QuestInfo, InquiryInfo, ForumConfig } from "../models/QuestionAlias";
+import { QuestInfo, InquiryInfo, ForumConfig, InlineImage } from "../models/QuestionAlias";
 import { ChatRepository } from "./ChatRepository";
 import { ForumDocHandler } from "../forumdoc/ForumDocHandler";
 import { PromptUtility } from "./PromptUtility";
@@ -58,7 +58,16 @@ export class ChatImageHandler extends ChatPDFHandler {
         return result;
     }
 
-    public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+    public async getInlineImage(quest: QuestInfo, db: KnDBConnector) : Promise<InlineImage | undefined> {
+        let img_info = undefined;
+        let image_info = await this.getFileImageInfo(quest.image,db);
+        if(image_info && image_info.file.length > 0 && image_info.stream) {
+            img_info = this.getImageInfo(image_info.mime,image_info.stream);
+        }
+        return img_info;
+    }
+
+    public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model, img_info?: InlineImage) : Promise<InquiryInfo> {
         let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: "" };
         let valid = this.validateParameter(quest.question,quest.mime,quest.image);
         if(!valid.valid) {
@@ -88,11 +97,8 @@ export class ChatImageHandler extends ChatPDFHandler {
                 });
                 chatmap.set(category,chat);
             }
-            let img_info = undefined;
-            let image_info = await this.getFileImageInfo(quest.image,db);
-            if(image_info && image_info.file.length > 0 && image_info.stream) {
-                img_info = this.getImageInfo(image_info.mime,image_info.stream);
-            }
+            let hasParam = img_info;
+            if(!hasParam) img_info = await this.getInlineImage(quest,db);
             console.log("img_info",img_info);
             let msg = "Question: "+quest.question;
             let result = await chat.sendMessage(img_info ? [msg, img_info] : msg);
@@ -100,7 +106,8 @@ export class ChatImageHandler extends ChatPDFHandler {
             let text = response.text();
             this.logger.debug(this.constructor.name+".processQuest: response:",text);
             info.answer = this.parseAnswer(text);    
-            this.deleteAttach(quest.image);
+            if(!hasParam) this.deleteAttach(quest.image);
+            else chatmap.remove(category);
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;
@@ -110,6 +117,12 @@ export class ChatImageHandler extends ChatPDFHandler {
         }
         this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
         return info;
+    }
+
+    public async processAsk(quest: QuestInfo, context: KnContextInfo) : Promise<InquiryInfo> {
+        //this api accept image parameter as image stream directly
+        let img_info = this.getImageInfo(quest.mime,quest.image);
+        return await this.processQuest(context,quest,this.model,img_info);
     }
 
 }

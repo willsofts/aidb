@@ -317,11 +317,6 @@ export class QuestionHandler extends TknOperateHandler {
         return info;
     }
 
-    public async processQuestGemma(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
-        let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
-        return info;
-    }
-
     public async processQuestion(quest: QuestInfo, context?: KnContextInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
         if(quest.agent=="GEMINI") {
             return await this.processQuestionGemini(quest, context, model);
@@ -393,8 +388,7 @@ export class QuestionHandler extends TknOperateHandler {
         }
         console.log(this.constructor.name+":[PROCESS QUEST]",quest);
         switch (quest.agent?.toLocaleUpperCase()) {            
-            
-            case "GEMMA" : 
+            case "GEMMA" :
             case "LLAMA" : {
                 return await this.processAskOllama(quest, context);
             }
@@ -444,6 +438,13 @@ export class QuestionHandler extends TknOperateHandler {
             let input = quest.question;            
             let prmutil = new PromptOLlamaUtility();
             let prompt = prmutil.createAskPrompt(input);
+            //const ollama = new Ollama({ host: API_OLLAMA_HOST })
+            // const result = await ollama.generate({
+            //     model: quest.model!,
+            //     keep_alive: API_OLLAMA_TIMEOUT,
+            //     prompt: prompt,
+            //     stream: false,
+            // })
             let result = await ollamaGenerate(prompt, quest.model!);
             let response = result.response;
             this.logger.debug(this.constructor.name+".processAsk: response:", response);

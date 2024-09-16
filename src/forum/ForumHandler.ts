@@ -79,8 +79,8 @@ export class ForumHandler extends TknOperateHandler {
         sql.set("editdate",Utilities.now(),"DATE");
         sql.set("edittime",Utilities.now(),"TIME");
         sql.set("edituser",this.userToken?.userid);
-        sql.set("forumprompt",context.params.forumprompt_gemini);
-        sql.set("forumtable",context.params.forumtable_gemini);
+        sql.set("forumprompt",context.params.forumprompt || context.params.forumprompt_gemini);
+        sql.set("forumtable",context.params.forumtable || context.params.forumtable_gemini);
     }
 
     /* try to validate fields for insert, update, delete, retrieve */
@@ -481,8 +481,12 @@ export class ForumHandler extends TknOperateHandler {
             createmillis: Utilities.currentTimeMillis(now),
             createdate: now,
             createtime: Utilities.currentTime(now),
+            forumprompt: context.params.forumprompt || context.params.forumprompt_gemini,
+            forumtable: context.params.forumtable || context.params.forumtable_gemini,
+            forumremark: context.params.forumremark || context.params.forumremark_gemini,
         };
-        context.params.forumid = id;
+        context.params.forumid = record.forumid;
+        context.params.forumcode = record.forumcode;
         await this.insertQuestions(context, model, db);
         await this.insertForumAgent(context, model, db);
         let knsql = this.buildInsertQuery(context, model, KnOperation.CREATE);

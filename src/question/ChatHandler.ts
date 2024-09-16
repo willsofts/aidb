@@ -46,17 +46,7 @@ export class ChatHandler extends QuestionHandler {
         //         role: "user",
         //         parts: [{text: prompt}],
         //     },
-        //     {
-        //         role: "model",
-        //         parts: [{text: "Great to meet you. What would you like to know?"}],
-        //     },
         // ];
-    }
-
-    public getChatHistoryGemma(category: string, table_info: string, version: string) {
-        let prmutil = new PromptOLlamaUtility();
-        let prompt = prmutil.createChatPrompt_ori("", table_info, version);
-        return prompt;
     }
 
     public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
@@ -253,7 +243,6 @@ export class ChatHandler extends QuestionHandler {
     }
 
     public override async processQuestOllama(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
-        
         let info = { error: false, question: quest.question, query: "", answer: "", dataset: [] };
         if(!quest.question || quest.question.trim().length == 0) {
             info.error = true;
@@ -275,11 +264,7 @@ export class ChatHandler extends QuestionHandler {
             let chat = chatmap.get(category);
             //if(!chat) {
             let version = await this.getDatabaseVersioning(forum);
-            let history = this.getChatHistoryOllama(category, table_info, version);   
-            if (quest.agent?.toLocaleUpperCase() == "GEMMA"){
-                history = this.getChatHistoryGemma(category, table_info, version);              
-            }
-            
+            let history = this.getChatHistoryOllama(category, table_info, version);              
             let response = await ollamaChat(history, input, quest.model!);
 
             //let msg = "Question: "+input;
@@ -330,7 +315,7 @@ export class ChatHandler extends QuestionHandler {
         this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
         return info;
     }
-    
+
     public sendError(chat: ChatSession, errmsg: string) {
         let msg = "Error: "+errmsg;
         chat.sendMessage(msg).then((msg: any) => { 
