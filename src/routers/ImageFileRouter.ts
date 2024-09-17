@@ -4,7 +4,7 @@ import multer from 'multer';
 import { v4 as uuid } from 'uuid';
 import { Service } from "moleculer";
 import { Request, Response, RequestHandler } from 'express';
-import { JSONReply, HTTP } from "@willsofts/will-api";
+import { HTTP } from "@willsofts/will-api";
 import { KnResponser, VerifyError, KnContextInfo } from "@willsofts/will-core";
 import { UPLOAD_RESOURCES_PATH, UPLOAD_FILE_TYPES, UPLOAD_FILE_SIZE } from "../utils/EnvironmentVariable";
 import { TknAttachHandler } from '@willsofts/will-core';
@@ -79,9 +79,6 @@ export class ImageFileRouter extends TknBaseRouter {
 		}
 		console.log(this.constructor.name+".doUploadFile: body",JSON.stringify(req.body));
 		console.log(this.constructor.name+".doUploadFile: file",req.file);
-		let response: JSONReply = new JSONReply();
-		response.head.modeling("upload","file");
-		response.head.composeNoError();
 		let info = { error: false, question: "", query: "", answer: "", dataset: "" };
 		try {
             let context = await this.createContext(req);
