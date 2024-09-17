@@ -65,7 +65,7 @@ export class PromptOLlamaUtility {
         Use the following format:
         
         Question: "Question here"
-        Answer: "SQL Query to run with plain text in double quotes"
+        Answer: "SQL Query to run with plain text in double quotes without \\ and \\" "
         
         ${current_version}
         Only use the following tables:
@@ -77,42 +77,6 @@ export class PromptOLlamaUtility {
         For additional information, the current date or today is ${current_date}.
                 
         `;
-
-        // v.1
-        // return `Given an input question, first create a syntactically correct ${dialect} query to run return as the answer.
-        // Use the following format:
-        
-        // Question: "Question here"
-        // Answer: "Only answer as plain text SQL Query to run in double quotes"
-        
-        // ${current_version}
-        // Only use the following tables:
-        
-        // ${table_info}
-                
-        // Always using alias name or full table name within columns in query statement and avoid field list is ambiguous.
-        // If someone asks for the table foobar, they really mean the product table. 
-        // For additional information, the current date or today is ${current_date}.
-                
-        // `;
-
-        // v.2 fetch fail
-        // return `Given an input question, first create a syntactically correct ${dialect} query to run return as the answer.
-        // Use the following format:
-        
-        // Question: "Question here"
-        // Answer: "The answer only contains the SQL query in double quotes, The answer without any other explanation and other options."
-        
-        // ${current_version}
-        // Only use the following tables:
-        
-        // ${table_info}
-                
-        // Always using alias name or full table name within columns in query statement and avoid field list is ambiguous.
-        // If someone asks for the table foobar, they really mean the product table. 
-        // For additional information, the current date or today is ${current_date}.
-                
-        // `;
     }
 
     public createQueryPrompt(input: string, table_info: string, version: string, dialect: string = this.dialect) : string {
