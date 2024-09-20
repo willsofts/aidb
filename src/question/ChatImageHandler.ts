@@ -7,7 +7,7 @@ import { QuestInfo, InquiryInfo, ForumConfig, InlineImage } from "../models/Ques
 import { ChatRepository } from "./ChatRepository";
 import { ForumDocHandler } from "../forumdoc/ForumDocHandler";
 import { PromptUtility } from "./PromptUtility";
-import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
+import { GoogleGenerativeAI, GenerativeModel, Part } from "@google/generative-ai";
 import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -122,7 +122,59 @@ export class ChatImageHandler extends ChatPDFHandler {
     public async processAsk(quest: QuestInfo, context: KnContextInfo) : Promise<InquiryInfo> {
         //this api accept image parameter as image stream directly
         let img_info = this.getImageInfo(quest.mime,quest.image);
-        return await this.processQuest(context,quest,this.model,img_info);
+        return await this.processQuestion(quest,context,this.model,img_info);
+    }
+
+    public override async processQuestion(quest: QuestInfo, context: KnContextInfo, model: KnModel = this.model, img_info?: InlineImage) : Promise<InquiryInfo> {
+        let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: "" };
+        let valid = this.validateParameter(quest.question,quest.mime,quest.image);
+        if(!valid.valid) {
+            info.error = true;
+            info.answer = "No "+valid.info+" found.";
+            return Promise.resolve(info);
+        }
+        let category = quest.category;
+        if(!category || category.trim().length==0) category = "DOCFILE";
+        this.logger.debug(this.constructor.name+".processQuestion: quest:",quest);
+        const aimodel = this.getAIModel(context);
+        let db = this.getPrivateConnector(model);
+        let input = quest.question;
+        try {
+            let forum = await this.getForumConfig(db,category,context);
+            this.logger.debug(this.constructor.name+".processQuestion: forum:",forum);
+            this.logger.debug(this.constructor.name+".processQuestion: category:",category+", input:",input);
+            let contents = this.getImagePrompt(forum?.prompt, forum?.tableinfo);
+            let hasParam = img_info;
+            if(!hasParam) img_info = await this.getInlineImage(quest,db);
+            console.log("img_info",img_info);
+            let msg = "Question: "+quest.question;
+            if(img_info) {
+                contents.push({text: msg});
+                contents.push(img_info);
+            } else {
+                contents.push({text: msg});
+            }
+            let result = await aimodel.generateContent(contents);
+            let response = result.response;
+            let text = response.text();
+            this.logger.debug(this.constructor.name+".processQuestion: response:",text);
+            info.answer = this.parseAnswer(text);    
+            if(!hasParam) this.deleteAttach(quest.image);
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            info.error = true;
+            info.answer = this.getDBError(ex).message;
+		} finally {
+			if(db) db.close();
+        }
+        this.logger.debug(this.constructor.name+".processQuestion: return:",JSON.stringify(info));
+        return info;
+    }
+
+    public getImagePrompt(document?: string, prompt_info?: string) : Part[] {
+        let prmutil = new PromptUtility();
+        let prompt = prmutil.createChatImagePrompt(document, prompt_info);
+        return [{text: prompt}];
     }
 
 }
