@@ -23,11 +23,26 @@ export class OllamaObj{
     }
 }
 
+export async function ollamaCreateModel(systemPrompt: string, title: string) {
+    console.log("Create Model File");
+    try {
+        const modelfile = `
+        FROM llama3.1
+        PARAMETER temperature 1
+        SYSTEM """
+        ${systemPrompt}
+        """
+        `
+        await OllamaObj.getInstance().ollama()?.create({ model: title, modelfile: modelfile })
+    }
+    catch(ex: any){
+        console.log(ex.message);
+    }
+}
 
 export async function ollamaChat(systemPrompt: string, userPrompt: string, model: string): Promise<any> {
 
     try{
-        //const ollama = new Ollama({ host: API_OLLAMA_HOST }); //await ollama.chat({
         const response = OllamaObj.getInstance().ollama()?.chat({
         model: model!,
         keep_alive: API_OLLAMA_TIMEOUT,
@@ -40,11 +55,10 @@ export async function ollamaChat(systemPrompt: string, userPrompt: string, model
     catch(ex: any) {
         console.log(ex.message);
     }
-    
 }
+
 export async function ollamaGenerate(prompt: string, model: string): Promise<any> {
 
-    //const ollama = new Ollama({ host: API_OLLAMA_HOST });
     let response = OllamaObj.getInstance().ollama()?.generate({
         model: model!,
         keep_alive: API_OLLAMA_TIMEOUT,

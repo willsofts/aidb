@@ -163,26 +163,22 @@ export class PromptOLlamaUtility {
 
         Question: ${input}`;
     }
-
+    
     public createChatDocumentPrompt(document_info: string, prompt_info: string|null|undefined = "") : string {
         if(!prompt_info || prompt_info==null) prompt_info = "";
         let current_date = this.getCurrentDate();
-        return `Given an input question then return the answer.
-        Use the following format:
         
-        Question: "Question here"
-        Answer: "An answer in double quotes"
-        
-        Using only the following information to answer the question and reply in Answer format above.
+        return `
 
         ${document_info}
 
+        
         ${prompt_info}
-        For additional information, the current date or today is ${current_date}.
         `;
     }
 
-    public createCleansingPrompt(text: string, input: string = "Please correct text from info") : string {
+    public createCleansingPrompt(text: string, input: string = "ทำข้อมูลดังต่อไปนี้ให้ถูกต้องสามารถอ่านเข้าใจ") : string {
+        
         return `${input}.
     
         ${text}

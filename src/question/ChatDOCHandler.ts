@@ -106,5 +106,10 @@ export class ChatDOCHandler extends ChatPDFHandler {
         this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
         return info;
     }
-
+    public async processQuestGemini(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        return this.processQuest(context, quest, model);
+    }
+    public async processQuestOllama(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model) : Promise<InquiryInfo> {
+        return this.processQuest(context, quest, model);
+    }
 }

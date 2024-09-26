@@ -7,6 +7,7 @@ import { PromptUtility } from "./PromptUtility";
 import { QuestionUtility } from "./QuestionUtility";
 import { ChatSession, GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import { ChatRepository } from "./ChatRepository";
+import { PromptOLlamaUtility } from "./PromptOLlamaUtility";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -45,7 +46,14 @@ export class ChatPDFHandler extends VisionHandler {
             },
         ];
     }
-
+    
+    public getChatHistoryOllama(document: string, prompt_info?: string) {
+    
+        let prmutil = new PromptOLlamaUtility();
+        let prompt = prmutil.createChatDocumentPrompt(document, prompt_info);
+        return prompt;
+    }
+    
     public override validateParameter(question: string, mime: string, image: string) : KnValidateInfo {
         if(!question || question.length == 0) {
             return {valid: false, info: "question" };

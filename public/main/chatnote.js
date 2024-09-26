@@ -55,9 +55,10 @@ function sendQuery(quest) {
 	let cat = $("input[name='category']:checked").val();
 	if(!cat || cat=="") cat = "NOTEFILE";
 	let model = $("input[name='model']:checked").val();
+	let agent = $("input[name='model']:checked").attr("data-agent");
 	jQuery.ajax({
 		url: API_URL+"/api/chatnote/quest",
-		data: {category: cat, model: model, mime: "NOTE", query: quest},
+		data: {category: cat, model: model, mime: "NOTE", query: quest, agent: agent},
 		type: "POST",
 		dataType: "html",
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
