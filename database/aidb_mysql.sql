@@ -64,6 +64,110 @@ INSERT INTO `tdialect` (`dialectid`, `dialectalias`, `dialecttitle`, `dialectnam
 	('ORACLE', 'ORACLE', 'ORACLE Database', 'ORACLE', '0', '1', 5, NULL),
 	('POSTGRES', 'POSTGRES', 'PostgreSQL', 'PostgreSQL', '0', '1', 3, NULL);
 
+CREATE TABLE IF NOT EXISTS `tfiltercategory` (
+  `categoryid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `categorycode` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `categoryname` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `categoryprompt` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `categoryremark` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `createdate` date DEFAULT NULL,
+  `createtime` time DEFAULT NULL,
+  `createmillis` bigint DEFAULT NULL,
+  `createuser` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `editdate` date DEFAULT NULL,
+  `edittime` time DEFAULT NULL,
+  `editmillis` bigint DEFAULT NULL,
+  `edituser` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  PRIMARY KEY (`categoryid`) USING BTREE,
+  UNIQUE KEY `categorycode` (`categorycode`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep category of filtering';
+
+INSERT INTO `tfiltercategory` (`categoryid`, `categorycode`, `categoryname`, `categoryprompt`, `categoryremark`, `createdate`, `createtime`, `createmillis`, `createuser`, `editdate`, `edittime`, `editmillis`, `edituser`) VALUES
+	('C++', 'C++', 'C++', 'This category candidate must known or experience of C or C++ programming language.', NULL, '2024-09-26', '13:10:52', NULL, NULL, '2024-09-26', '13:11:06', NULL, NULL),
+	('CS', 'CS', 'C#', 'This category candidate must known or experience of CSharp programming language.', NULL, '2024-09-26', '13:10:51', NULL, NULL, '2024-09-26', '13:11:05', NULL, NULL),
+	('DB', 'DB', 'Database', 'This category candidate must known or experience some of relational database management.', NULL, '2024-09-26', '13:10:51', NULL, NULL, '2024-09-26', '13:11:04', NULL, NULL),
+	('HTML', 'HTML', 'HTML', 'This category candidate must known html, css for web application.', NULL, '2024-09-26', '13:10:50', NULL, NULL, '2024-09-26', '13:11:04', NULL, NULL),
+	('JAVA', 'JAVA', 'Java', 'This category candidate must known or experience of java programming language or related field such as Servlet, JSP or Spring Boot framework.', NULL, '2024-09-26', '13:10:50', NULL, NULL, '2024-09-26', '13:11:03', NULL, NULL),
+	('JS', 'JS', 'JavaScript', 'This category candidate must known or experience of java script language.', NULL, '2024-09-26', '13:10:49', NULL, NULL, '2024-09-26', '13:11:03', NULL, NULL),
+	('PHP', 'PHP', 'PHP', 'This category candidate must known or experience of PHP programming language.', NULL, '2024-09-26', '13:10:49', NULL, NULL, '2024-09-26', '13:11:02', NULL, NULL),
+	('PYTHON', 'PYTHON', 'Python', 'This category candidate must known or experience of python programming language.', NULL, '2024-09-26', '13:10:48', NULL, NULL, '2024-09-26', '13:11:01', NULL, NULL),
+	('TESTTOOL', 'TESTTOOL', 'Test Tools', 'This category candidate must known or experience in automated testing tools such as Selenium, JUnit or TestNG is high valuable.\r\nAnd have ability to perform both manual and automated tests to identify bugs and ensure functionality.', NULL, '2024-09-26', '13:10:47', NULL, NULL, '2024-09-26', '13:11:01', NULL, NULL),
+	('WEBSECURITY', 'WEBSECURITY', 'Web Security', 'This category candidate must known or familiarity with security tools such as Burp Suite, OWASP ZAP or Metasploit.\r\nUnderstanding of security protocols of SSL/TLS, HTTPS and other security protocols.\r\nAnd have ability to perform penetration tests to identify vulnerabilities.', NULL, '2024-09-26', '13:10:46', NULL, NULL, '2024-09-26', '13:11:00', NULL, NULL);
+
+CREATE TABLE IF NOT EXISTS `tfiltercategorygroup` (
+  `categoryid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'tfiltercategory.categoryid',
+  `groupid` varchar(50) NOT NULL COMMENT 'tfiltergroup.groupid',
+  PRIMARY KEY (`categoryid`,`groupid`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep filter category in group';
+
+INSERT INTO `tfiltercategorygroup` (`categoryid`, `groupid`) VALUES
+	('C++', 'DEVELOPER'),
+	('CS', 'DEVELOPER'),
+	('DB', 'DEVELOPER'),
+	('DB', 'TESTER'),
+	('HTML', 'DEVELOPER'),
+	('HTML', 'TESTER'),
+	('JAVA', 'DEVELOPER'),
+	('JS', 'DEVELOPER'),
+	('JS', 'TESTER'),
+	('PHP', 'DEVELOPER'),
+	('TESTTOOL', 'TESTER'),
+	('WEBSECURITY', 'TESTER');
+
+CREATE TABLE IF NOT EXISTS `tfilterdocument` (
+  `filterid` varchar(50) NOT NULL,
+  `attachid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'tattachfile.attachid',
+  `groupid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'tfiltergroup.groupid',
+  `filtertitle` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `filtername` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `filterplace` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `filterprofile` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `filtercategory` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `filterremark` text,
+  `filterdate` date DEFAULT NULL,
+  `filterfile` varchar(250) DEFAULT NULL,
+  `createdate` date DEFAULT NULL,
+  `createtime` time DEFAULT NULL,
+  `createmillis` bigint DEFAULT NULL,
+  `createuser` varchar(50) DEFAULT NULL,
+  `editdate` date DEFAULT NULL,
+  `edittime` time DEFAULT NULL,
+  `editmillis` bigint DEFAULT NULL,
+  `edituser` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`filterid`),
+  KEY `attachid` (`attachid`),
+  KEY `filtertype` (`groupid`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep filter documents';
+
+
+CREATE TABLE IF NOT EXISTS `tfiltergroup` (
+  `groupid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `groupname` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `prefixprompt` text,
+  `suffixprompt` text,
+  `jsonprompt` text,
+  `createdate` date DEFAULT NULL,
+  `createtime` time DEFAULT NULL,
+  `createmillis` bigint DEFAULT NULL,
+  `createuser` varchar(50) DEFAULT NULL,
+  `editdate` date DEFAULT NULL,
+  `edittime` time DEFAULT NULL,
+  `editmillis` bigint DEFAULT NULL,
+  `edituser` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`groupid`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep filter group';
+
+INSERT INTO `tfiltergroup` (`groupid`, `groupname`, `prefixprompt`, `suffixprompt`, `jsonprompt`, `createdate`, `createtime`, `createmillis`, `createuser`, `editdate`, `edittime`, `editmillis`, `edituser`) VALUES
+	('DEVELOPER', 'Developer', NULL, NULL, NULL, '2024-09-26', '13:10:10', NULL, NULL, '2024-09-27', '12:37:43', 1727415462843, NULL),
+	('TESTER', 'Tester', NULL, NULL, NULL, '2024-09-26', '13:10:10', NULL, NULL, '2024-09-26', '13:10:10', NULL, NULL);
+
+CREATE TABLE IF NOT EXISTS `tfilterincategory` (
+  `filterid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'tfilterdocument.filterid',
+  `categoryid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'tfiltercategory.categoryid',
+  PRIMARY KEY (`filterid`,`categoryid`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep filter in categories';
+
+
 CREATE TABLE IF NOT EXISTS `tforum` (
   `forumid` varchar(50) NOT NULL,
   `forumcode` varchar(50) NOT NULL,
