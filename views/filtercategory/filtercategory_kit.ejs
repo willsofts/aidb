@@ -1,0 +1,38 @@
+<div class="row row-height">
+    <div class="col-md-12 col-height">
+            <div class="table-layer-class">
+                <div class="row row-height">
+                    <div class="col-height col-md-10">
+<label for="categoryname" id="categoryname_label" class="control-label"><%=label.get('categoryname_label','Title')%></label>
+<div class="input-group"><input type="text" id="categoryname" name="categoryname" class="form-control input-md irequired alert-input" maxlength="100" value="<%=data.dataset?.categoryname%>" /><span></span><div class="input-group-required"><label class="required">*</label></div></div>
+<div id="categoryname_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('categoryname_alert','You can not leave this empty')%></div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+<div class="row row-height">
+    <div class="col-md-12 col-height">
+            <div class="table-layer-class">
+                <div class="row row-height">
+                    <div class="col-height col-md-10">
+<label for="categoryprompt" id="categoryprompt_label" class="control-label"><%=label.get('categoryprompt_label','Category Prompt Info')%></label>
+<div class="input-group"><textarea id="categoryprompt" name="categoryprompt" class="form-control input-md irequired alert-input" rows="6"><%=data.dataset?.categoryprompt%></textarea><div class="input-group-required"><label class="required">*</label></div></div>
+<div id="categoryprompt_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('categoryprompt_alert','You can not leave this empty')%></div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+<div class="row row-height">
+    <div class="col-md-12 col-height">
+            <div class="table-layer-class">
+                <div class="row row-height">
+                    <div class="col-height col-md-10">
+<label for="categoryremark" id="categoryremark_label" class="control-label"><%=label.get('categoryremark_label','Remark')%></label>
+<div class="input-group"><input type="text" id="categoryremark" name="categoryremark" class="form-control input-md" maxlength="100" value="<%=data.dataset?.categoryremark%>" /></div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>

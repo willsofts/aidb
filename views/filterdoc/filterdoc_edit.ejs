@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Classify Document</title>
+		<%- include('../asset/meta') %>		
+		<%- include('../asset/styles') %>		
+		<%- include('../asset/scripts') %>	
+		<link rel="stylesheet" type="text/css" href="<%=meta.base_url%>/filterdoc/filterdoc.css" />
+		<script type="text/javascript" src="<%=meta.base_url%>/filterdoc/filterdoc.js"></script>
+	</head>
+	<body class="portalbody portalbody-off">
+		<%- include('../partials/page_waiting') %>
+		<div id="ptmainpager" class="pt-page pt-page-current pt-page-controller filterdoc-entry-pager">
+			<%- page.createHeader({pid: 'filterdoc', title: label.get('caption','Classify Document')}) %>
+			<div id="entrypanel">
+				<div id="entrylayer" class="entry-layer">
+					<form id="fsentryform" name="fsentryform" method="post">	
+						<input type="hidden" name="rowsPerPage" value="<%=page.setting?.rowsPerPage%>"/>
+						<input type="hidden" name="limit" value="<%=page.setting?.limit%>"/>
+						<input type="hidden" name="page" value="<%=page.setting?.page%>"/>
+						<div id="entrylayerarea" class="portal-area sub-entry-layer">
+							<%- include('./filterdoc_key') %>
+							<%- include('./filterdoc_kit') %>
+							<div class="row">
+								<div id="fs_controlbuttonfooterlayer" class="col-md-12 pull-right text-right">
+									<input type="button" id="cancelbutton" class="btn btn-dark btn-sm" data-dismiss="modal" value="<%=label.get('cancelbutton','Cancel')%>"/>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div id="infodialogpanel"></div>
+	</body>
+</html>

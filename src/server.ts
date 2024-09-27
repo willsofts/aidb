@@ -3,6 +3,7 @@ import { ServiceSchema } from "moleculer";
 import { KnExpress, KnRunner } from "@willsofts/will-run";
 import { TknRouteManager } from '@willsofts/will-serv';
 import { FileUploadManager } from "./routers/FileUploadManager";
+import { TknReportManager } from "@willsofts/will-serv";
 
 const ExpressService : ServiceSchema = {
     name: "api",
@@ -28,6 +29,7 @@ runner.start(process.argv).then(() => {
         let app = KnExpress.createApplication(runner.service);
         console.log("working directory",__dirname);
         new TknRouteManager(runner.service, __dirname).route(app);
+        new TknReportManager(runner.service, __dirname).route(app);
         new FileUploadManager(runner.service,__dirname).route(app);
     }
 });

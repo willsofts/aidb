@@ -1,0 +1,65 @@
+<div id="fsfilemodaldialog_layer" class="modal fade pt-page pt-page-item" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-xm">
+		<div class="modal-content portal-area fa-portal-area">
+			<div class="modal-header">
+				<h4 class="modal-title">
+					<%=label.get('modalheadertitle_file','Upload File')%>
+				</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<div id="uploaddialoglayer" class="entry-dialog-layer">
+				<form id="uploadform" name="uploadform" method="post">
+					<input type="hidden" id="fileid" name="attachid" />
+					<input type="hidden" id="filterfile" name="filterfile" />
+					<div class="row row-height">
+						<div class="col-md-12 col-height">
+							<div class="table-layer-class">
+								<div class="row row-height">
+									<div class="col-height col-md-5">
+										<label for="filterdate" id="filterdate_label" class="control-label"><%=label.get('filterdate_label','Date')%></label>
+										<div class="input-group">
+											<%-page.html('date',{id: "filterdate", name: "filterdate", class: "form-control input-md irequired alert-input", current: true})%>
+											<div class="input-group-required"><label class="required">*</label></div>
+										</div>
+										<div id="filterdate_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('filterdate_alert','You can not leave this empty')%></div>
+									</div>
+									<div class="col-height col-md-6">
+										<label for="groupid" id="groupid_label" class="control-label"><%=label.get('groupid_label','Group')%></label>
+										<div class="input-group">
+										<%-page.html('select',{map: data.entity?.tfiltergroup, value: data.dataset?.groupid, id: "groupid", name: "groupid", class: "form-control input-md irequired alert-input"})%>
+										<a href="javascript:void(0)" id="groupeditbutton" class="input-group-addon input-group-append input-group-text" title="Edit Group" tabindex="-1"><em class="fa fa-edit" aria-hidden="true"></em></a>
+										<a href="javascript:void(0)" id="groupnewbutton" class="input-group-addon input-group-append input-group-text" title="New Group" tabindex="-1"><em class="fa fa-plus" aria-hidden="true"></em></a>
+										<div class="input-group-required"><label class="required">*</label></div></div><div id="groupid_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('groupid_alert','You can not leave this empty')%></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row row-height">
+						<div class="col-md-12 col-height">
+							<div class="table-layer-class">
+								<div class="row row-height">
+									<div class="col-height col-md-12">
+				<label for="filename" id="filename_label" class="control-label"><%=label.get('filename_label','Document File')%></label>
+				<div class="input-group">
+					<input type="hidden" id="attachid" name="id" />
+					<input type="hidden" id="filetype" name="type" value="FILTER" />
+					<input type="file" id="filename" name="filename" class="form-control input-md irequired alert-input" accept=".pdf"/>
+					<div class="input-group-required"><label class="required">*</label></div>
+				</div>
+				<div id="filename_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('filename_alert','You can not leave this empty')%></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="row-heighter modal-footer" >
+				<a href="/gui/filtercategory" target="category_setting_window" class="mr-auto"><%=label.get('categorysetting_label','Category Setting')%></a>
+				<input type="button" id="uploadbutton" class="btn btn-dark btn-sm" value="<%=label.get('uploadbutton','Upload')%>"/>
+				<input type="button" id="uploadcancelbutton" class="btn btn-dark btn-sm" data-dismiss="modal" value="<%=label.get('uploadcancelbutton','Cancel')%>"/>
+			</div>
+		</div>
+	</div>
+</div>

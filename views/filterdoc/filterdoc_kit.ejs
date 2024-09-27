@@ -1,0 +1,101 @@
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-10">
+<label for="docfile" id="docfile_label" class="control-label"><%=label.get('docfile_label','Document File')%></label>
+<% if(page.isUpdateMode()) {%>
+&nbsp;&nbsp;<a href="javascript:void(0)" id="fileviewbutton"><em class="fa fa-download" aria-hidden="true"></em></a>
+<% } %>
+<div class="input-group">
+	<input type="text" id="filterfile" class="form-control input-md" value="<%=data.dataset?.filterfile%>" readonly />
+</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-4">
+<label for="filterdate" id="filterdate_label" class="control-label"><%=label.get('filterdate_label','Date')%></label>
+<div class="input-group">
+	<input type="text" id="filterdate" class="form-control input-md" value="<%=data.dataset?.filterdate%>" readonly />
+</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-10">
+<label for="filtername" id="filtername_label" class="control-label"><%=label.get('filtername_label','Name')%></label>
+<div class="input-group">
+	<input type="text" id="filtername" class="form-control input-md" value="<%=data.dataset?.filtername%>" readonly />
+</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-10">
+<label for="filtertitle" id="filtertitle_label" class="control-label"><%=label.get('filtertitle_label','Title')%></label>
+<div class="input-group">
+	<input type="text" id="filtertitle" class="form-control input-md" value="<%=data.dataset?.filtertitle%>" readonly />
+</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-10">
+<label for="filterplace" id="filterplace_label" class="control-label"><%=label.get('filterplace_label','Institution')%></label>
+<div class="input-group">
+	<input type="text" id="filterplace" class="form-control input-md" value="<%=data.dataset?.filterplace%>" readonly />
+</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-10">
+<label for="filtercategory" id="filterplace_label" class="control-label"><%=label.get('filtercategory_label','Categories')%></label>
+<div class="input-group">
+	<input type="text" id="filtercategory" class="form-control input-md" value="<%=data.dataset?.filtercategory%>" readonly />
+</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-10">
+<label for="filterprofile" id="filterprofile_label" class="control-label"><%=label.get('filterprofile_label','Profile')%></label>
+<div class="input-group">
+	<textarea id="filterprofile" name="filterprofile" class="form-control input-md" rows="5" readonly><%=data.dataset?.filterprofile%></textarea>
+</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>

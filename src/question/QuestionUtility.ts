@@ -101,4 +101,38 @@ export class QuestionUtility {
         return text.replaceAll("\\n","\n");
     }
 
+    public static parseJSONAnswer(answer: string) : string {
+        answer = answer.trim();
+        let ans = answer;
+        let hasQuote = ans.startsWith("\"");
+        if(hasQuote) {
+            ans = ans.substring(1,ans.length-1);
+        }
+        if(hasQuote && ans.endsWith("\"")) {
+            ans = ans.substring(0,ans.length-1);
+        }
+        let foundsql = false;
+        let idx = ans.indexOf("```json");
+        if(idx>=0) {
+            foundsql = true;
+            ans = ans.substring(idx+7);
+        }
+        idx = ans.indexOf("```");
+        if(!foundsql && idx>=0) {
+            ans = ans.substring(idx+3);
+        }
+        idx = ans.lastIndexOf("```");
+        if(idx>0) {
+            ans = ans.substring(0,idx);
+        }
+        let hasGrave = ans.startsWith("`");
+        if(hasGrave) {
+            ans = ans.substring(1,ans.length-1);
+        }
+        if(hasGrave && ans.endsWith("`")) {
+            ans = ans.substring(0,ans.length-1);
+        }
+        return this.trime(ans.trim());
+    }
+
 }

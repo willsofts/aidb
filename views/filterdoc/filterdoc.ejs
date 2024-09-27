@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Classify Document</title>
+		<%- include('../asset/meta') %>		
+		<%- include('../asset/styles') %>		
+		<%- include('../asset/scripts') %>	
+		<link rel="stylesheet" type="text/css" href="<%=meta.base_url%>/filterdoc/filterdoc.css" />
+		<script type="text/javascript" src="<%=meta.base_url%>/filterdoc/filterdoc.js"></script>
+	</head>
+	<body class="portalbody portalbody-off">
+		<%- include('../partials/page_waiting') %>
+		<div id="ptsearchpager" class="pt-page pt-page-current pt-page-controller filterdoc-search-pager">
+			<%- page.createHeader({pid: 'filterdoc', title: label.get('caption','Classify Document')}) %>
+			<div id="searchpanel" class="panel-body">
+				<form id="fssearchform" name="fssearchform" method="post">
+					<input type="hidden" name="ajax" value="true"/>
+					<input type="hidden" name="rowsPerPage" value="<%=page.setting?.rowsPerPage%>"/>
+					<input type="hidden" name="limit" value="<%=page.setting?.limit%>"/>
+					<input type="hidden" name="page" value="1"/>
+					<input type="hidden" name="orderBy" value=""/>
+					<input type="hidden" name="orderDir" value=""/>
+					<%- include('./filterdoc_filter') %>
+				</form>
+				<div id="listpanel" class="table-responsive fa-list-panel">
+					<%- include('./filterdoc_data') %>
+				</div>
+			</div>
+		</div>
+		<div id="dialogpanel"></div>
+		<div id="uploaddialogpanel">
+			<%- include('./filterdoc_dialog_file') %>
+		</div>
+		<div id="infodialogpanel"></div>
+		<div id="groupdialogpanel">
+			<%- include('./filterdoc_dialog_group') %>			
+		</div>
+	</body>
+</html>

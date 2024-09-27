@@ -1,0 +1,48 @@
+<div class="row row-height">
+    <div id="groupcategoriespanel" class="col-md-12 col-height">
+        <fieldset id="groupcategoriesheaderinfo">
+            <legend id="groupcategories_legend">
+                <label id="groupcategories_sectionlabel" class="control-label"><%=label.get('groupcategories_sectionlabel','Classify Categories')%></label>
+            </legend>
+        </fieldset>	
+        <div id="groupcategorieslayer">
+            <div id="groupcategories" class="table-layer-class">				
+<%	let catmap = data.entity?.tfiltercategory;
+if(catmap) {
+    let catkey = Object.keys(catmap);
+    let isz = catkey.length;
+    if(isz > 0) {
+        let index = -1;
+        let counter = isz;
+        let max = 3;
+        do {
+%>
+                    <div class="row row-height">
+<%			
+            for(let k = 0; k < max; k++ ) {
+                index++;
+                if(index < isz) {
+                    let key = catkey[index];
+                    let mapname = catmap[key];
+%>  
+                        <div class="col-height col-md-4">
+<div class="checkbox form-check"><input type="checkbox" value="<%=key%>" id="groupcategories_<%=index%>" name="groupcategories" class="form-control input-md form-check-input group-categories" <%=page.checked(key,data.dataset?.groupcategories)%> /><label for="groupcategories_<%=index%>" class="control-label form-check-label"><%=mapname%></label></div>
+                        </div>
+<%					
+                }
+            }
+%>
+                    </div>
+<%
+            counter -= max;
+        }while(counter>0);
+    }
+}
+%>								 
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row row-height">    
+    <div id="groupcategories_alert" role="alert" class="col-md-12 col-height has-feedback has-error alert-layer fa-hidden"><%=label.get('groupcategories_alert','You can not leave this empty or select only one')%></div>
+</div>
