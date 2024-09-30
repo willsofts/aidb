@@ -18,6 +18,7 @@ export class FilterGroupHandler extends TknOperateHandler {
             prefixprompt: { type: "STRING" },
             suffixprompt: { type: "STRING" },
             jsonprompt: { type: "STRING" },
+            skillprompt: { type: "STRING" },
             createmillis: { type: "BIGINT", selected: true, created: true, updated: false, defaultValue: Utilities.currentTimeMillis() },
             createdate: { type: "DATE", selected: true, created: true, updated: false, defaultValue: Utilities.now() },
             createtime: { type: "TIME", selected: true, created: true, updated: false, defaultValue: Utilities.now() },
@@ -216,6 +217,7 @@ export class FilterGroupHandler extends TknOperateHandler {
         knsql.set("prefixprompt",context.params.prefixprompt); 
         knsql.set("suffixprompt",context.params.suffixprompt); 
         knsql.set("jsonprompt",context.params.jsonprompt); 
+        knsql.set("skillprompt",context.params.skillprompt); 
         knsql.set("createmillis",record.createmillis);
         knsql.set("createdate",record.createdate,"DATE");
         knsql.set("createtime",record.createtime,"TIME");
@@ -333,14 +335,20 @@ export class FilterGroupHandler extends TknOperateHandler {
     }
 
     public override async getDataEntry(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
+        let meta = { showtitle : true };
+        if(context.params.showtitle=="false") meta.showtitle = false;
         let dt = await this.getDataAdd(context, model);
         dt.renderer = this.progid+"/"+this.progid+"_edit";
+        dt.meta = meta;
         return dt;
     }    
 
     public override async getDataView(context: KnContextInfo, model: KnModel) : Promise<KnDataTable> {
+        let meta = { showtitle : true };
+        if(context.params.showtitle=="false") meta.showtitle = false;
         let dt = await this.getDataRetrieval(context, model);
         dt.renderer = this.progid+"/"+this.progid+"_edit";
+        dt.meta = meta;
         return dt;
     }    
 

@@ -17,14 +17,14 @@ import fs from "fs";
 import os from "os";
 
 const PREFIX_PROMPT = "Try to classify this resume into the following categories:";
-const SUFFIX_PROMPT = "After classified the resume then answer in JSON data with the following format (with out mark down code):";
-const JSON_PROMPT = `
+const JSON_PROMPT = `After classified the resume then answer in JSON data with the following format (with out mark down code):
     {
         category_names: "array of category_name found from defined categories ex. ["Category1","Category2"]",
         candidate_name: "naming of the owner resume",
         candidate_title: "naming on highest of educations",
         candidate_institute: "naming of educational institution",
-        candidate_profile: "summarize resume profile shortly"
+        candidate_profile: "summarize resume profile shortly",
+        candidate_skill: "summarize the owner resume skills",
     }
 `;
 
@@ -45,6 +45,7 @@ export class FilterDocumentHandler extends TknOperateHandler {
             filtername: { type: "STRING" },
             filterplace: { type: "STRING" },
             filterprofile: { type: "STRING" },
+            filterskill: { type: "STRING" },
             filtercategory: { type: "STRING" },
             filterremark: { type: "STRING" },
             filterdate: { type: "DATE" },
@@ -250,6 +251,7 @@ export class FilterDocumentHandler extends TknOperateHandler {
             filtertitle: ds.candidate_title, 
             filterplace: ds.candidate_institute, 
             filterprofile: ds.candidate_profile,
+            filterskill: ds.candidate_skill,
             filtercategory: ds.category_names,
             filterremark: JSON.stringify(ds),
         };
@@ -283,6 +285,7 @@ export class FilterDocumentHandler extends TknOperateHandler {
         knsql.set("filtername",context.params.filtername); 
         knsql.set("filterplace",context.params.filterplace); 
         knsql.set("filterprofile",context.params.filterprofile); 
+        knsql.set("filterskill",context.params.filterskill); 
         knsql.set("filtercategory",categories ? categories.join(",") : undefined); 
         knsql.set("filterremark",context.params.filterremark); 
         knsql.set("filterdate",Utilities.parseDate(context.params.filterdate),"DATE");
@@ -516,22 +519,26 @@ export class FilterDocumentHandler extends TknOperateHandler {
         let prefixprompt;
         let suffixprompt;
         let jsonprompt;
+        let skillprompt;
         if(gs && gs.rows.length > 0) {
             let row = gs.rows[0];
             prefixprompt = row.prefixprompt;
             suffixprompt = row.suffixprompt;
             jsonprompt = row.jsonprompt;
+            skillprompt = row.skillprompt;
         }
-        let prompt : string | undefined;
         if(!prefixprompt || prefixprompt.trim().length == 0) prefixprompt = PREFIX_PROMPT;
-        if(!suffixprompt || suffixprompt.trim().length == 0) suffixprompt = SUFFIX_PROMPT;
         if(!jsonprompt || jsonprompt.trim().length == 0) jsonprompt = JSON_PROMPT;
         //compose filter prompt by categories, this prompt return known json format
-        prompt = prefixprompt+"\n\n";
+        let prompt = prefixprompt+"\n\n";
         categories.forEach(item => { prompt += item; });
         prompt += "\n";
         prompt += suffixprompt+"\n";
         prompt += jsonprompt;
+        if(skillprompt && skillprompt.trim().length > 0) {
+            prompt += "\n";
+            prompt += skillprompt;
+        }
         return prompt;
     }
 

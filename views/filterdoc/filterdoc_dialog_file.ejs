@@ -24,7 +24,7 @@
 										<div id="filterdate_alert" role="alert" class="has-feedback has-error fa-hidden"><%=label.get('filterdate_alert','You can not leave this empty')%></div>
 									</div>
 									<div class="col-height col-md-6">
-										<label for="groupid" id="groupid_label" class="control-label"><%=label.get('groupid_label','Group')%></label>
+										<label for="groupid" id="groupid_label" class="control-label"><%=label.get('groupid_label','Scope')%></label>
 										<div class="input-group">
 										<%-page.html('select',{map: data.entity?.tfiltergroup, value: data.dataset?.groupid, id: "groupid", name: "groupid", class: "form-control input-md irequired alert-input"})%>
 										<a href="javascript:void(0)" id="groupeditbutton" class="input-group-addon input-group-append input-group-text" title="Edit Group" tabindex="-1"><em class="fa fa-edit" aria-hidden="true"></em></a>

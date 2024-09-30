@@ -15,6 +15,8 @@ function initialApplication() {
 	setupComponents();
 	setupAlertComponents();
 	//#(40000) programmer code begin;
+	$("#uploaddialogpanel").find(".modal-dialog").draggable();
+	$("#groupdialogpanel").find(".modal-dialog").draggable();
 	//#(40000) programmer code end;
 }
 function setupComponents() {
@@ -46,7 +48,6 @@ function setupComponents() {
 	$("#fileuploadbutton").click(function() { showUploadDialog(); });
 	$("#fileviewbutton").click(function() { showFileInfoDialog(); });
 	$("#uploadbutton").click(function() { startUploadFile(); });
-	$("#uploaddialogpanel").find(".modal-dialog").draggable();
 	$("#groupeditbutton").click(function() { showEditGroup(); });
 	$("#groupnewbutton").click(function() { showNewGroup(); });
 	//#(60000) programmer code end;
@@ -432,6 +433,15 @@ function setupDataTable() {
 			submitDelete(element,[$(this).parent().parent().attr("data-key"),$(this).attr("data-name")]);
 		});
 	});
+	$("#datatablebody").find(".fa-data-download").each(function(index,element) {
+		$(element).click(function() {
+			if($(this).is(":disabled")) return;
+			let attachid = $(this).parent().parent().attr("data-attach");
+			if(attachid && attachid.trim().length > 0) {
+				submitWindow({url: BASE_URL+"/report/filterdoc", params: {attachid : attachid}, windowName: "filterdoc_pdf_window"});			
+			}
+		});
+	});
 }
 function validateUploadFile() {
 	if($.trim($("#fileid").val())=="" && $.trim($("#attachid").val())=="") {
@@ -541,13 +551,13 @@ function showFileInfoDialog() {
 function showEditGroup() {
 	$("#groupeditheader").show();
 	$("#groupnewheader").hide();
-	let url = BASE_URL+"/gui/filtergroup/view?groupid="+$("#groupid").val();
+	let url = BASE_URL+"/gui/filtergroup/view?showtitle=false&groupid="+$("#groupid").val();
 	showGroupDialog(url);
 }
 function showNewGroup() {
 	$("#groupeditheader").hide();
 	$("#groupnewheader").show();
-	showGroupDialog(BASE_URL+"/gui/filtergroup/entry");
+	showGroupDialog(BASE_URL+"/gui/filtergroup/entry?showtitle=false");
 }
 function showGroupDialog(url) {
 	$("#groupworkingframe").attr("src",url);

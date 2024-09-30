@@ -19,21 +19,13 @@
 	<div class="col-md-12 col-height">
 			<div class="table-layer-class">
 				<div class="row row-height">
-					<div class="col-height col-md-4">
+					<div class="col-height col-md-3">
 <label for="filterdate" id="filterdate_label" class="control-label"><%=label.get('filterdate_label','Date')%></label>
 <div class="input-group">
 	<input type="text" id="filterdate" class="form-control input-md" value="<%=data.dataset?.filterdate%>" readonly />
 </div>
 					</div>
-				</div>
-			</div>
-	</div>
-</div>
-<div class="row row-height">
-	<div class="col-md-12 col-height">
-			<div class="table-layer-class">
-				<div class="row row-height">
-					<div class="col-height col-md-10">
+					<div class="col-height col-md-7">
 <label for="filtername" id="filtername_label" class="control-label"><%=label.get('filtername_label','Name')%></label>
 <div class="input-group">
 	<input type="text" id="filtername" class="form-control input-md" value="<%=data.dataset?.filtername%>" readonly />
@@ -93,6 +85,20 @@
 <label for="filterprofile" id="filterprofile_label" class="control-label"><%=label.get('filterprofile_label','Profile')%></label>
 <div class="input-group">
 	<textarea id="filterprofile" name="filterprofile" class="form-control input-md" rows="5" readonly><%=data.dataset?.filterprofile%></textarea>
+</div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="row row-height">
+	<div class="col-md-12 col-height">
+			<div class="table-layer-class">
+				<div class="row row-height">
+					<div class="col-height col-md-10">
+<label for="filterskill" id="filterskill_label" class="control-label"><%=label.get('filterskill_label','Skill')%></label>
+<div class="input-group">
+	<textarea id="filterskill" name="filterskill" class="form-control input-md" rows="5" readonly><%=data.dataset?.filterskill%></textarea>
 </div>
 					</div>
 				</div>
