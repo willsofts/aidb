@@ -72,6 +72,7 @@
 					return false;
 				}
 			}).focus();
+			checkOllamaConnection();
 		});
 		function sendQuery(quest) {
 			let li = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-quest f-left").text("Question")).append($('<span>').addClass("text text-quest f-right").text(quest));
@@ -115,7 +116,47 @@
 			let ans = $('<li>').addClass("fxc").append($('<span>').addClass("topic topic-answer f-left").text("Answer")).append(txt);
 			$('#listmessages').append(ans);
 		}
-    </script>
+		function checkOllamaConnection(){
+			try 
+			{
+				getConfig().then(res => {
+					if (res){
+						if (!res.head.errordesc){		
+							var url = res.body.config
+							fetch(url).then(function(response) {
+								if (response.ok){
+									console.log(`checkOllamaConnection: ${response.status}`);
+									$("#model_4").removeAttr('disabled');
+									$("#model_5").removeAttr('disabled');
+								}
+							}).catch(function(response) {
+								console.log(`checkOllamaConnection error: ${response.status}`);
+							})
+						} else {
+							console.log(`checkOllamaConnection config error: ${res.head.errordesc}`);
+						}
+					}
+				});
+			} catch (error) { 
+				console.log(`checkOllamaConnection error: ${error}`);
+				$("#model_4").prop('disabled', true);
+				$("#model_5").prop('disabled', true);
+			} 	
+		}
+		function getConfig() { 
+
+			return jQuery.ajax({
+				url: API_URL+"/api/fetch/config?name=API_OLLAMA_HOST",
+				type: "POST",
+				dataType: "json",
+				contentType: "application/json; charset=utf-8",
+				error : function(transport,status,errorThrown) {
+				},
+				success: function(data,status,transport) {
+				}
+			});
+		} 
+	</script>
   </head>
   <body>
 	<div id="headlayer">
@@ -126,8 +167,8 @@
 				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_1" value="gemini-1.5-flash" data-agent="GEMINI" checked /><label for="mobel_1">Gemini 1.5 Flash<label></a>
 				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_2" value="gemini-pro" data-agent="GEMINI" /><label for="mobel_2">Gemini Pro<label></a>
 				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_3" value="gemini-1.5-pro" data-agent="GEMINI" /><label for="mobel_3">Gemini 1.5 Pro</label></a>
-				<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_4" value="llama3.1" data-agent="LLAMA" /><label for="mobel_4">Llama 3.1 8B</label></a>
-				<a href="#0" tabindex="-1"><input type="radio" name="model" id="mobel_5" value="gemma2" data-agent="GEMMA" /><label for="mobel_5">Gemma 2 9B</label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_4" value="llama3.1" data-agent="LLAMA" disabled /><label for="mobel_4">Llama 3.1 8B</label></a>
+				<a href="#0" tabindex="-1"><input type="radio" name="model" id="model_5" value="gemma2" data-agent="GEMMA" disabled /><label for="mobel_5">Gemma 2 9B</label></a>
 			</div>
 		</div>
 	</div>	

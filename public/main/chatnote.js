@@ -45,6 +45,7 @@ $(function() {
 	bindingSettings();
 	loadCategories(forum_id);
 	$('#query').focus();
+	checkOllamaConnection();
 });
 function sendQuery(quest) {
 	let li = $('<li>').addClass("fxc li-topic").append($('<span>').addClass("topic topic-quest").text("Question")).append($('<span>').addClass("text text-quest").text(quest));
@@ -318,3 +319,45 @@ function confirmResetCategory(cat,title) {
 		}
 	});	
 }
+
+
+function checkOllamaConnection(){
+	try 
+	{
+		getConfig().then(res => {
+			if (res){
+				if (!res.head.errordesc){		
+					var url = res.body.config
+					fetch(url).then(function(response) {
+						if (response.ok){
+							console.log(`checkOllamaConnection: ${response.status}`);
+							$("#model_4").removeAttr('disabled');
+							$("#model_5").removeAttr('disabled');
+						}
+					}).catch(function(response) {
+						console.log(`checkOllamaConnection error: ${response.status}`);
+					})
+				} else {
+					console.log(`checkOllamaConnection config error: ${res.head.errordesc}`);
+				}
+			}
+		});
+	} catch (error) { 
+		console.log(`checkOllamaConnection error: ${error}`);
+		$("#model_4").prop('disabled', true);
+		$("#model_5").prop('disabled', true);
+	} 	
+}
+function getConfig() { 
+
+	return jQuery.ajax({
+		url: API_URL+"/api/fetch/config?name=API_OLLAMA_HOST",
+		type: "POST",
+		dataType: "json",
+		contentType: "application/json; charset=utf-8",
+		error : function(transport,status,errorThrown) {
+		},
+		success: function(data,status,transport) {
+		}
+	});
+} 
