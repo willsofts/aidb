@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS `tfilterdocument` (
   `filtername` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `filterplace` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `filterprofile` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `filterskill` text,
   `filtercategory` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
   `filterremark` text,
   `filterdate` date DEFAULT NULL,
@@ -146,6 +147,7 @@ CREATE TABLE IF NOT EXISTS `tfiltergroup` (
   `prefixprompt` text,
   `suffixprompt` text,
   `jsonprompt` text,
+  `skillprompt` text,
   `createdate` date DEFAULT NULL,
   `createtime` time DEFAULT NULL,
   `createmillis` bigint DEFAULT NULL,
@@ -157,9 +159,9 @@ CREATE TABLE IF NOT EXISTS `tfiltergroup` (
   PRIMARY KEY (`groupid`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='table keep filter group';
 
-INSERT INTO `tfiltergroup` (`groupid`, `groupname`, `prefixprompt`, `suffixprompt`, `jsonprompt`, `createdate`, `createtime`, `createmillis`, `createuser`, `editdate`, `edittime`, `editmillis`, `edituser`) VALUES
-	('DEVELOPER', 'Developer', NULL, NULL, NULL, '2024-09-26', '13:10:10', NULL, NULL, '2024-09-27', '12:37:43', 1727415462843, NULL),
-	('TESTER', 'Tester', NULL, NULL, NULL, '2024-09-26', '13:10:10', NULL, NULL, '2024-09-26', '13:10:10', NULL, NULL);
+INSERT INTO `tfiltergroup` (`groupid`, `groupname`, `prefixprompt`, `suffixprompt`, `jsonprompt`, `skillprompt`, `createdate`, `createtime`, `createmillis`, `createuser`, `editdate`, `edittime`, `editmillis`, `edituser`) VALUES
+	('DEVELOPER', 'Developer', NULL, NULL, NULL, 'Candidate skills more info:\r\n\r\n1. มีประสบการณ์ทำงานกี่ปี หรือ เป็นเด็กจบใหม่ไม่มีประสบการณ์การทำงาน เช่น มีประสบการณ์ 2 ปี หรือ เด็กจบใหม่\r\n2. สรุปลักษะงานที่เคยทำ หรือ เคยทำโปรเจคจบเกี่ยวกับอะไรมา เช่น เคยทำงานเป็นโปรแกรมเมอร์พัฒนา Website และ Mobile App\r\n3. สรุปภาษาโปรแกรมที่มีประมาณ 3 อย่าง เช่น มีทักษะในการใช้ Java, C# และ CSS\r\n\r\nขอให้สรุปข้อมูลโดยเรียงข้อมูลตามหัวข้อข้างต้น โดยใช้รูปประโยคที่สั้น กระชับ เข้าใจง่าย\r\nไม่ต้องใช้คำฟุ่มเฟือยเยอะๆ ตัวอย่างเช่น\r\nมีประสบการณ์ 3 ปี ในด้านการพัฒนา Web app โดยใช้ Javascript, css \r\n', '2024-09-26', '13:10:10', NULL, NULL, '2024-09-27', '12:37:43', 1727415462843, NULL),
+	('TESTER', 'Tester', NULL, NULL, NULL, NULL, '2024-09-26', '13:10:10', NULL, NULL, '2024-09-26', '13:10:10', NULL, NULL);
 
 CREATE TABLE IF NOT EXISTS `tfilterincategory` (
   `filterid` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'tfilterdocument.filterid',
