@@ -15,7 +15,7 @@
     "ALWAYS_DB_TRACKING": "false",
     "EXCEPT_AUTHORIZE_PATH": "/health,/sign,/policy,/fetch,/forgot,/captcha,/login",
     "DB_SECTION": "AIDB",
-    "AIDB" : { "alias": "mysql2", "dialect": "mysql", "url":"", "user": "root", "password": "Freewill@1168/86-88", "host": "localhost", "port": 3306, "database": "aidb", "options": { "charset": "utf8", "connectionLimit": 100 } },
-    "AIDB1" : { "alias": "mysql2", "dialect": "mysql", "url":"", "user": "root", "password": "Freewill@1168/86-88", "host": "localhost", "port": 3306, "database": "aidb1", "options": { "charset": "utf8", "connectionLimit": 100 } },
-    "AIDB2" : { "alias": "mysql2", "dialect": "mysql", "url":"", "user": "root", "password": "Freewill@1168/86-88", "host": "localhost", "port": 3306, "database": "aidb2", "options": { "charset": "utf8", "connectionLimit": 100 } }
+    "AIDB" : { "alias": "mysql2", "dialect": "mysql", "url":"", "user": "root", "password": "root", "host": "localhost", "port": 3306, "database": "aidb", "options": { "charset": "utf8", "connectionLimit": 100 } },
+    "AIDB1" : { "alias": "mysql2", "dialect": "mysql", "url":"", "user": "root", "password": "root", "host": "localhost", "port": 3306, "database": "aidb1", "options": { "charset": "utf8", "connectionLimit": 100 } },
+    "AIDB2" : { "alias": "mysql2", "dialect": "mysql", "url":"", "user": "root", "password": "root", "host": "localhost", "port": 3306, "database": "aidb2", "options": { "charset": "utf8", "connectionLimit": 100 } }
 }
