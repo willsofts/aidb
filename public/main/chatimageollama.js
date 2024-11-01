@@ -49,6 +49,7 @@ $(function() {
 	} else {
 		$('#filename').focus();
 	}
+	checkOllamaConnection();
 });
 function sendQuery(quest) {
 	let li = $('<li>').addClass("fxc li-topic").append($('<span>').addClass("topic topic-quest").text("Question")).append($('<span>').addClass("text text-quest").text(quest));
@@ -389,4 +390,31 @@ function displayImage(imgfile) {
 		img.attr("src",e.target.result);
 	};
 	reader.readAsDataURL(document.getElementById("filename").files[0]);
+}
+function checkOllamaConnection(){
+	try 
+	{
+		getConfig().then(res => {
+			if (res){
+				if (!res.head.errordesc){		
+					var url = res.body.config
+					fetch(url).then(function(response) {
+						if (response.ok){
+							console.log(`checkOllamaConnection: ${response.status}`);
+							$("#model_1").removeAttr('disabled');
+							$("#model_2").removeAttr('disabled');
+						}
+					}).catch(function(response) {
+						console.log(`checkOllamaConnection error: ${response.status}`);
+					})
+				} else {
+					console.log(`checkOllamaConnection config error: ${res.head.errordesc}`);
+				}
+			}
+		});
+	} catch (error) { 
+		console.log(`checkOllamaConnection error: ${error}`);
+		$("#model_1").prop('disabled', true);
+		$("#model_2").prop('disabled', true);
+	} 	
 }
