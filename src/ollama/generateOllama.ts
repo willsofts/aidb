@@ -64,6 +64,18 @@ export async function ollamaGenerate(prompt: string, model: string): Promise<any
         keep_alive: API_OLLAMA_TIMEOUT,
         prompt: prompt,
         stream: false
-    })
+    });
+    return response;
+}
+
+export async function ollamaImageAsk(prompt: string, model: string, imgbase64: string): Promise<any>{
+
+    let response = OllamaObj.getInstance().ollama()?.generate({
+        model: model!,
+        keep_alive: API_OLLAMA_TIMEOUT,
+        prompt: prompt,
+        images: [ imgbase64 ],
+        stream: false
+    });
     return response;
 }

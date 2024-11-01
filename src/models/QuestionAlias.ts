@@ -7,6 +7,8 @@ export interface QuestInfo {
     category?: string;
     agent?: string;
     model?: string;
+    imageocr?: string;
+    imagetmp?: string;
 }
 
 export interface InquiryInfo {

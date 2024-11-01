@@ -3,12 +3,15 @@ import { KnDBConnector } from "@willsofts/will-sql";
 import { HTTP } from "@willsofts/will-api";
 import { KnContextInfo, VerifyError } from "@willsofts/will-core";
 import { ChatPDFHandler } from "./ChatPDFHandler";
-import { QuestInfo, InquiryInfo, ForumConfig, InlineImage } from "../models/QuestionAlias";
+import { QuestInfo, InquiryInfo, ForumConfig, InlineImage, FileImageInfo } from "../models/QuestionAlias";
 import { ChatRepository } from "./ChatRepository";
 import { ForumDocHandler } from "../forumdoc/ForumDocHandler";
 import { PromptUtility } from "./PromptUtility";
 import { GoogleGenerativeAI, GenerativeModel, Part } from "@google/generative-ai";
 import { API_KEY, API_MODEL } from "../utils/EnvironmentVariable";
+import { PromptOLlamaUtility } from "./PromptOLlamaUtility";
+import { ollamaGenerate, ollamaImageAsk } from "../ollama/generateOllama";
+import { ExtractDataFromImage } from "../tesseract/TesseractHandler";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -32,6 +35,12 @@ export class ChatImageHandler extends ChatPDFHandler {
                 parts: [{text: "Great to meet you. What would you like to know?"}],
             },
         ];
+    }
+
+    public getChatHistoryOllama(document?: string, prompt_info?: string) {
+        let prmutil = new PromptOLlamaUtility();
+        let prompt = prmutil.createChatImagePrompt(document, prompt_info);
+        return prompt;
     }
 
     public getAIModel(context?: KnContextInfo) : GenerativeModel {
@@ -67,7 +76,28 @@ export class ChatImageHandler extends ChatPDFHandler {
         return img_info;
     }
 
+    public async getImageFileInfo(quest: QuestInfo, db: KnDBConnector) : Promise<FileImageInfo | null > {
+        
+        let image_info = await this.getFileImageInfo(quest.imageocr == null ? quest.image : quest.imageocr, db);
+        return image_info;
+    }
+
     public override async processQuest(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model, img_info?: InlineImage) : Promise<InquiryInfo> {
+        console.log(this.constructor.name+":[PROCESS QUEST]",quest);
+        switch (quest.agent?.toLocaleUpperCase()) {            
+            case "LLAVA" : 
+            case "GEMMA" :
+            case "LLAMA" : {
+                return await this.processQuestOllama(context, quest, model);
+            }
+            case "GEMINI" :
+            default : { //otherwise GEMINI
+                return await this.processQuestGemini(context, quest, model);
+            }
+        }
+    }
+
+    public async processQuestGemini(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model, img_info?: InlineImage) : Promise<InquiryInfo> {
         let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: "" };
         let valid = this.validateParameter(quest.question,quest.mime,quest.image);
         if(!valid.valid) {
@@ -108,6 +138,73 @@ export class ChatImageHandler extends ChatPDFHandler {
             info.answer = this.parseAnswer(text);    
             if(!hasParam) this.deleteAttach(quest.image);
             else chatmap.remove(category);
+        } catch(ex: any) {
+            this.logger.error(this.constructor.name,ex);
+            info.error = true;
+            info.answer = this.getDBError(ex).message;
+		} finally {
+			if(db) db.close();
+        }
+        this.logger.debug(this.constructor.name+".processQuest: return:",JSON.stringify(info));
+        return info;
+    }
+
+    public async processQuestOllama(context: KnContextInfo, quest: QuestInfo, model: KnModel = this.model, img_info?: FileImageInfo | null) : Promise<InquiryInfo> {
+        let info : InquiryInfo = { error: false, question: quest.question, query: "", answer: "", dataset: "" };
+        let valid = this.validateParameter(quest.question,quest.mime,quest.image);
+        if(!valid.valid) {
+            info.error = true;
+            info.answer = "No "+valid.info+" found.";
+            return Promise.resolve(info);
+        }
+        let category = quest.category;
+        if(!category || category.trim().length==0) category = "DOCFILE";
+        this.logger.debug(this.constructor.name+".processQuest: quest:",quest);
+        
+        let db = this.getPrivateConnector(model);
+        let input = quest.question;
+        try {
+            const chatmap = ChatRepository.getInstance();
+            let forum = await this.getForumConfig(db,category,context);
+            this.logger.debug(this.constructor.name+".processQuest: forum:",forum);
+            this.logger.debug(this.constructor.name+".processQuest: category:",category+", input:",input);
+            let hasParam = img_info;
+            if(!hasParam) img_info = await this.getImageFileInfo(quest, db);
+
+            if (quest.imagetmp){
+                this.deleteAttach(quest.imagetmp);
+            }
+
+            let msg = "Question: "+quest.question;
+
+            if (img_info != null) {
+
+                let prmutil = new PromptOLlamaUtility();
+                switch (quest.agent?.toLocaleUpperCase()) {      
+                    case "GEMMA":
+                    case "LLAMA":
+                        let ocrtext = await ExtractDataFromImage(img_info?.file);
+                        let promptOllama = prmutil.createTesseractCleansingPrompt(ocrtext, input);
+                        let resultOllama = await ollamaGenerate(promptOllama, quest.model!);
+                        let responseOllama = resultOllama.response;
+                        this.logger.debug(this.constructor.name+".processQuest: response:", responseOllama);
+                        info.answer = this.parseAnswer(responseOllama);    
+                        // Do not delete image file
+                        break;
+    
+                    case "LLAVA":       
+                        let promptLava = prmutil.createAskPrompt(input);
+                        let resultLava = await ollamaImageAsk(promptLava, quest.model!, img_info.stream!);
+                        let responseLava = resultLava.response;
+                        this.logger.debug(this.constructor.name+".processAsk: response:", responseLava);
+                        info.answer = this.parseAnswer(responseLava);
+                        // Do not delete image file
+                        break;
+                }
+            } else {
+                throw new Error("Image not found");
+            }
+            
         } catch(ex: any) {
             this.logger.error(this.constructor.name,ex);
             info.error = true;

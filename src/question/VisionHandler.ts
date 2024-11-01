@@ -37,7 +37,7 @@ export class VisionHandler extends TknOperateHandler {
     }
 
     public async doQuest(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {
-        return this.processQuest(context,{category: context.params.category, question: context.params.query, mime: context.params.mime, image: context.params.image, agent: context.params.agent, model: context.params.model || ""},model);
+        return this.processQuest(context,{category: context.params.category, question: context.params.query, mime: context.params.mime, image: context.params.image, agent: context.params.agent, model: context.params.model || "", imageocr: context.params.imageocr, imagetmp: context.params.imagetmp },model);
     }
 
     public async doAsk(context: KnContextInfo, model: KnModel) : Promise<InquiryInfo> {

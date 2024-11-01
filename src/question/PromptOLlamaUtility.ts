@@ -184,4 +184,32 @@ export class PromptOLlamaUtility {
         ${text}
         `;
     }
+
+    public createTesseractCleansingPrompt(text: string, input: string) : string {
+        
+        return `ทำข้อมูลดังต่อไปนี้ให้ถูกต้องสามารถอ่านเข้าใจ 
+        ${input}.
+    
+        ${text}
+        `;
+    }
+
+    public createChatImagePrompt(document_info: string|null|undefined = "", prompt_info: string|null|undefined = "") : string {
+        if(!document_info || document_info==null) document_info = "";
+        if(!prompt_info || prompt_info==null) prompt_info = "";
+        let current_date = this.getCurrentDate();
+        return `Given an input question then return the answer.
+        Use the following format:
+        
+        Question: "Question here"
+        Answer: "An answer in double quotes"
+        
+        Using the following information to answer the question and reply in Answer format above.
+        ${document_info}
+
+        ${prompt_info}
+        For additional information, the current date or today is ${current_date}.
+        `;
+    }
+
 }
